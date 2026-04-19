@@ -1,8 +1,8 @@
 {
   "name": "react-example",
   "private": true,
-  "version": "0.6.0",
-  "build_id": "forced_redeploy_v2_final_06",
+  "version": "0.7.0",
+  "build_id": "forced_redeploy_v2_final_07_nuclear",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

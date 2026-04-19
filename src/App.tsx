@@ -52,37 +52,37 @@ const CATEGORIES = [
       { 
         id: 11, 
         name: "Varilla", 
-        img: "varilla.png?v=2.4",
+        img: "/varilla.png?v=2.5",
         description: "Acero de refuerzo de alta resistencia. Para conocer existencias y formatos, cotiza ahora con nosotros."
       },
       { 
         id: 12, 
         name: "Cemento Chihuahua", 
-        img: "cemento.png?v=2.4",
+        img: "/cemento.png?v=2.5",
         description: "Calidad garantizada del Cemento de Chihuahua para cada etapa de tu obra."
       },
       { 
         id: 13, 
         name: "Castillo de Construcción", 
-        img: "castillo.png?v=2.4",
+        img: "/castillo.png?v=2.5",
         description: "Armados precisos que agilizan tu construcción."
       },
       { 
         id: 14, 
         name: "Block de Cemento", 
-        img: "block.png?v=2.4",
+        img: "/block.png?v=2.5",
         description: "Resistencia estructural superior para muros duraderos."
       },
       { 
         id: 15, 
         name: "Yeso Máximo", 
-        img: "yeso.png?v=2.4",
+        img: "/yeso.png?v=2.5",
         description: "Recubrimiento de alta calidad para interiores. Acabado profesional."
       },
       { 
         id: 16, 
         name: "Mortero Chuviscar", 
-        img: "mortero.png?v=2.4",
+        img: "/mortero.png?v=2.5",
         description: "Ideal para aplanados y pegado de block. Máxima trabajabilidad."
       },
       {
@@ -102,7 +102,7 @@ const CATEGORIES = [
       {
         id: 19,
         name: "Ángulo de Amarre 250 x 305",
-        img: "angulo.png?v=2.4",
+        img: "/angulo.png?v=2.5",
         description: "Accesorio para fijación perimetral en plafones y muros."
       }
     ]
@@ -116,34 +116,34 @@ const CATEGORIES = [
       {
         id: 21,
         name: "Tubo Negro Roscada de 3/4",
-        img: "tubo_negro_roscada.png?v=2.4",
+        img: "/tubo_negro_roscada.png?v=2.5",
         description: "Tubería de alta calidad para instalaciones de gas y fluidos industriales."
       },
       {
         id: 22,
         name: "Codo Negro 90",
-        img: "codo_negro_1.png?v=2.4",
+        img: "/codo_negro_1.png?v=2.5",
         sizes: ["1/2", "3/4"],
         description: "Conexión robusta de 90 grados para tubería negra."
       },
       {
         id: 23,
         name: "Tee Negra",
-        img: "tee_negra.png?v=2.4",
+        img: "/tee_negra.png?v=2.5",
         sizes: ["1/2", "3/4"],
         description: "Conexión en T para derivaciones en sistemas de tubería negra."
       },
       {
         id: 24,
         name: "Válvula Bola Roscable",
-        img: "valbula.png?v=2.4",
+        img: "/valbula.png?v=2.5",
         sizes: ["1/2", "3/4"],
         description: "Control de paso de alta durabilidad con cierre tipo bola."
       },
       {
         id: 25,
         name: "Tubo PVC",
-        img: "pvc.png?v=2.4",
+        img: "/pvc.png?v=2.5",
         description: "Tubería para drenaje y ventilación, resistente y durable."
       }
     ]
@@ -157,7 +157,7 @@ const CATEGORIES = [
       {
         id: 31,
         name: "Pintura Axel",
-        img: "axel.png?v=2.4",
+        img: "/axel.png?v=2.5",
         sizes: ["Bronze", "Silver", "Golden"],
         selectionLabel: "Seleccionar Tipo",
         description: "Línea premium de acabados metálicos y decorativos. Selecciona tu color."
@@ -165,13 +165,13 @@ const CATEGORIES = [
       {
         id: 32,
         name: "Pintura de Señalamiento Alto Rendimiento",
-        img: "trafico.png?v=2.4",
+        img: "/trafico.png?v=2.5",
         description: "Especial para tráfico y vialidades. Máxima visibilidad y durabilidad."
       },
       {
         id: 41,
         name: "Adhesivo 3B Real",
-        img: "pega.png?v=2.4",
+        img: "/pega.png?v=2.5",
         sizes: ["Pega Piso Real", "Pega Azulejo Real"],
         selectionLabel: "Seleccionar Tipo",
         description: "Adhesivo especializado de gran fuerza para recubrimientos cerámicos."
@@ -207,13 +207,13 @@ export default function App() {
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [productSizes, setProductSizes] = useState<Record<number, string>>({});
+  const [imageErrors, setImageErrors] = useState<string[]>([]);
 
   // Forced build sync timestamp: 1713541849
   // Performance check for mobile
   const [isLowPowerMode, setIsLowPowerMode] = useState(false);
   useEffect(() => {
-    console.log("DICON App v2.4 - DEBUG MODE ACTIVE");
-    console.log("First Product Image Path:", CATEGORIES[0].products[0].img);
+    console.log("DICON App v2.5 - REVOLUCION FINAL ACTIVE");
     const checkPerformance = () => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isSmallScreen = window.innerWidth < 768; // Only trigger for phones
@@ -318,7 +318,7 @@ export default function App() {
           <div className="flex items-center gap-3 group">
             <div className="relative">
               <img 
-                src="logo.png?v=2.4" 
+                src="/logo.png?v=2.5" 
                 alt="DICON" 
                 className="h-12 w-auto transition-transform group-hover:scale-110"
                 onError={(e) => {
@@ -753,7 +753,7 @@ export default function App() {
                 className="will-change-transform"
               >
                 <img 
-                  src="casco2.png?v=2.4" 
+                  src="/casco2.png?v=2.5" 
                   alt="Casco Pro DICON" 
                   className="w-[300px] md:w-[500px] grayscale brightness-90 drop-shadow-[0_20px_60px_rgba(255,87,34,0.2)]"
                   onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -802,7 +802,7 @@ export default function App() {
             className="absolute right-[-10%] top-[5%] hidden lg:block opacity-20 pointer-events-none will-change-transform"
           >
             <img 
-              src="block2.png?v=2.4"
+              src="/block2.png?v=2.5"
               className="w-[600px] grayscale brightness-75 drop-shadow-[0_0_30px_rgba(255,87,34,0.1)]" 
               alt="Deco Block"
             />
@@ -815,7 +815,7 @@ export default function App() {
                 className="absolute left-[-8%] top-[75%] hidden lg:block opacity-30 pointer-events-none will-change-transform"
               >
                 <img 
-                  src="pvc_2_final.png?v=2.4"
+                  src="/pvc_2_final.png?v=2.5"
                   className="w-[450px] grayscale brightness-90 -rotate-12" 
                   alt="Deco PVC"
                 />
@@ -826,7 +826,7 @@ export default function App() {
                 className="absolute right-[-8%] top-[60%] hidden lg:block opacity-30 pointer-events-none will-change-transform"
               >
                 <img 
-                  src="hola.png?v=2.4"
+                  src="/hola.png?v=2.5"
                   className="w-[400px] rotate-12" 
                   alt="Deco Rodillo"
                   onError={(e) => {
@@ -842,7 +842,7 @@ export default function App() {
           <motion.div 
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px" }}
             variants={containerVariants}
             className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8"
           >
@@ -1011,8 +1011,10 @@ export default function App() {
                             alt={product.name} 
                             className="w-full h-full object-cover" 
                             referrerPolicy="no-referrer" 
-                            loading="lazy"
                             onError={(e) => {
+                              if (!imageErrors.includes(product.name)) {
+                                setImageErrors(prev => [...prev, product.name]);
+                              }
                               e.currentTarget.src = "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=600";
                             }}
                           />
@@ -1183,7 +1185,7 @@ export default function App() {
             <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-3">
                 <img 
-                  src="logo.png?v=2.4" 
+                  src="/logo.png?v=2.5" 
                   alt="DICON" 
                   className="h-8 w-auto opacity-80"
                   onError={(e) => {
@@ -1211,8 +1213,13 @@ export default function App() {
               © 2026 DICON DISTRIBUIDORA
             </p>
             <p className="text-text-secondary text-xs opacity-50 mt-4">
-              Sistema v2.4 - COMPLETO
+              Sistema v2.5 - REVOLUCIÓN
             </p>
+            {imageErrors.length > 0 && (
+              <p className="text-red-500 text-[10px] mt-2">
+                Errores detectados: {imageErrors.length} ({imageErrors.slice(0, 3).join(", ")})
+              </p>
+            )}
           </div>
         </div>
       </footer>
