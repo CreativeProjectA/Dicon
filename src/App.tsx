@@ -116,20 +116,20 @@ const CATEGORIES = [
       {
         id: 21,
         name: "Tubo Negro Roscada de 3/4",
-        img: "/tubo negro roscada.png",
+        img: "/tubo_negro_roscada.png",
         description: "Tubería de alta calidad para instalaciones de gas y fluidos industriales."
       },
       {
         id: 22,
         name: "Codo Negro 90",
-        img: "/codo negro 1.png",
+        img: "/codo_negro_1.png",
         sizes: ["1/2", "3/4"],
         description: "Conexión robusta de 90 grados para tubería negra."
       },
       {
         id: 23,
         name: "Tee Negra",
-        img: "/tee negra.png",
+        img: "/tee_negra.png",
         sizes: ["1/2", "3/4"],
         description: "Conexión en T para derivaciones en sistemas de tubería negra."
       },
@@ -812,7 +812,7 @@ export default function App() {
                 className="absolute left-[-8%] top-[75%] hidden lg:block opacity-30 pointer-events-none will-change-transform"
               >
                 <img 
-                  src="/productos/pvc 2.png"
+                  src="/productos/pvc_2.png"
                   className="w-[450px] grayscale brightness-90 -rotate-12" 
                   alt="Deco PVC"
                 />
