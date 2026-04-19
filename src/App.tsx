@@ -307,10 +307,8 @@ export default function App() {
       {/* Glow Sphere Background Effect */}
       {!isLowPowerMode && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          {/* Main central glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-[radial-gradient(circle,var(--color-accent-glow)_0%,transparent_70%)] opacity-60 blur-[60px]" />
-          {/* Subtle top secondary glow to give definition */}
-          <div className="absolute top-[-20%] right-[10%] w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(255,255,255,0.05)_0%,transparent_70%)] opacity-30" />
+          <div className="main-glow" />
+          <div className="secondary-glow" />
         </div>
       )}
 

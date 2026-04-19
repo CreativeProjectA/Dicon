@@ -45,4 +45,30 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
   }
+
+  .main-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px;
+    height: 1200px;
+    background: radial-gradient(circle, var(--color-accent-glow) 0%, transparent 70%);
+    opacity: 0.6;
+    filter: blur(60px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .secondary-glow {
+    position: fixed;
+    top: -20%;
+    right: 10%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+  }
 }
