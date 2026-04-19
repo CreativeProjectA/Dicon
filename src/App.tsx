@@ -569,13 +569,14 @@ export default function App() {
       </section>
 
       {/* Brands Marquee */}
-      <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-bg/50">
-        <div className="relative">
+      <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-bg relative">
+        <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none" />
+        <div className="relative z-10">
           <div className="flex animate-marquee-fast md:animate-marquee-slow whitespace-nowrap gap-20 items-center will-change-transform translate-z-0">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
               <span 
                 key={i} 
-                className="text-2xl md:text-4xl font-black text-text-secondary/10 hover:text-accent transition-colors cursor-default select-none tracking-tighter"
+                className="text-2xl md:text-4xl font-black text-white/20 hover:text-accent transition-colors cursor-default select-none tracking-tighter filter grayscale brightness-50 contrast-125"
               >
                 {brand}
               </span>
