@@ -12,7 +12,8 @@ import {
   MessageCircle, 
   Menu, 
   X, 
-  ChevronRight, 
+  ChevronRight,
+  ChevronDown, 
   Truck, 
   ShieldCheck, 
   ArrowRight,
@@ -26,7 +27,8 @@ import {
   Plus,
   Droplets,
   Palette,
-  Layers
+  Layers,
+  Sparkle
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef } from "react";
 
@@ -184,19 +186,19 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3
+    transition: { 
+      staggerChildren: 0.05,
+      delayChildren: 0.1
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.4, ease: "easeOut" }
   }
 };
 
@@ -204,6 +206,7 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<typeof CATEGORIES[0] | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [productSizes, setProductSizes] = useState<Record<number, string>>({});
@@ -283,10 +286,11 @@ export default function App() {
     
   const smoothY = useSpring(scrollYProgress, springConfig);
 
-  const y1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -600]);
-  const y2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 400]);
-  const rotate1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 45]);
-  const rotate2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -30]);
+  // Disabled Parallax for the 'Senior' experience - maximum smoothness
+  const y1 = 0;
+  const y2 = 0;
+  const rotate1 = 0;
+  const rotate2 = 0;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -313,12 +317,15 @@ export default function App() {
       </div>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-bg/80 backdrop-blur-md border-b border-border py-4" : "bg-transparent py-8"}`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-bg/85 backdrop-blur-xl border-b border-white/5 py-4 shadow-2xl" : "bg-transparent py-8"}`}>
         <div className="section-container flex items-center justify-between">
-          <div className="flex items-center gap-3 group">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center gap-3 group cursor-pointer"
+          >
             <div className="relative">
               <img 
-                src="/logo.png?v=2.5" 
+                src="/logo.png" 
                 alt="DICON" 
                 className="h-12 w-auto transition-transform group-hover:scale-110"
                 onError={(e) => {
@@ -327,10 +334,10 @@ export default function App() {
               />
               <div className="absolute -inset-1 bg-accent/20 blur opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
             </div>
-            <div className="text-2xl font-black tracking-tighter text-text-primary">
+            <div className="text-2xl font-black tracking-tighter text-text-primary group-hover:text-accent transition-colors">
               DI<span className="text-accent drop-shadow-[0_0_15px_var(--color-accent-glow)]">CON</span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10">
@@ -416,10 +423,10 @@ export default function App() {
 
         <div className="section-container relative z-10 w-full">
           <div className="flex flex-col items-center text-center mb-24">
-            {/* Floating Particles (Cement Dust) - High performance mode only */}
-            {!isLowPowerMode && (
+            {/* Floating Particles (Cement Dust) - Disabled for extreme performance optimization */}
+            {false && !isLowPowerMode && (
               <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
-                {[...Array(20)].map((_, i) => (
+                {[...Array(10)].map((_, i) => (
                   <motion.div
                     key={i}
                     initial={{ 
@@ -515,27 +522,27 @@ export default function App() {
               variants={itemVariants}
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group will-change-transform"
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="glass-card p-8 border border-white/10 shadow-lg relative overflow-hidden group will-change-transform"
             >
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
                 <ShieldCheck className="w-10 h-10" />
               </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">10+</div>
-              <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Años de Confianza</div>
+              <div className="text-4xl font-black text-accent mb-2">1.5</div>
+              <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Año y Medio de Confianza</div>
             </motion.div>
 
             <motion.div 
               variants={itemVariants}
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group lg:mt-4 will-change-transform"
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="glass-card p-8 border border-white/10 shadow-lg relative overflow-hidden group lg:mt-4 will-change-transform"
             >
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
                 <Truck className="w-10 h-10" />
               </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">1k+</div>
+              <div className="text-4xl font-black text-accent mb-2">1k+</div>
               <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Clientes en Juárez</div>
             </motion.div>
 
@@ -543,13 +550,13 @@ export default function App() {
               variants={itemVariants}
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group will-change-transform"
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="glass-card p-8 border border-white/10 shadow-lg relative overflow-hidden group will-change-transform"
             >
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
                 <Zap className="w-10 h-10" />
               </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">24/7</div>
+              <div className="text-4xl font-black text-accent mb-2">24/7</div>
               <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Soporte Logístico</div>
             </motion.div>
 
@@ -557,13 +564,13 @@ export default function App() {
               variants={itemVariants}
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group lg:mt-4 will-change-transform"
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="glass-card p-8 border border-white/10 shadow-lg relative overflow-hidden group lg:mt-4 will-change-transform"
             >
               <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
                 <Box className="w-10 h-10" />
               </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">100%</div>
+              <div className="text-4xl font-black text-accent mb-2">100%</div>
               <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Garantía de Entrega</div>
             </motion.div>
           </motion.div>
@@ -578,7 +585,7 @@ export default function App() {
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
               <span 
                 key={i} 
-                className="text-2xl md:text-4xl font-black text-white/20 hover:text-accent transition-colors cursor-default select-none tracking-tighter filter grayscale brightness-50 contrast-125"
+                className="text-2xl md:text-4xl font-black text-white/10 hover:text-accent transition-colors cursor-default select-none tracking-tighter"
               >
                 {brand}
               </span>
@@ -791,9 +798,45 @@ export default function App() {
       </section>
 
       {/* Categories / Catalog */}
-      <section id="materiales" className="py-32 relative overflow-hidden">
-        {/* Advanced Decorative Parallax Elements */}
+      <section id="materiales" className="py-40 relative overflow-hidden bg-[#050608]">
+        {/* Extreme 'Wow' Background Elements */}
         <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+          
+          {/* Brutalist Background Text - Optimized for Senior experience */}
+          <div className="absolute top-1/4 -left-10 select-none pointer-events-none opacity-[0.012] whitespace-nowrap hidden md:block">
+            <span className="text-[15rem] lg:text-[25rem] font-black italic tracking-tighter text-white uppercase leading-none">DICON SUPPLY DICON SUPPLY</span>
+          </div>
+          <div className="absolute bottom-1/4 -right-10 select-none pointer-events-none opacity-[0.012] whitespace-nowrap hidden md:block">
+            <span className="text-[15rem] lg:text-[25rem] font-black tracking-tighter text-white uppercase leading-none">ALTO IMPACTO ALTO IMPACTO</span>
+          </div>
+
+          {/* Senior Optimization: Using simple gradients instead of heavy filters */}
+          <div className="absolute -right-[10%] top-[10%] w-[600px] h-[600px] bg-accent/5 rounded-full pointer-events-none opacity-50" />
+          <div className="absolute -left-[15%] bottom-[10%] w-[500px] h-[500px] bg-blue-500/5 rounded-full pointer-events-none opacity-50" />
+          
+          {/* Static Tech Grid */}
+          <div className="absolute inset-0 w-full h-full opacity-[0.02] bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:80px_80px]" />
+
+          {/* Floating 3D Icons */}
+          {!isLowPowerMode && (
+            <>
+              <motion.div 
+                animate={{ y: [0, -30, 0], rotate: [0, 15, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute left-[5%] top-[15%] text-white/5"
+              >
+                <Construction className="w-40 h-40" />
+              </motion.div>
+              <motion.div 
+                animate={{ y: [0, 40, 0], rotate: [0, -20, 0] }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute right-[8%] bottom-[20%] text-accent/5"
+              >
+                <Zap className="w-32 h-32" />
+              </motion.div>
+            </>
+          )}
           <motion.div 
             style={{ 
               y: y1,
@@ -847,10 +890,13 @@ export default function App() {
             className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8"
           >
             <div className="max-w-2xl">
-              <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[4px] uppercase mb-4 block italic">SUMINISTRO ESTRATÉGICO</motion.span>
-              <motion.h2 variants={itemVariants} className="text-5xl md:text-8xl font-black mb-8 tracking-tight text-gradient uppercase">Nuestros Materiales</motion.h2>
-              <motion.p variants={itemVariants} className="text-text-secondary font-medium text-xl leading-relaxed">
-                Logística de alto impacto para ferreterías y constructoras líderes en la región.
+              <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
+                <div className="h-px w-12 bg-accent" />
+                <span className="text-accent font-bold text-sm tracking-[6px] uppercase italic">SUMINISTRO ESTRATÉGICO</span>
+              </motion.div>
+              <motion.h2 variants={itemVariants} className="text-6xl md:text-[11rem] font-black mb-8 tracking-tighter leading-[0.8] text-gradient uppercase italic">IMPACTO <br /> <span className="text-accent underline decoration-accent/20 underline-offset-[20px]">Industrial</span></motion.h2>
+              <motion.p variants={itemVariants} className="text-text-secondary font-medium text-xl md:text-2xl leading-relaxed max-w-xl">
+                Logística de ALTO IMPACTO para quienes construyen el futuro de la región.
               </motion.p>
             </div>
           </motion.div>
@@ -860,11 +906,18 @@ export default function App() {
             <motion.div 
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.05 }}
               variants={itemVariants}
-              className={`relative overflow-hidden group rounded-[40px] md:rounded-[60px] bg-card-bg/80 border border-white/10 p-8 md:p-16 lg:p-24 shadow-2xl ${isLowPowerMode ? "" : "backdrop-blur-md"}`}
+              whileHover={{ 
+                y: -5, 
+                transition: { duration: 0.2 } 
+              }}
+              className={`relative overflow-hidden group rounded-[40px] md:rounded-[60px] bg-card-bg border border-white/10 p-8 md:p-16 lg:p-24 shadow-xl transition-all duration-300 transform-gpu`}
             >
-              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-accent/20 via-transparent to-transparent pointer-events-none transition-transform duration-700 group-hover:scale-110"></div>
+              {/* Internal Spotlight Glow */}
+              <div className="absolute -inset-20 bg-gradient-radial from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[80px]" />
+              
+              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-accent/20 via-transparent to-transparent pointer-events-none transition-transform duration-1000 group-hover:scale-110"></div>
               <div className="relative z-10 flex flex-col lg:flex-row gap-10 lg:gap-16 items-center">
                 <div className="flex-1 w-full text-center lg:text-left">
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-[32px] flex items-center justify-center text-accent mb-8 md:mb-12 bg-accent/10 shadow-[0_0_50px_rgba(255,87,34,0.15)] ring-1 ring-white/10 mx-auto lg:mx-0">
@@ -911,7 +964,8 @@ export default function App() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={itemVariants}
-                className={`relative overflow-hidden group rounded-[60px] bg-card-bg/60 border border-white/5 p-12 lg:p-16 shadow-xl ${isLowPowerMode ? "" : "backdrop-blur-sm"}`}
+                whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+                className={`relative overflow-hidden group rounded-[60px] bg-card-bg/60 border border-white/5 p-12 lg:p-16 shadow-xl ${isLowPowerMode ? "" : "backdrop-blur-sm"} hover:border-blue-500/30 transition-all`}
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 via-transparent to-transparent pointer-events-none transition-opacity group-hover:opacity-100 opacity-40"></div>
                 <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full"></div>
@@ -940,7 +994,8 @@ export default function App() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={itemVariants}
-                className={`relative overflow-hidden group rounded-[60px] bg-card-bg/60 border border-white/5 p-12 lg:p-16 shadow-xl ${isLowPowerMode ? "" : "backdrop-blur-sm"}`}
+                whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+                className={`relative overflow-hidden group rounded-[60px] bg-card-bg/60 border border-white/5 p-12 lg:p-16 shadow-xl ${isLowPowerMode ? "" : "backdrop-blur-sm"} hover:border-purple-500/30 transition-all`}
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-transparent pointer-events-none transition-opacity group-hover:opacity-100 opacity-40"></div>
                 <div className="absolute -right-20 -top-20 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full"></div>
@@ -1150,76 +1205,168 @@ export default function App() {
         </div>
       </section>
 
-      {/* FAQ Section - Recommendation for further engagement */}
-      <section className="py-24 bg-bg">
-        <div className="section-container">
-          <div className="text-center mb-20">
-            <span className="text-accent font-bold text-xs tracking-[4px] uppercase mb-4 block">CENTRO DE AYUDA</span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">Dudas Frecuentes</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Puedo ir a recoger la mercancía?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">¡Claro que sí! Puedes visitarnos directamente en nuestro centro operativo para recoger tus materiales de forma inmediata y segura.</p>
+      {/* FAQ Section - Pro Senior Layout */}
+      <section className="py-32 relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="section-container relative z-10">
+          <div className="flex flex-col lg:flex-row gap-20">
+            <div className="lg:w-1/3">
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={containerVariants}
+              >
+                <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[4px] uppercase mb-6 block">KNOWLEDGE BASE</motion.span>
+                <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-none mb-10">
+                  Respuesta <br />
+                  <span className="text-gradient font-black">Inmediata.</span>
+                </motion.h2>
+                <motion.p variants={itemVariants} className="text-text-secondary text-lg font-medium leading-relaxed mb-12">
+                  Todo lo que necesitas saber sobre logística, mayoreo y seguridad técnica para tu proyecto. 
+                </motion.p>
+                <motion.div variants={itemVariants} className="p-6 rounded-3xl bg-accent/10 border border-accent/20">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-accent p-3 rounded-2xl shadow-lg shadow-accent/20">
+                      <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm mb-1 uppercase tracking-wider">Atención VIP</p>
+                      <p className="text-text-secondary text-xs leading-none italic">Soporte directo 24/7 para constructoras.</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
             </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Tienen precio de mayoreo?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Claro, somos distribuidores directos. Entre más necesites, mejoramos el presupuesto para tu ferretería o constructora.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Cómo solicito una cotización?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Puedes agregar productos a tu lista en esta web y enviarla por WhatsApp, o llamarnos directamente.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Aceptan pagos con tarjeta?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Aceptamos transferencias, depósitos y pagos con tarjeta directamente en nuestro centro operativo.</p>
+
+            <div className="lg:w-2/3 space-y-4">
+              {[
+                { 
+                  q: "¿Puedo ir a recoger la mercancía?", 
+                  a: "¡Claro que sí! Puedes visitarnos directamente en nuestro centro operativo para recoger tus materiales de forma inmediata y segura. Contamos con logística de carga rápida para que tu obra no se detenga." 
+                },
+                { 
+                  q: "¿Tienen precio de mayoreo?", 
+                  a: "Claro, somos distribuidores directos. Entre más necesites, mejoramos el presupuesto para tu ferretería o constructora. Manejamos escalas de precios competitivas para proyectos de gran volumen." 
+                },
+                { 
+                  q: "¿Cómo solicito una cotización?", 
+                  a: "Puedes agregar productos a tu lista en esta web y enviarla por WhatsApp con un solo clic. También puedes llamarnos directamente para atención personalizada inmediata." 
+                },
+                { 
+                  q: "¿Aceptan pagos con tarjeta?", 
+                  a: "Aceptamos transferencias, depósitos y pagos con todas las tarjetas de crédito/débito directamente en nuestro centro operativo. Facturación inmediata disponible." 
+                }
+              ].map((faq, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className={`group rounded-[32px] border transition-all duration-500 overflow-hidden ${
+                    openFaq === idx 
+                    ? "bg-card-bg border-accent/30 shadow-2xl shadow-accent/5 ring-1 ring-accent/10" 
+                    : "bg-white/5 border-white/5 hover:border-white/20"
+                  }`}
+                >
+                  <button 
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    className="w-full p-8 flex items-center justify-between text-left"
+                  >
+                    <span className={`text-xl font-black uppercase tracking-tight transition-colors ${openFaq === idx ? "text-accent" : "text-white"}`}>
+                      {faq.q}
+                    </span>
+                    <div className={`p-2 rounded-full transition-transform duration-500 ${openFaq === idx ? "rotate-180 bg-accent text-white" : "text-text-secondary bg-white/5"}`}>
+                      <ChevronDown className="w-5 h-5" />
+                    </div>
+                  </button>
+                  <AnimatePresence>
+                    {openFaq === idx && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <div className="px-8 pb-8 text-text-secondary text-lg leading-relaxed font-inter font-medium border-t border-white/5 pt-6 mx-4">
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-20 bg-bg border-t border-border">
-        <div className="section-container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-            <div className="flex flex-col items-center md:items-start gap-4">
+      <footer className="bg-bg py-24 border-t border-border relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 blur-[100px] rounded-full pointer-events-none" />
+        <div className="section-container relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+            <div className="space-y-8">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/logo.png?v=2.5" 
+                  src="/logo.png" 
                   alt="DICON" 
-                  className="h-8 w-auto opacity-80"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }} 
+                  className="h-10 w-auto"
                 />
-                <div className="text-2xl font-extrabold tracking-tighter text-text-primary">
-                  DI<span className="text-accent">CON</span>
-                </div>
+                <span className="text-2xl font-black tracking-tighter">DI<span className="text-accent">CON</span></span>
               </div>
-              <p className="text-text-secondary text-sm font-medium italic">"Cimientos sólidos para proyectos extraordinarios."</p>
+              <p className="text-text-secondary text-sm leading-relaxed font-medium italic">
+                Líderes en suministro estratégico para Ciudad Juárez. Calidad, velocidad y compromiso en cada entrega.
+              </p>
+              <div className="flex gap-4">
+                <a href="https://www.facebook.com/diconjrz" target="_blank" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-secondary hover:bg-accent hover:text-white transition-all shadow-lg">
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a href="https://wa.me/5216568079485" target="_blank" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-text-secondary hover:bg-accent hover:text-white transition-all shadow-lg">
+                  <MessageCircle className="w-5 h-5" />
+                </a>
+              </div>
             </div>
 
-            <div className="text-right flex flex-col items-center md:items-end gap-2">
-              <div className="text-xs text-text-secondary font-medium">
-                Llámanos ahora: <span className="text-text-primary ml-2">+52 656 634 8189</span>
-              </div>
-              <div className="text-xs text-text-secondary font-medium">
-                Ubicación: <span className="text-text-primary ml-2">Ciudad Juárez, MX</span>
-              </div>
+            <div>
+              <h4 className="font-bold text-white uppercase tracking-widest text-xs mb-8">Navegación</h4>
+              <ul className="space-y-4">
+                {navLinks.map(link => (
+                  <li key={link.name}>
+                    <a href={link.href} className="text-text-secondary hover:text-accent text-sm transition-colors font-medium">{link.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white uppercase tracking-widest text-xs mb-8">Soporte</h4>
+              <ul className="space-y-4">
+                <li><p className="text-text-secondary text-sm font-medium">Cotizaciones rápidas</p></li>
+                <li><p className="text-text-secondary text-sm font-medium">Ventas de mayoreo</p></li>
+                <li><p className="text-text-secondary text-sm font-medium">Logística Juárez</p></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white uppercase tracking-widest text-xs mb-8">Contacto Directo</h4>
+              <p className="text-text-secondary text-sm leading-relaxed font-medium mb-4">
+                Calle Nahoas 3139, Aztecas<br />
+                Ciudad Juárez, Chihuahua
+              </p>
+              <p className="text-accent font-bold text-lg">656 634 8189</p>
             </div>
           </div>
-          <div className="mt-16 pt-8 border-t border-border text-center">
+
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
             <p className="text-[10px] text-text-secondary uppercase tracking-[4px] font-bold opacity-30">
-              © 2026 DICON DISTRIBUIDORA
+              © 2026 DICON DISTRIBUIDORA - TODOS LOS DERECHOS RESERVADOS
             </p>
-            <p className="text-text-secondary text-xs opacity-50 mt-4">
-              Sistema v2.5 - REVOLUCIÓN
-            </p>
-            {imageErrors.length > 0 && (
-              <p className="text-red-500 text-[10px] mt-2">
-                Errores detectados: {imageErrors.length} ({imageErrors.slice(0, 3).join(", ")})
-              </p>
-            )}
+            <div className="flex gap-8">
+               <span className="text-[10px] text-text-secondary uppercase tracking-[2px] font-bold opacity-20">Privacy Policy</span>
+               <span className="text-[10px] text-text-secondary uppercase tracking-[2px] font-bold opacity-20">Terms of Service</span>
+            </div>
           </div>
         </div>
       </footer>
