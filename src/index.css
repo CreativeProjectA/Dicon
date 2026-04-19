@@ -1,0 +1,48 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Immersive UI Palette */
+  --color-bg: #0a0b0e;
+  --color-card-bg: #15171c;
+  --color-accent: #f27121;
+  --color-accent-glow: rgba(242, 113, 33, 0.3);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #94a3b8;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-glass: rgba(255, 255, 255, 0.03);
+  
+  /* Legacy/Support for previous names if needed, but primarily using new ones */
+  --color-dicon-orange: var(--color-accent);
+  --color-dicon-dark: var(--color-bg);
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text-primary font-sans antialiased;
+  }
+}
+
+@layer components {
+  .section-container {
+    @apply max-w-7xl mx-auto px-6 sm:px-10 lg:px-16;
+  }
+
+  .glass-card {
+    @apply bg-card-bg border border-border rounded-[20px] relative overflow-hidden;
+  }
+
+  .accent-line-top::after {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-[1px];
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0.5;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  }
+}
