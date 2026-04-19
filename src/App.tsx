@@ -304,13 +304,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg text-text-primary">
-      {/* Glow Sphere Background Effect */}
-      {!isLowPowerMode && (
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="main-glow" />
-          <div className="secondary-glow" />
-        </div>
-      )}
+      {/* Glow Sphere Background Effect - ALWAYS VISIBLE */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="main-glow" />
+        <div className="secondary-glow" />
+      </div>
 
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-bg/80 backdrop-blur-md border-b border-border py-4" : "bg-transparent py-8"}`}>
