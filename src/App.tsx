@@ -212,7 +212,7 @@ export default function App() {
   // Performance check for mobile
   const [isLowPowerMode, setIsLowPowerMode] = useState(false);
   useEffect(() => {
-    console.log("DICON App v2.2 - System Ready");
+    console.log("DICON App v2.3 - FORCE SYNC ACTIVE");
     const checkPerformance = () => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isSmallScreen = window.innerWidth < 768; // Only trigger for phones
@@ -1208,6 +1208,9 @@ export default function App() {
           <div className="mt-16 pt-8 border-t border-border text-center">
             <p className="text-[10px] text-text-secondary uppercase tracking-[4px] font-bold opacity-30">
               © 2026 DICON DISTRIBUIDORA
+            </p>
+            <p className="text-text-secondary text-xs opacity-50 mt-4">
+              Sistema v2.3 - Sincronizado
             </p>
           </div>
         </div>

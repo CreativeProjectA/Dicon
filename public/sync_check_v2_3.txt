@@ -1,0 +1,2 @@
+Sync check performed at April 19, 2026. This file confirms the public folder must be updated at GitHub. v2.3
+Images have been moved to public root.
