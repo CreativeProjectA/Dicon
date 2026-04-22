@@ -54,7 +54,7 @@ const PUBLICO_PRODUCTS = {
     { id: 4, name: "Mortero Chuviscar", price: 95, unit: "bulto", img: "/mortero.png" },
     { id: 5, name: "Yeso Máximo", price: 85, unit: "bulto", img: "/yeso.png" },
     { id: 1, name: "Varilla de acero", price: 180, unit: "pieza", img: "/varilla.png", variants: ["3/8", "1/2", "5/8"] },
-    { id: 6, name: "Castillo de construcción", price: null, unit: "cotización", img: "/yeso.png", variants: ["Hasta 2.5m", "Hasta 3m"] },
+    { id: 6, name: "Castillo de construcción", price: null, unit: "cotización", img: "/castillo.png", variants: ["Hasta 2.5m", "Hasta 3m"] },
   ],
   "Plomería": [
     { id: 7, name: "Tubo PVC", price: 85, unit: "pieza", img: "/pvc.png", variants: ["1/2\"", "3/4\"", "1\""] },
@@ -215,6 +215,7 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
   }, [product.constructorMode, qty, product.price]);
 
   // Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
+  // Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
   if (isLowPowerMode) {
     return (
       <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm">
@@ -295,6 +296,107 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
       </div>
     );
   }
+
+  // Versión Desktop con animaciones premium
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-20px" }}
+      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm"
+    >
+      {product.constructorMode && product.price && (
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1">
+          <div className="bg-orange-600 text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-sm tracking-widest uppercase">
+            Módulo Constructor
+          </div>
+          {qty < 10 ? (
+            <div className="bg-white/10 backdrop-blur-md text-white/40 text-[7px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
+              10+ para activar mayoreo
+            </div>
+          ) : (
+             <motion.div 
+               initial={{ scale: 0.8, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               className="bg-green-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-widest uppercase flex items-center gap-1"
+             >
+               <Sparkle className="w-2 h-2" /> Mayoreo activo (-15%)
+             </motion.div>
+          )}
+        </div>
+      )}
+
+      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden">
+        <img 
+          src={product.img} 
+          alt={product.name}
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" 
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div className="flex-1 flex flex-col">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white mb-1 tracking-tight">{product.name}</h3>
+          {product.variants && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {product.variants.map((v: string) => (
+                <button 
+                  key={v}
+                  onClick={() => setSelectedVariant(v)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-medium border transition-all ${selectedVariant === v ? 'bg-white text-black border-white' : 'border-white/10 text-white/40 hover:border-white/30'}`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-auto">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+               <p className="text-xs text-white/40 mb-1 font-medium">Precio unitario</p>
+               <div className="flex items-center gap-2">
+                 <span className="text-2xl font-bold text-accent">
+                   {finalUnitPrice ? `$${Math.round(finalUnitPrice).toLocaleString()}` : 'Cotizar'}
+                 </span>
+                 {isMayoreoActive && (
+                   <span className="text-xs text-white/20 line-through font-medium">${product.price}</span>
+                 )}
+               </div>
+            </div>
+            
+            <div className="flex items-center bg-white/5 border border-white/10 rounded-full p-1 h-10">
+              <button 
+                onClick={() => setQty(Math.max(1, qty - 1))}
+                className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-accent transition-colors"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <span className="w-8 text-center text-xs font-bold text-white tracking-tighter">
+                {qty}
+              </span>
+              <button 
+                onClick={() => setQty(qty + 1)}
+                className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-accent transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => addToCart({ ...product, qty, selectedVariant })}
+            className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2"
+          >
+            Añadir a la lista <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
 });
 
 export default function App() {
@@ -302,14 +404,6 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-<<<<<<< HEAD
-  const [productSizes, setProductSizes] = useState<Record<number, string>>({});
-  const [imageErrors, setImageErrors] = useState<string[]>([]);
-const [activeModal, setActiveModal] = useState<string | null>(null);
-  // Forced build sync timestamp: 1713541849
-  // Performance check for mobile
-  const [isLowPowerMode, setIsLowPowerMode] = useState(false);
-=======
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeModal, setActiveModal] = useState<null | 'publico' | 'constructora' | 'maquila'>(null);
 
@@ -322,7 +416,6 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
   });
 
->>>>>>> fbdca033839bb41b7b105e79a968fd957db15fea
   useEffect(() => {
     const checkPerformance = () => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -875,22 +968,22 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
       </section>
 
       {/* Brands Marquee - GPU Accelerated */}
-      <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-bg relative contain-paint">
-        <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none" />
+      <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-[#0a0a0a] relative contain-paint">
+        <div className="absolute inset-0 bg-accent/5 z-0 pointer-events-none" />
         <div className="relative z-10">
           <div className="flex animate-marquee-fast md:animate-marquee-slow whitespace-nowrap gap-20 items-center will-change-transform translate-x-0 force-gpu">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
               <span 
                 key={i} 
-                className="text-2xl md:text-5xl font-bold text-white/10 hover:text-accent transition-colors cursor-default select-none tracking-tight"
+                className="text-2xl md:text-5xl font-black text-accent/20 hover:text-accent transition-all duration-500 cursor-default select-none tracking-tighter uppercase"
               >
-                {brand.toLowerCase()}
+                {brand}
               </span>
             ))}
           </div>
           {/* Fades */}
-          <div className="absolute inset-y-0 left-0 w-24 md:w-40 bg-gradient-to-r from-bg to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-bg to-transparent z-10" />
+          <div className="absolute inset-y-0 left-0 w-24 md:w-40 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10" />
+          <div className="absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10" />
         </div>
       </section>
 
@@ -940,7 +1033,12 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
                           className="flex gap-4 items-center bg-bg/40 p-5 rounded-2xl border border-border/50 group relative"
                         >
                           <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                            <img 
+                              src={item.img} 
+                              alt={item.name} 
+                              className="w-full h-full object-cover" 
+                              loading="lazy"
+                            />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start">
@@ -1272,7 +1370,12 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
             {/* Modal Header Fijo */}
             <header className="flex items-center justify-between px-6 md:px-12 py-6 bg-bg border-b border-white/5 relative z-[210] md:backdrop-blur-3xl">
               <div className="flex items-center gap-4">
-                <img src="/logo.png" alt="DICON" className="h-8 w-auto" />
+                <img 
+                  src="/logo.png" 
+                  alt="DICON" 
+                  className="h-8 w-auto" 
+                  loading="lazy"
+                />
                 <span className="text-lg font-bold tracking-tight text-white border-l border-white/10 pl-4">
                   {`Catálogo — ${activeModal === 'publico' ? 'Público General' : activeModal === 'constructora' ? 'Constructoras' : 'Industria Maquiladora'}`}
                 </span>
@@ -1479,61 +1582,7 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
           </div>
         </div>
       </section>
-{/* Quien le servimos */}
-      <section className="py-32 relative overflow-hidden bg-bg">
-        <div className="section-container relative z-10">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={containerVariants}
-            className="text-center mb-20"
-          >
-            <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[6px] uppercase mb-4 block italic">NUESTRO CATÁLOGO</motion.span>
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-black tracking-tighter uppercase text-gradient">¿A quién le servimos?</motion.h2>
-            <motion.p variants={itemVariants} className="text-text-secondary text-xl mt-6 max-w-2xl mx-auto">Selecciona tu perfil y accede a precios y productos especializados para ti.</motion.p>
-          </motion.div>
 
-<<<<<<< HEAD
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={containerVariants}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            {[
-              { id: "publico", title: "Público General", desc: "Materiales, plomería y acabados para tu hogar u obra pequeña. Precios de menudeo.", icon: "🏠", color: "from-orange-500/20" },
-              { id: "constructora", title: "Constructoras y Ferreterías", desc: "Precios de mayoreo desde la primera pieza. Más compras, mejor precio.", icon: "🏗️", color: "from-blue-500/20" },
-              { id: "maquila", title: "Industria Maquiladora", desc: "Acero especial
-     {/* FAQ Section */}
-      <section className="py-32 bg-bg relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent/3 blur-[150px] rounded-full" />
-        </div>
-        <div className="section-container relative z-10">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="text-center mb-20">
-            <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[6px] uppercase mb-4 block italic">SOPORTE</motion.span>
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-black tracking-tighter uppercase text-gradient">Preguntas Frecuentes</motion.h2>
-          </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {[
-              { q: "¿Puedo ir a recoger la mercancía?", a: "¡Claro que sí! Puedes visitarnos directamente en nuestro centro operativo para recoger tus materiales de forma inmediata y segura." },
-              { q: "¿Tienen precio de mayoreo?", a: "Claro, somos distribuidores directos. Entre más necesites, mejoramos el presupuesto para tu ferretería o constructora." },
-              { q: "¿Cómo solicito una cotización?", a: "Puedes agregar productos a tu lista en esta web y enviarla por WhatsApp, o llamarnos directamente." },
-              { q: "¿Aceptan pagos con tarjeta?", a: "Aceptamos transferencias, depósitos y pagos con tarjeta directamente en nuestro centro operativo." }
-            ].map((item, i) => (
-              <motion.div key={i} variants={itemVariants} className="group glass-card p-10 border border-white/5 rounded-[32px] hover:border-accent/30 transition-all duration-300 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
-                <div className="text-accent font-black text-xs tracking-[4px] uppercase mb-4 opacity-40 group-hover:opacity-100 transition-opacity italic">
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <h4 className="font-black text-lg mb-4 text-white uppercase tracking-tight group-hover:text-accent transition-colors">{item.q}</h4>
-                <p className="text-text-secondary text-sm leading-relaxed font-medium">{item.a}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-=======
       {/* FAQ Section */}
       <section className="py-24 md:py-40 bg-bg">
         <div className="section-container">
@@ -1581,86 +1630,20 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
               </motion.div>
             ))}
           </div>
->>>>>>> fbdca033839bb41b7b105e79a968fd957db15fea
         </div>
       </section>
 
       {/* Footer */}
-<<<<<<< HEAD
-      <footer className="py-24 bg-card-bg/30 border-t border-border relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-accent/5 blur-[100px] rounded-full" />
-        </div>
-        <div className="section-container relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16 pb-16 border-b border-border">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-3">
-                <img src="/logo.png?v=2.5" alt="DICON" className="h-10 w-auto opacity-90" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                <div className="text-2xl font-black tracking-tighter">DI<span className="text-accent">CON</span></div>
-              </div>
-              <p className="text-text-secondary text-sm font-medium italic leading-relaxed max-w-xs">
-                "Cimientos sólidos para proyectos extraordinarios."
-              </p>
-              <div className="flex gap-4">
-                <a href="https://www.facebook.com/diconjrz" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:border-accent transition-all">
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a href="https://wa.me/5216568079485" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:border-accent transition-all">
-                  <MessageCircle className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              <h4 className="font-black text-xs tracking-[4px] uppercase text-text-secondary">Navegación</h4>
-              <div className="flex flex-col gap-3">
-                {navLinks.map(link => (
-                  <a key={link.name} href={link.href} className="text-text-secondary hover:text-accent transition-colors text-sm font-medium flex items-center gap-2 group">
-                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
-                    {link.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              <h4 className="font-black text-xs tracking-[4px] uppercase text-text-secondary">Contacto</h4>
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-3.5 h-3.5 text-accent" />
-                  </div>
-                  <span className="text-sm text-text-secondary font-medium">656 634 8189</span>
-                </div>
-                <div className="flex items-center gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-3.5 h-3.5 text-accent" />
-                  </div>
-                  <span className="text-sm text-text-secondary font-medium">+52 1 656 807 9485</span>
-                </div>
-                <div className="flex items-start gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <MapPin className="w-3.5 h-3.5 text-accent" />
-                  </div>
-                  <span className="text-sm text-text-secondary font-medium leading-relaxed">Calle Nahoas 3139, Aztecas,<br/>Ciudad Juárez, MX</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[11px] text-text-secondary uppercase tracking-[4px] font-bold opacity-30">© 2026 DICON Distribuidora — Todos los derechos reservados</p>
-            <p className="text-[11px] text-text-secondary opacity-30 font-medium">
-             — Ciudad Juárez, MX</p>
-          </div>
-        </div>
-      </footer>
-=======
       <footer className="bg-bg py-24 border-t border-border">
         <div className="section-container text-center">
           <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-16 px-4">
             <div className="flex items-center gap-4">
-              <img src="/logo.png" alt="DICON" className="h-10 w-auto" />
+              <img 
+                src="/logo.png" 
+                alt="DICON" 
+                className="h-10 w-auto" 
+                loading="lazy"
+              />
               <span className="text-3xl font-black tracking-[-0.05em] text-white">Dicon <span className="text-accent">Juárez</span></span>
             </div>
             
@@ -1736,4 +1719,3 @@ const [activeModal, setActiveModal] = useState<string | null>(null);
     </div>
   );
 }
->>>>>>> fbdca033839bb41b7b105e79a968fd957db15fea
