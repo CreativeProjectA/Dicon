@@ -55,15 +55,24 @@ html, body {
 /* Premium Effects - Apple style */
 .glass-card {
   background: rgba(255, 255, 255, 0.04) !important;
-  backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 24px;
-  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
 }
 
 .glass-card:hover {
   border-color: rgba(255, 255, 255, 0.2) !important;
-  transform: translateY(-4px);
+  transform: translateY(-4px) translateZ(0);
 }
 
 .section-container {
@@ -119,10 +128,22 @@ html, body {
 
 .animate-marquee-slow {
   animation: marquee 60s linear infinite;
+  will-change: transform;
 }
 
 .animate-marquee-fast {
-  animation: marquee 40s linear infinite;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+/* Optimization for mobile and large lists */
+section, .product-grid-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 400px;
+}
+
+.hero-section {
+  content-visibility: visible;
 }
 
 ::selection {

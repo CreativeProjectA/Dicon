@@ -138,31 +138,56 @@ const itemVariants = {
   }
 };
 
-const QuoteCard = memo(({ card }: any) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm"
-  >
-    <div className="flex flex-col gap-4 mb-6">
-      <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
-        {card.icon || <Package className="w-6 h-6" />}
+const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
+  if (isLowPowerMode) {
+    return (
+      <div className="product-grid-item bg-white/[0.06] p-8 border border-white/[0.08] rounded-[24px] flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+            {card.icon || <Package className="w-6 h-6" />}
+          </div>
+          <h3 className="text-2xl font-bold tracking-tight text-white">{card.title}</h3>
+        </div>
+        <p className="text-white/50 text-sm font-normal leading-relaxed mb-8 grow">
+          {card.items}
+        </p>
+        <button 
+          onClick={() => window.open(`https://wa.me/5216563222670?text=${encodeURIComponent(card.msg)}`, '_blank')}
+          className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-2"
+        >
+          Cotizar por WhatsApp
+          <MessageCircle className="w-4 h-4" />
+        </button>
       </div>
-      <h3 className="text-2xl font-bold tracking-tight text-white">{card.title}</h3>
-    </div>
-    <p className="text-white/50 text-sm font-normal leading-relaxed mb-8 grow">
-      {card.items}
-    </p>
-    <button 
-      onClick={() => window.open(`https://wa.me/5216563222670?text=${encodeURIComponent(card.msg)}`, '_blank')}
-      className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-sm"
+    );
+  }
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm"
     >
-      Cotizar por WhatsApp
-      <MessageCircle className="w-4 h-4" />
-    </button>
-  </motion.div>
-));
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+          {card.icon || <Package className="w-6 h-6" />}
+        </div>
+        <h3 className="text-2xl font-bold tracking-tight text-white">{card.title}</h3>
+      </div>
+      <p className="text-white/50 text-sm font-normal leading-relaxed mb-8 grow">
+        {card.items}
+      </p>
+      <button 
+        onClick={() => window.open(`https://wa.me/5216563222670?text=${encodeURIComponent(card.msg)}`, '_blank')}
+        className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-sm"
+      >
+        Cotizar por WhatsApp
+        <MessageCircle className="w-4 h-4" />
+      </button>
+    </motion.div>
+  );
+});
 
 const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
   const [selectedVariant, setSelectedVariant] = useState(product.variants ? product.variants[0] : null);
@@ -189,109 +214,87 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
     return product.constructorMode && qty >= 10 && product.price;
   }, [product.constructorMode, qty, product.price]);
 
-  // Optimización: Desactivar animaciones pesadas en móvil para máxima fluidez
-  const animationProps = isLowPowerMode 
-    ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
-    : { initial: { opacity: 0, y: 15 }, whileInView: { opacity: 1, y: 0 } };
-
-  return (
-    <motion.div 
-      {...animationProps}
-      viewport={{ once: true, margin: "-20px" }}
-      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm"
-    >
-      {product.constructorMode && product.price && (
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1">
-          <div className="bg-orange-600 text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-sm tracking-widest uppercase">
-            Módulo Constructor
-          </div>
-          {qty < 10 ? (
-            <div className="bg-white/10 backdrop-blur-md text-white/40 text-[7px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
-              10+ para activar mayoreo
+  // Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
+  if (isLowPowerMode) {
+    return (
+      <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm">
+        {product.constructorMode && product.price && (
+          <div className="absolute top-4 left-4 z-20 flex flex-col gap-1">
+            <div className="bg-orange-600 text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-sm tracking-widest uppercase">
+              Módulo Constructor
             </div>
-          ) : (
-             <motion.div 
-               initial={{ scale: 0.8, opacity: 0 }}
-               animate={{ scale: 1, opacity: 1 }}
-               className="bg-green-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-widest uppercase flex items-center gap-1"
-             >
-               <Sparkle className="w-2 h-2" /> Mayoreo activo (-15%)
-             </motion.div>
-          )}
-        </div>
-      )}
-
-      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden">
-        <img 
-          src={product.img} 
-          alt={product.name}
-          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" 
-          loading="lazy"
-          onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x200?text=DC'; }} 
-        />
-      </div>
-
-      <div className="flex-1 flex flex-col">
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-white mb-1 tracking-tight">{product.name}</h3>
-          {product.variants && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {product.variants.map((v: string) => (
-                <button 
-                  key={v}
-                  onClick={() => setSelectedVariant(v)}
-                  className={`px-3 py-1 rounded-full text-[10px] font-medium border transition-all ${selectedVariant === v ? 'bg-white text-black border-white' : 'border-white/10 text-white/40 hover:border-white/30'}`}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="mt-auto">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-               <p className="text-xs text-white/40 mb-1 font-medium">Precio unitario</p>
-               <div className="flex items-center gap-2">
-                 <span className="text-2xl font-bold text-accent">
-                   {finalUnitPrice ? `$${finalUnitPrice.toLocaleString()}` : 'Cotizar'}
-                 </span>
-                 {isMayoreoActive && (
-                   <span className="text-xs text-white/20 line-through font-medium">${product.price}</span>
-                 )}
+            {qty < 10 ? (
+              <div className="bg-white/10 text-white/40 text-[7px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
+                10+ para activar mayoreo
+              </div>
+            ) : (
+               <div className="bg-green-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-widest uppercase flex items-center gap-1">
+                 <Sparkle className="w-2 h-2" /> Mayoreo activo (-15%)
                </div>
-            </div>
-            
-            <div className="flex items-center bg-white/5 border border-white/10 rounded-full p-1 h-10">
-              <button 
-                onClick={() => setQty(Math.max(1, qty - 1))}
-                className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-accent transition-colors"
-              >
-                <Minus className="w-3 h-3" />
-              </button>
-              <span className="w-8 text-center text-xs font-bold text-white tracking-tighter">
-                {qty}
-              </span>
-              <button 
-                onClick={() => setQty(qty + 1)}
-                className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-accent transition-colors"
-              >
-                <Plus className="w-3 h-3" />
-              </button>
-            </div>
+            )}
+          </div>
+        )}
+
+        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden">
+          <img 
+            src={product.img} 
+            alt={product.name}
+            className="w-full h-full object-contain" 
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        <div className="flex-1 flex flex-col">
+          <div className="mb-4">
+            <h3 className="text-xl font-bold text-white mb-1 tracking-tight">{product.name}</h3>
+            {product.variants && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {product.variants.map((v: string) => (
+                  <button 
+                    key={v}
+                    onClick={() => setSelectedVariant(v)}
+                    className={`px-3 py-1 rounded-full text-[10px] font-medium border transition-all ${selectedVariant === v ? 'bg-white text-black border-white' : 'border-white/10 text-white/40'}`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <button 
-            onClick={() => addToCart({ ...product, qty, selectedVariant })}
-            className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2"
-          >
-            Añadir a la lista <ArrowRight className="w-4 h-4" />
-          </button>
+          <div className="mt-auto">
+            <div className="flex items-end justify-between mb-6">
+              <div>
+                 <p className="text-xs text-white/40 mb-1 font-medium">Precio unitario</p>
+                 <div className="flex items-center gap-2">
+                   <span className="text-2xl font-bold text-accent">
+                     {finalUnitPrice ? `$${Math.round(finalUnitPrice).toLocaleString()}` : 'Cotizar'}
+                   </span>
+                   {isMayoreoActive && (
+                     <span className="text-xs text-white/20 line-through font-medium">${product.price}</span>
+                   )}
+                 </div>
+              </div>
+              
+              <div className="flex items-center bg-white/5 border border-white/10 rounded-full p-1 h-10">
+                <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-8 h-8 px-2 flex items-center justify-center"><Minus className="w-3 h-3 text-white/40"/></button>
+                <span className="w-6 text-center text-xs font-bold text-white">{qty}</span>
+                <button onClick={() => setQty(qty + 1)} className="w-8 h-8 px-2 flex items-center justify-center"><Plus className="w-3 h-3 text-white/40"/></button>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => addToCart({ ...product, qty, selectedVariant })}
+              className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-2"
+            >
+              Añadir a la lista <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
-    </motion.div>
-  );
+    );
+  }
 });
 
 export default function App() {
@@ -306,23 +309,28 @@ export default function App() {
   const mayoreoRef = useRef<HTMLElement>(null);
   const maquilaRef = useRef<HTMLElement>(null);
 
-  const [isLowPowerMode, setIsLowPowerMode] = useState(true); // Default to true for faster first paint
+  const [isLowPowerMode, setIsLowPowerMode] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  });
+
   useEffect(() => {
     const checkPerformance = () => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isSmallScreen = window.innerWidth < 768;
-      // Also check for reduced motion preference
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       setIsLowPowerMode(isMobile || isSmallScreen || prefersReducedMotion);
     };
+    
+    // Check immediately on mount in case the initial state was wrong
     checkPerformance();
-    // Use a small delay to avoid resize thrashing
+    
     let timeout: any;
     const handleResize = () => {
       clearTimeout(timeout);
       timeout = setTimeout(checkPerformance, 200);
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
     return () => {
       window.removeEventListener('resize', handleResize);
       clearTimeout(timeout);
@@ -333,14 +341,13 @@ export default function App() {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Cart logic
+  // Cart logic - Precision fix
   const getPrice = useCallback((item: any) => {
     if (!item.price) return null;
     
     // Regla DICON: El mayoreo (15% dto al llegar a 10 piezas)
-    // SOLO se activa en el módulo de Constructoras.
     if (item.constructorMode && item.quantity >= 10) {
-      return Math.round(item.price * 0.85);
+      return item.price * 0.85; // Don't round yet for precision
     }
     
     return item.price;
@@ -419,16 +426,26 @@ export default function App() {
     const discountedTotal = useMemo(() => {
       return cart.reduce((sum, item) => {
         const price = getPrice(item);
+        // Precision subtotal for the item
         return sum + ((price || 0) * item.quantity);
       }, 0);
     }, [cart]);
 
     const totalSavings = useMemo(() => {
-      return regularTotal - discountedTotal;
-    }, [regularTotal, discountedTotal]);
+      // Direct savings calculation to ensure it matches what user sees
+      return cart.reduce((sum, item) => {
+        if (item.constructorMode && item.quantity >= 10 && item.price) {
+          const regularItemTotal = item.price * item.quantity;
+          const discountedItemTotal = (item.price * 0.85) * item.quantity;
+          return sum + (regularItemTotal - discountedItemTotal);
+        }
+        return sum;
+      }, 0);
+    }, [cart]);
 
-    const iva = useMemo(() => Math.round(discountedTotal * 0.16), [discountedTotal]);
-    const finalTotal = useMemo(() => Math.round(discountedTotal + iva), [discountedTotal, iva]);
+    const subtotalConAhorro = discountedTotal;
+    const iva = subtotalConAhorro * 0.16;
+    const finalTotal = Math.round(subtotalConAhorro + iva);
 
     return (
       <div className="flex flex-col h-full bg-[#000] text-white">
@@ -546,7 +563,7 @@ export default function App() {
                       <div className="text-right">
                         <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest leading-none mb-1">Subtotal Item</p>
                         <p className={`text-lg font-black tracking-tighter ${isMayoreo ? 'text-green-400' : 'text-white'}`}>
-                          {finalPrice ? `$${(finalPrice * item.quantity).toLocaleString()}` : 'A cotizar'}
+                          {finalPrice ? `$${Math.round(finalPrice * item.quantity).toLocaleString()}` : 'A cotizar'}
                         </p>
                       </div>
                     </div>
@@ -575,12 +592,16 @@ export default function App() {
             
             <div className="space-y-3 px-1">
               <div className="flex justify-between text-white/30 font-bold uppercase tracking-widest text-[10px]">
-                <span>Base Gravable</span>
-                <span className="text-white/60">${discountedTotal.toLocaleString()}</span>
+                <span>Precio Comercial (Sin Descuento)</span>
+                <span className="text-white/40 line-through">${Math.round(regularTotal).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-white/30 font-bold uppercase tracking-widest text-[10px]">
+                <span>Subtotal Neto</span>
+                <span className="text-white/60">${Math.round(discountedTotal).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-white/30 font-bold uppercase tracking-widest text-[10px]">
                 <span>IVA Trasladado (16%)</span>
-                <span className="text-white/60">${iva.toLocaleString()}</span>
+                <span className="text-white/60">${Math.round(iva).toLocaleString()}</span>
               </div>
               <div className="pt-6 mt-4 border-t border-white/5 flex justify-between items-end">
                 <div className="flex flex-col">
@@ -610,15 +631,17 @@ export default function App() {
     );
   });
 
-  // Advanced Scroll Parallax Hook - Optimized
+  // Advanced Scroll Parallax Hook - Optimized and Subtler on Mobile
   const { scrollYProgress } = useScroll();
-  const springConfig = isLowPowerMode 
-    ? { stiffness: 1000, damping: 100 } 
-    : { stiffness: 100, damping: 30, restDelta: 0.001 };
+  
+  // Dynamic spring config: high stiffness on mobile for efficiency, smooth on PC for flair
+  const springConfig = useMemo(() => isLowPowerMode 
+    ? { stiffness: 400, damping: 60, mass: 0.5, restDelta: 0.01 } 
+    : { stiffness: 80, damping: 25, mass: 1, restDelta: 0.001 }, [isLowPowerMode]);
     
   const smoothY = useSpring(scrollYProgress, springConfig);
 
-  // Parallax only for PC/High Power
+  // Parallax ranges - Much more subtle on Mobile (isLowPowerMode)
   const y1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -300]);
   const y2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -500]);
   const rotate1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 30]);
@@ -647,12 +670,12 @@ export default function App() {
   ];
 
   useEffect(() => {
-    if (activeModal) {
+    if (activeModal || isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
-  }, [activeModal]);
+  }, [activeModal, isMenuOpen]);
 
   return (
     <div className="min-h-screen bg-transparent text-text-primary overflow-x-hidden selection:bg-accent/30">
@@ -660,10 +683,11 @@ export default function App() {
       <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none translate-z-0" />
 
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-bg/80 backdrop-blur-xl border-b border-white/5 py-4" : "bg-transparent py-8"}`}>
-        <div className="section-container flex items-center justify-between">
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-[#080808]/80 backdrop-blur-md border-b border-white/5 py-4" : "bg-transparent py-8"}`}>
+        <div className="section-container flex items-center justify-between relative z-50">
           <motion.div 
             whileHover={{ scale: 1.02 }}
+            onClick={() => { setIsMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className="flex items-center gap-3 group cursor-pointer"
           >
             <img 
@@ -697,18 +721,77 @@ export default function App() {
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <button 
-            className="md:hidden p-2 text-white"
+            className="md:hidden p-2 text-white relative z-50 flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/5 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
           >
-            {isMenuOpen ? <X /> : <Menu />}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={isMenuOpen ? 'close' : 'menu'}
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 45 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </motion.div>
+            </AnimatePresence>
           </button>
         </div>
+
+        {/* Full-screen Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed inset-0 z-40 md:hidden bg-[#080808] flex flex-col pt-32 px-10"
+            >
+              <div className="flex flex-col gap-8">
+                {navLinks.map((link, i) => (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.1 }}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-4xl font-black text-white tracking-tighter hover:text-accent transition-colors"
+                  >
+                    {link.name}
+                  </motion.a>
+                ))}
+                <motion.a
+                  href="https://wa.me/5216568079485"
+                  target="_blank"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-4 bg-accent text-white py-5 rounded-2xl font-black text-center text-sm tracking-widest uppercase shadow-[0_10px_30px_rgba(249,115,22,0.3)]"
+                >
+                  Contactar por WhatsApp
+                </motion.a>
+              </div>
+
+              <motion.div 
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 transition={{ delay: 0.8 }}
+                 className="mt-auto mb-20 text-white/20 text-xs font-bold uppercase tracking-[0.2em] text-center"
+              >
+                Dicon Juárez © 2024
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg">
+      <section id="inicio" className="hero-section relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg">
         {/* Glows */}
         <div className="main-glow" />
         <div className="secondary-glow" />
@@ -978,7 +1061,7 @@ export default function App() {
                   repeat: Infinity, 
                   ease: "easeInOut" 
                 }}
-                style={isLowPowerMode ? { scale: 0.8 } : { y: y1 }}
+                style={{ y: y1 }}
                 className="will-change-transform"
               >
                 <img 
@@ -1178,7 +1261,7 @@ export default function App() {
             className="fixed inset-0 z-[200] bg-bg flex flex-col overflow-hidden"
           >
             {/* Modal Header Fijo */}
-            <header className="flex items-center justify-between px-6 md:px-12 py-6 bg-bg/95 backdrop-blur-3xl border-b border-white/5 relative z-[210]">
+            <header className="flex items-center justify-between px-6 md:px-12 py-6 bg-bg border-b border-white/5 relative z-[210] md:backdrop-blur-3xl">
               <div className="flex items-center gap-4">
                 <img src="/logo.png" alt="DICON" className="h-8 w-auto" />
                 <span className="text-lg font-bold tracking-tight text-white border-l border-white/10 pl-4">
@@ -1247,7 +1330,7 @@ export default function App() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {QUOTE_CARDS_PUBLIC.map((card, idx) => (
-                            <QuoteCard key={idx} card={card} />
+                            <QuoteCard key={idx} card={card} isLowPowerMode={isLowPowerMode} />
                           ))}
                         </div>
                       </div>
@@ -1284,7 +1367,7 @@ export default function App() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {QUOTE_CARDS_CONSTRUCTORA.map((card, idx) => (
-                            <QuoteCard key={idx} card={card} />
+                            <QuoteCard key={idx} card={card} isLowPowerMode={isLowPowerMode} />
                           ))}
                         </div>
                       </div>
@@ -1297,7 +1380,7 @@ export default function App() {
                        <h3 className="text-2xl font-bold text-white tracking-tight mb-8">Suministro industrial MRO</h3>
                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {QUOTE_CARDS_MAQUILA.map((card, idx) => (
-                            <QuoteCard key={idx} card={card} />
+                            <QuoteCard key={idx} card={card} isLowPowerMode={isLowPowerMode} />
                           ))}
                         </div>
                     </div>
