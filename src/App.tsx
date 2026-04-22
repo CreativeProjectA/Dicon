@@ -208,7 +208,7 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [productSizes, setProductSizes] = useState<Record<number, string>>({});
   const [imageErrors, setImageErrors] = useState<string[]>([]);
-
+const [activeModal, setActiveModal] = useState<string | null>(null);
   // Forced build sync timestamp: 1713541849
   // Performance check for mobile
   const [isLowPowerMode, setIsLowPowerMode] = useState(false);
@@ -1149,108 +1149,128 @@ export default function App() {
           </div>
         </div>
       </section>
+{/* Quien le servimos */}
+      <section className="py-32 relative overflow-hidden bg-bg">
+        <div className="section-container relative z-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="text-center mb-20"
+          >
+            <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[6px] uppercase mb-4 block italic">NUESTRO CATÁLOGO</motion.span>
+            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-black tracking-tighter uppercase text-gradient">¿A quién le servimos?</motion.h2>
+            <motion.p variants={itemVariants} className="text-text-secondary text-xl mt-6 max-w-2xl mx-auto">Selecciona tu perfil y accede a precios y productos especializados para ti.</motion.p>
+          </motion.div>
 
-      {/* FAQ Section - Recommendation for further engagement */}
-      <section className="py-24 bg-bg">
-        <div className="section-container">
-          <div className="text-center mb-20">
-            <span className="text-accent font-bold text-xs tracking-[4px] uppercase mb-4 block">CENTRO DE AYUDA</span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">Dudas Frecuentes</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Puedo ir a recoger la mercancía?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">¡Claro que sí! Puedes visitarnos directamente en nuestro centro operativo para recoger tus materiales de forma inmediata y segura.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Tienen precio de mayoreo?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Claro, somos distribuidores directos. Entre más necesites, mejoramos el presupuesto para tu ferretería o constructora.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Cómo solicito una cotización?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Puedes agregar productos a tu lista en esta web y enviarla por WhatsApp, o llamarnos directamente.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Aceptan pagos con tarjeta?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Aceptamos transferencias, depósitos y pagos con tarjeta directamente en nuestro centro operativo.</p>
-            </div>
-          </div>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={containerVariants}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {[
+              { id: "publico", title: "Público General", desc: "Materiales, plomería y acabados para tu hogar u obra pequeña. Precios de menudeo.", icon: "🏠", color: "from-orange-500/20" },
+              { id: "constructora", title: "Constructoras y Ferreterías", desc: "Precios de mayoreo desde la primera pieza. Más compras, mejor precio.", icon: "🏗️", color: "from-blue-500/20" },
+              { id: "maquila", title: "Industria Maquiladora", desc: "Acero especial
+     {/* FAQ Section */}
+      <section className="py-32 bg-bg relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent/3 blur-[150px] rounded-full" />
+        </div>
+        <div className="section-container relative z-10">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="text-center mb-20">
+            <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[6px] uppercase mb-4 block italic">SOPORTE</motion.span>
+            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-black tracking-tighter uppercase text-gradient">Preguntas Frecuentes</motion.h2>
+          </motion.div>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {[
+              { q: "¿Puedo ir a recoger la mercancía?", a: "¡Claro que sí! Puedes visitarnos directamente en nuestro centro operativo para recoger tus materiales de forma inmediata y segura." },
+              { q: "¿Tienen precio de mayoreo?", a: "Claro, somos distribuidores directos. Entre más necesites, mejoramos el presupuesto para tu ferretería o constructora." },
+              { q: "¿Cómo solicito una cotización?", a: "Puedes agregar productos a tu lista en esta web y enviarla por WhatsApp, o llamarnos directamente." },
+              { q: "¿Aceptan pagos con tarjeta?", a: "Aceptamos transferencias, depósitos y pagos con tarjeta directamente en nuestro centro operativo." }
+            ].map((item, i) => (
+              <motion.div key={i} variants={itemVariants} className="group glass-card p-10 border border-white/5 rounded-[32px] hover:border-accent/30 transition-all duration-300 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
+                <div className="text-accent font-black text-xs tracking-[4px] uppercase mb-4 opacity-40 group-hover:opacity-100 transition-opacity italic">
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <h4 className="font-black text-lg mb-4 text-white uppercase tracking-tight group-hover:text-accent transition-colors">{item.q}</h4>
+                <p className="text-text-secondary text-sm leading-relaxed font-medium">{item.a}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-20 bg-bg border-t border-border">
-        <div className="section-container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-            <div className="flex flex-col items-center md:items-start gap-4">
+      <footer className="py-24 bg-card-bg/30 border-t border-border relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-accent/5 blur-[100px] rounded-full" />
+        </div>
+        <div className="section-container relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16 pb-16 border-b border-border">
+            <div className="flex flex-col gap-6">
               <div className="flex items-center gap-3">
-                <img 
-                  src="/logo.png?v=2.5" 
-                  alt="DICON" 
-                  className="h-8 w-auto opacity-80"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }} 
-                />
-                <div className="text-2xl font-extrabold tracking-tighter text-text-primary">
-                  DI<span className="text-accent">CON</span>
-                </div>
+                <img src="/logo.png?v=2.5" alt="DICON" className="h-10 w-auto opacity-90" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                <div className="text-2xl font-black tracking-tighter">DI<span className="text-accent">CON</span></div>
               </div>
-              <p className="text-text-secondary text-sm font-medium italic">"Cimientos sólidos para proyectos extraordinarios."</p>
+              <p className="text-text-secondary text-sm font-medium italic leading-relaxed max-w-xs">
+                "Cimientos sólidos para proyectos extraordinarios."
+              </p>
+              <div className="flex gap-4">
+                <a href="https://www.facebook.com/diconjrz" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:border-accent transition-all">
+                  <Facebook className="w-4 h-4" />
+                </a>
+                <a href="https://wa.me/5216568079485" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:border-accent transition-all">
+                  <MessageCircle className="w-4 h-4" />
+                </a>
+              </div>
             </div>
 
-            <div className="text-right flex flex-col items-center md:items-end gap-2">
-              <div className="text-xs text-text-secondary font-medium">
-                Llámanos ahora: <span className="text-text-primary ml-2">+52 656 634 8189</span>
+            <div className="flex flex-col gap-6">
+              <h4 className="font-black text-xs tracking-[4px] uppercase text-text-secondary">Navegación</h4>
+              <div className="flex flex-col gap-3">
+                {navLinks.map(link => (
+                  <a key={link.name} href={link.href} className="text-text-secondary hover:text-accent transition-colors text-sm font-medium flex items-center gap-2 group">
+                    <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
+                    {link.name}
+                  </a>
+                ))}
               </div>
-              <div className="text-xs text-text-secondary font-medium">
-                Ubicación: <span className="text-text-primary ml-2">Ciudad Juárez, MX</span>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <h4 className="font-black text-xs tracking-[4px] uppercase text-text-secondary">Contacto</h4>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-3.5 h-3.5 text-accent" />
+                  </div>
+                  <span className="text-sm text-text-secondary font-medium">656 634 8189</span>
+                </div>
+                <div className="flex items-center gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="w-3.5 h-3.5 text-accent" />
+                  </div>
+                  <span className="text-sm text-text-secondary font-medium">+52 1 656 807 9485</span>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-accent" />
+                  </div>
+                  <span className="text-sm text-text-secondary font-medium leading-relaxed">Calle Nahoas 3139, Aztecas,<br/>Ciudad Juárez, MX</span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="mt-16 pt-8 border-t border-border text-center">
-            <p className="text-[10px] text-text-secondary uppercase tracking-[4px] font-bold opacity-30">
-              © 2026 DICON DISTRIBUIDORA
-            </p>
-            <p className="text-text-secondary text-xs opacity-50 mt-4">
-              Sistema v2.5 - REVOLUCIÓN
-            </p>
-            {imageErrors.length > 0 && (
-              <p className="text-red-500 text-[10px] mt-2">
-                Errores detectados: {imageErrors.length} ({imageErrors.slice(0, 3).join(", ")})
-              </p>
-            )}
+
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[11px] text-text-secondary uppercase tracking-[4px] font-bold opacity-30">© 2026 DICON Distribuidora — Todos los derechos reservados</p>
+            <p className="text-[11px] text-text-secondary opacity-30 font-medium">
+             — Ciudad Juárez, MX</p>
           </div>
         </div>
       </footer>
-      
-      {/* Marquee Animation */}
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-33.33%, 0, 0); }
-        }
-        .animate-marquee-slow {
-          animation: marquee 60s linear infinite;
-          backface-visibility: hidden;
-          perspective: 1000px;
-        }
-        .animate-marquee-fast {
-          animation: marquee 40s linear infinite;
-          backface-visibility: hidden;
-          perspective: 1000px;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: var(--color-accent);
-          border-radius: 10px;
-        }
-      `}</style>
-    </div>
-  );
-}
