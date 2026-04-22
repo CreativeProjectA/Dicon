@@ -7,12 +7,12 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "mot
 import { 
   Phone, 
   MapPin, 
-  Instagram, 
   Facebook,
   MessageCircle, 
   Menu, 
   X, 
-  ChevronRight, 
+  ChevronRight,
+  ChevronDown, 
   Truck, 
   ShieldCheck, 
   ArrowRight,
@@ -26,9 +26,14 @@ import {
   Plus,
   Droplets,
   Palette,
-  Layers
+  Layers,
+  Sparkle,
+  Trash2,
+  ShoppingBag,
+  Package,
+  ShoppingCart
 } from "lucide-react";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
 
 const BRANDS = [
   "CEMENTO CHIHUAHUA",
@@ -42,143 +47,76 @@ const BRANDS = [
   "3B"
 ];
 
-const CATEGORIES = [
+const PUBLICO_PRODUCTS = {
+  "Materiales de Construcción": [
+    { id: 2, name: "Cemento Chihuahua", price: 210, unit: "bulto", img: "/cemento.png" },
+    { id: 3, name: "Block de cemento", price: 12, unit: "pieza", img: "/block.png", variants: ["4 pulgadas", "6 pulgadas", "8 pulgadas"] },
+    { id: 4, name: "Mortero Chuviscar", price: 95, unit: "bulto", img: "/mortero.png" },
+    { id: 5, name: "Yeso Máximo", price: 85, unit: "bulto", img: "/yeso.png" },
+    { id: 1, name: "Varilla de acero", price: 180, unit: "pieza", img: "/varilla.png", variants: ["3/8", "1/2", "5/8"] },
+    { id: 6, name: "Castillo de construcción", price: null, unit: "cotización", img: "/yeso.png", variants: ["Hasta 2.5m", "Hasta 3m"] },
+  ],
+  "Plomería": [
+    { id: 7, name: "Tubo PVC", price: 85, unit: "pieza", img: "/pvc.png", variants: ["1/2\"", "3/4\"", "1\""] },
+    { id: 8, name: "Codo Negro 90", price: 18, unit: "pieza", img: "/codo_negro_1.png", variants: ["1/2\"", "3/4\""] },
+    { id: 9, name: "Tee Negra", price: 22, unit: "pieza", img: "/tee_negra.png", variants: ["1/2\"", "3/4\""] },
+    { id: 10, name: "Válvula Bola", price: 45, unit: "pieza", img: "/valbula.png", variants: ["1/2\"", "3/4\""] },
+    { id: 11, name: "Tubo Negro Roscado", price: 120, unit: "pieza", img: "/tubo_negro_roscada.png", variants: ["1/2\"", "3/4\"", "1\""] },
+  ],
+  "Pintura y Adhesivos": [
+    { id: 50, name: "Pintura Axel", price: 320, unit: "litro", img: "/axel.png", variants: ["Bronce", "Plata", "Oro"] },
+    { id: 51, name: "Pintura Señalamiento", price: 280, unit: "cubeta", img: "/trafico.png", variants: ["Amarillo", "Blanco"] },
+    { id: 52, name: "Adhesivo 3B Real", price: 280, unit: "cubeta", img: "/pega.png", variants: ["Piso", "Azulejo"] },
+  ]
+};
+
+const CONSTRUCTORA_PRODUCTS = Object.entries(PUBLICO_PRODUCTS).reduce((acc, [category, products]) => {
+  acc[category] = products.map(p => ({ 
+    ...p, 
+    // Ahora mantenemos el precio base para que el mayoreo se "active" al llegar a 10
+    // en el módulo de constructoras específicamente.
+    constructorMode: true 
+  }));
+  return acc;
+}, {} as any);
+
+const QUOTE_CARDS_PUBLIC = [
   { 
-    id: "materiales", 
-    name: "Nuestros Materiales", 
-    icon: <Construction className="w-8 h-8" />, 
-    desc: "Suministro estratégico para ferreterías y constructoras. Los pilares de Juárez en un solo lugar.",
-    products: [
-      { 
-        id: 11, 
-        name: "Varilla", 
-        img: "/varilla.png?v=2.5",
-        description: "Acero de refuerzo de alta resistencia. Para conocer existencias y formatos, cotiza ahora con nosotros."
-      },
-      { 
-        id: 12, 
-        name: "Cemento Chihuahua", 
-        img: "/cemento.png?v=2.5",
-        description: "Calidad garantizada del Cemento de Chihuahua para cada etapa de tu obra."
-      },
-      { 
-        id: 13, 
-        name: "Castillo de Construcción", 
-        img: "/castillo.png?v=2.5",
-        description: "Armados precisos que agilizan tu construcción."
-      },
-      { 
-        id: 14, 
-        name: "Block de Cemento", 
-        img: "/block.png?v=2.5",
-        description: "Resistencia estructural superior para muros duraderos."
-      },
-      { 
-        id: 15, 
-        name: "Yeso Máximo", 
-        img: "/yeso.png?v=2.5",
-        description: "Recubrimiento de alta calidad para interiores. Acabado profesional."
-      },
-      { 
-        id: 16, 
-        name: "Mortero Chuviscar", 
-        img: "/mortero.png?v=2.5",
-        description: "Ideal para aplanados y pegado de block. Máxima trabajabilidad."
-      },
-      {
-        id: 17,
-        name: "Canal de Amarre",
-        img: "canal.png?v=2.4",
-        sizes: ["5/8", "1/2", "3 5/8"],
-        description: "Estructura metálica para soporte de muros de panel de yeso."
-      },
-      {
-        id: 18,
-        name: "Poste Metálico",
-        img: "canal.png?v=2.4",
-        sizes: ["5/8", "1/2"],
-        description: "Perfiles de acero galvanizado para bastidores de muros."
-      },
-      {
-        id: 19,
-        name: "Ángulo de Amarre 250 x 305",
-        img: "/angulo.png?v=2.5",
-        description: "Accesorio para fijación perimetral en plafones y muros."
-      }
-    ]
-  },
-  {
-    id: "plomeria",
-    name: "Plomería",
-    icon: <Droplets className="w-8 h-8" />,
-    desc: "Conexiones, válvulas y tubería industrial. Calidad que resiste la presión de tu obra.",
-    products: [
-      {
-        id: 21,
-        name: "Tubo Negro Roscada de 3/4",
-        img: "/tubo_negro_roscada.png?v=2.5",
-        description: "Tubería de alta calidad para instalaciones de gas y fluidos industriales."
-      },
-      {
-        id: 22,
-        name: "Codo Negro 90",
-        img: "/codo_negro_1.png?v=2.5",
-        sizes: ["1/2", "3/4"],
-        description: "Conexión robusta de 90 grados para tubería negra."
-      },
-      {
-        id: 23,
-        name: "Tee Negra",
-        img: "/tee_negra.png?v=2.5",
-        sizes: ["1/2", "3/4"],
-        description: "Conexión en T para derivaciones en sistemas de tubería negra."
-      },
-      {
-        id: 24,
-        name: "Válvula Bola Roscable",
-        img: "/valbula.png?v=2.5",
-        sizes: ["1/2", "3/4"],
-        description: "Control de paso de alta durabilidad con cierre tipo bola."
-      },
-      {
-        id: 25,
-        name: "Tubo PVC",
-        img: "/pvc.png?v=2.5",
-        description: "Tubería para drenaje y ventilación, resistente y durable."
-      }
-    ]
-  },
-  {
-    id: "acabados",
-    name: "Pintura y Adhesivos",
-    icon: <Palette className="w-8 h-8" />,
-    desc: "Recubrimientos especiales, adhesivos de alto desempeño y pinturas premium.",
-    products: [
-      {
-        id: 31,
-        name: "Pintura Axel",
-        img: "/axel.png?v=2.5",
-        sizes: ["Bronze", "Silver", "Golden"],
-        selectionLabel: "Seleccionar Tipo",
-        description: "Línea premium de acabados metálicos y decorativos. Selecciona tu color."
-      },
-      {
-        id: 32,
-        name: "Pintura de Señalamiento Alto Rendimiento",
-        img: "/trafico.png?v=2.5",
-        description: "Especial para tráfico y vialidades. Máxima visibilidad y durabilidad."
-      },
-      {
-        id: 41,
-        name: "Adhesivo 3B Real",
-        img: "/pega.png?v=2.5",
-        sizes: ["Pega Piso Real", "Pega Azulejo Real"],
-        selectionLabel: "Seleccionar Tipo",
-        description: "Adhesivo especializado de gran fuerza para recubrimientos cerámicos."
-      }
-    ]
+    title: "Herramientas y Ferretería General", 
+    items: "WD-40, candados, cintas, tornillería, cerrajería, material eléctrico", 
+    msg: "Hola DICON, me interesa cotizar herramientas y ferretería general" 
   }
 ];
+
+const QUOTE_CARDS_CONSTRUCTORA = [
+  { title: "Acero Comercial", icon: <Layers />, items: "Canal, Tubería negra, Lámina, Viga, Varilla, PTR, Ángulo, Soleras, Placas, Perfiles", msg: "Hola DICON, necesito cotización por volumen de Acero Comercial" },
+  { title: "Acero Especial", icon: <Zap />, items: "Inoxidable, Carbón, Grado herramienta, Resistente abrasión", msg: "Hola DICON, solicito cotización de Acero Especial" },
+  { title: "Herramientas Surtek / Urrea", icon: <Wrench />, items: "Juegos completos, Llaves, Dados, Pinzas, Torque, Impacto", msg: "Hola DICON, cotización de Herramientas Industriales" },
+  { title: "Plomería Industrial", icon: <Droplets />, items: "Tubería PVC, CPVC, PPR, Cobre y todas sus conexiones", msg: "Hola DICON, cotización Plomería Industrial" },
+  { title: "EPP", icon: <ShieldCheck />, items: "Cascos, guantes, lentes, señalización, ropa de trabajo", msg: "Hola DICON, cotización de EPP" },
+  { title: "Racks y Estantes", icon: <Box />, items: "Fabricación a medida, diseño personalizado", msg: "Hola DICON, cotización Racks" },
+];
+
+const QUOTE_CARDS_MAQUILA = [
+  { title: "Tornillería Industrial", icon: <Package />, items: "Tornillos, tuercas, rondanas, pijas, anclas — todas las medidas", msg: "Hola DICON, necesito cotizar tornillería industrial" },
+  { title: "Acero Especial Industrial", icon: <Layers />, items: "Inoxidable, carbón, grado herramienta, resistente abrasión — en barras, placas y perfiles", msg: "Hola DICON, cotización Acero Especial Industrial" },
+  { title: "Herramientas de Precisión", icon: <Drill />, items: "Dados, llaves de torque, medición y trazo, extractores, prensas", msg: "Hola DICON, cotización Herramientas Precisión" },
+  { title: "Lubricantes y Químicos", icon: <Droplets />, items: "WD-40 industrial, aceites, grasas, limpiadores, químicos especiales", msg: "Hola DICON, cotización Lubricantes" },
+  { title: "EPP Industrial", icon: <ShieldCheck />, items: "Cascos, guantes anticorte, lentes, tapones auditivos, señalización OSHA", msg: "Hola DICON, cotización EPP Industrial" },
+  { title: "Racks y Estaciones de Trabajo", icon: <Box />, items: "Racks de almacenamiento, estantes industriales, fabricación a medida", msg: "Hola DICON, cotización Racks/Estaciones" },
+  { title: "Herramientas Eléctricas y Neumáticas", icon: <Zap />, items: "Taladros, esmeriles, compresores, aspiradoras industriales, herramientas de poder", msg: "Hola DICON, cotización Herramientas Poder" },
+  { title: "Plásticos e Insumos", icon: <Layers />, items: "Policarbonato sólido, cintas industriales, masking tape, vinílica, de empaque, aislante", msg: "Hola DICON, cotización Plásticos/Insumos" },
+  { title: "Material Eléctrico e Iluminación", icon: <Zap />, items: "Cables, contactos, interruptores, lámparas industriales LED", msg: "Hola DICON, cotización Material Eléctrico" },
+];
+
+const GlowSpheres = () => {
+  return (
+    <>
+      <div className="main-glow" />
+      <div className="secondary-glow" />
+    </>
+  );
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -186,71 +124,248 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.3
+      delayChildren: 0.2
     }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { 
+  hidden: { opacity: 0, y: 20 },
+  visible: {
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
   }
 };
+
+const QuoteCard = memo(({ card }: any) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm"
+  >
+    <div className="flex flex-col gap-4 mb-6">
+      <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
+        {card.icon || <Package className="w-6 h-6" />}
+      </div>
+      <h3 className="text-2xl font-bold tracking-tight text-white">{card.title}</h3>
+    </div>
+    <p className="text-white/50 text-sm font-normal leading-relaxed mb-8 grow">
+      {card.items}
+    </p>
+    <button 
+      onClick={() => window.open(`https://wa.me/5216563222670?text=${encodeURIComponent(card.msg)}`, '_blank')}
+      className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-sm"
+    >
+      Cotizar por WhatsApp
+      <MessageCircle className="w-4 h-4" />
+    </button>
+  </motion.div>
+));
+
+const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
+  const [selectedVariant, setSelectedVariant] = useState(product.variants ? product.variants[0] : null);
+  const [qty, setQty] = useState(1);
+
+  const finalUnitPrice = useMemo(() => {
+    if (!product.price) return null;
+    // Mayoreo SOLO en modo constructor cuando cantidad es 10+
+    if (product.constructorMode && qty >= 10) {
+      return Math.round(product.price * 0.85);
+    }
+    return product.price;
+  }, [product, qty]);
+
+  const savings = useMemo(() => {
+    if (!product.price || !product.constructorMode || qty < 10) return 0;
+    const totalOriginal = product.price * qty;
+    const totalDiscounted = Math.round(product.price * 0.85) * qty;
+    return totalOriginal - totalDiscounted;
+  }, [product, qty]);
+
+  const isMayoreoActive = useMemo(() => {
+    // Solo activamos banderas de mayoreo en modo constructor
+    return product.constructorMode && qty >= 10 && product.price;
+  }, [product.constructorMode, qty, product.price]);
+
+  // Optimización: Desactivar animaciones pesadas en móvil para máxima fluidez
+  const animationProps = isLowPowerMode 
+    ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
+    : { initial: { opacity: 0, y: 15 }, whileInView: { opacity: 1, y: 0 } };
+
+  return (
+    <motion.div 
+      {...animationProps}
+      viewport={{ once: true, margin: "-20px" }}
+      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm"
+    >
+      {product.constructorMode && product.price && (
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-1">
+          <div className="bg-orange-600 text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-sm tracking-widest uppercase">
+            Módulo Constructor
+          </div>
+          {qty < 10 ? (
+            <div className="bg-white/10 backdrop-blur-md text-white/40 text-[7px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
+              10+ para activar mayoreo
+            </div>
+          ) : (
+             <motion.div 
+               initial={{ scale: 0.8, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               className="bg-green-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-widest uppercase flex items-center gap-1"
+             >
+               <Sparkle className="w-2 h-2" /> Mayoreo activo (-15%)
+             </motion.div>
+          )}
+        </div>
+      )}
+
+      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden">
+        <img 
+          src={product.img} 
+          alt={product.name}
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" 
+          loading="lazy"
+          onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x200?text=DC'; }} 
+        />
+      </div>
+
+      <div className="flex-1 flex flex-col">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white mb-1 tracking-tight">{product.name}</h3>
+          {product.variants && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {product.variants.map((v: string) => (
+                <button 
+                  key={v}
+                  onClick={() => setSelectedVariant(v)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-medium border transition-all ${selectedVariant === v ? 'bg-white text-black border-white' : 'border-white/10 text-white/40 hover:border-white/30'}`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-auto">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+               <p className="text-xs text-white/40 mb-1 font-medium">Precio unitario</p>
+               <div className="flex items-center gap-2">
+                 <span className="text-2xl font-bold text-accent">
+                   {finalUnitPrice ? `$${finalUnitPrice.toLocaleString()}` : 'Cotizar'}
+                 </span>
+                 {isMayoreoActive && (
+                   <span className="text-xs text-white/20 line-through font-medium">${product.price}</span>
+                 )}
+               </div>
+            </div>
+            
+            <div className="flex items-center bg-white/5 border border-white/10 rounded-full p-1 h-10">
+              <button 
+                onClick={() => setQty(Math.max(1, qty - 1))}
+                className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-accent transition-colors"
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <span className="w-8 text-center text-xs font-bold text-white tracking-tighter">
+                {qty}
+              </span>
+              <button 
+                onClick={() => setQty(qty + 1)}
+                className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-accent transition-colors"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => addToCart({ ...product, qty, selectedVariant })}
+            className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2"
+          >
+            Añadir a la lista <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<typeof CATEGORIES[0] | null>(null);
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [productSizes, setProductSizes] = useState<Record<number, string>>({});
-  const [imageErrors, setImageErrors] = useState<string[]>([]);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeModal, setActiveModal] = useState<null | 'publico' | 'constructora' | 'maquila'>(null);
 
-  // Forced build sync timestamp: 1713541849
-  // Performance check for mobile
-  const [isLowPowerMode, setIsLowPowerMode] = useState(false);
+  const menudeoRef = useRef<HTMLElement>(null);
+  const mayoreoRef = useRef<HTMLElement>(null);
+  const maquilaRef = useRef<HTMLElement>(null);
+
+  const [isLowPowerMode, setIsLowPowerMode] = useState(true); // Default to true for faster first paint
   useEffect(() => {
-    console.log("DICON App v2.5 - REVOLUCION FINAL ACTIVE");
     const checkPerformance = () => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isSmallScreen = window.innerWidth < 768; // Only trigger for phones
-      if (isSmallScreen || isMobile) {
-        setIsLowPowerMode(true);
-      } else {
-        setIsLowPowerMode(false);
-      }
+      const isSmallScreen = window.innerWidth < 768;
+      // Also check for reduced motion preference
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setIsLowPowerMode(isMobile || isSmallScreen || prefersReducedMotion);
     };
     checkPerformance();
-    window.addEventListener('resize', checkPerformance);
-    return () => window.removeEventListener('resize', checkPerformance);
+    // Use a small delay to avoid resize thrashing
+    let timeout: any;
+    const handleResize = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(checkPerformance, 200);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeout);
+    };
   }, []);
 
-  // Cart logic
-  const addToCart = (product: any) => {
-    const size = productSizes[product.id];
-    
-    // If it has sizes and none is selected, don't add yet (or we could show an alert, but the UI will handle showing the selection)
-    if (product.sizes && !size) {
-      // In a real app we might show a nudge, but here the button will be disabled or we'll pick first by default
-      return;
-    }
-
-    setCart(prev => {
-      const cartItemId = size ? `${product.id}-${size}` : `${product.id}`;
-      const exists = prev.find(item => item.cartItemId === cartItemId);
-      if (exists) {
-        return prev.map(item => 
-          item.cartItemId === cartItemId ? { ...item, quantity: (item.quantity || 1) + 1 } : item
-        );
-      }
-      return [...prev, { ...product, cartItemId, selectedSize: size, quantity: 1 }];
-    });
+  const scrollToSection = (ref: { current: HTMLElement | null }) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const updateQuantity = (cartItemId: string, delta: number) => {
+  // Cart logic
+  const getPrice = useCallback((item: any) => {
+    if (!item.price) return null;
+    
+    // Regla DICON: El mayoreo (15% dto al llegar a 10 piezas)
+    // SOLO se activa en el módulo de Constructoras.
+    if (item.constructorMode && item.quantity >= 10) {
+      return Math.round(item.price * 0.85);
+    }
+    
+    return item.price;
+  }, []);
+
+  const addToCart = useCallback((product: any) => {
+    setCart(prev => {
+      // Identificador único: ID + Modo + Variante (si aplica)
+      const cartItemId = `${product.id}-${product.constructorMode ? 'con' : 'pub'}-${product.selectedVariant || 'base'}`;
+      const existingIndex = prev.findIndex(item => item.cartItemId === cartItemId);
+      
+      if (existingIndex > -1) {
+        const newCart = [...prev];
+        newCart[existingIndex] = {
+          ...newCart[existingIndex],
+          quantity: newCart[existingIndex].quantity + (product.qty || 1)
+        };
+        return newCart;
+      }
+      
+      return [...prev, { ...product, cartItemId, quantity: (product.qty || 1) }];
+    });
+  }, []);
+
+  const updateQuantity = useCallback((cartItemId: string, delta: number) => {
     setCart(prev => prev.map(item => {
       if (item.cartItemId === cartItemId) {
         const newQty = Math.max(1, (item.quantity || 1) + delta);
@@ -258,79 +373,309 @@ export default function App() {
       }
       return item;
     }));
-  };
+  }, []);
 
-  const removeFromCart = (cartItemId: string) => {
+  const removeFromCart = useCallback((cartItemId: string) => {
     setCart(prev => prev.filter(item => item.cartItemId !== cartItemId));
-  };
+  }, []);
 
-  const generateWhatsAppMessage = () => {
-    if (cart.length === 0) return "";
-    const itemsList = cart.map(item => {
-      const sizeText = item.selectedSize ? ` [Medida: ${item.selectedSize}]` : "";
-      return `• ${item.quantity}x ${item.name}${sizeText}`;
+  const totalCart = useMemo(() => {
+    return cart.reduce((sum, item) => {
+      const price = getPrice(item);
+      return sum + ((price || 0) * item.quantity);
+    }, 0);
+  }, [cart, getPrice]);
+
+  const generateWhatsAppMessage = useCallback(() => {
+    const header = "Hola DICON, aquí está mi lista:\n\n";
+    const items = cart.map(item => {
+      const price = getPrice(item);
+      const isMayoreo = !item.constructorMode && item.quantity >= 10;
+      const sub = price ? (price * item.quantity).toLocaleString() : "A Cotizar";
+      const priceStr = price ? `$${price.toLocaleString()}/${item.unit || 'unidad'}` : "Cotizar";
+      const tag = isMayoreo ? " — (MAYOREO)" : "";
+      
+      return `- ${item.quantity}x ${item.name}${item.selectedVariant ? ` (${item.selectedVariant})` : ""} — ${priceStr}${tag} — $${sub}`;
     }).join("\n");
-    return `Hola DICON, me gustaría cotizar mi lista de materiales y plomería:\n\n${itemsList}\n\nQuedo a la espera de su respuesta.`;
-  };
+    
+    const subtotalStr = `Subtotal: $${totalCart.toLocaleString()}`;
+    const ivaStr = `IVA (16%): $${(totalCart * 0.16).toLocaleString()}`;
+    const totalStr = `TOTAL: $${(totalCart * 1.16).toLocaleString()}`;
+    
+    const footer = "\n\nQuedo a la espera de su cotización.";
+    
+    return encodeURIComponent(header + items + "\n\n" + subtotalStr + "\n" + ivaStr + "\n" + totalStr + footer);
+  }, [cart, getPrice, totalCart]);
 
-  const whatsappUrl = `https://wa.me/5216568079485?text=${encodeURIComponent(generateWhatsAppMessage())}`;
+  const whatsappUrl = `https://wa.me/5216563222670?text=${generateWhatsAppMessage()}`;
 
-  // Advanced Scroll Parallax Hook
+  const CartContent = memo(() => {
+    const regularTotal = useMemo(() => {
+      return cart.reduce((sum, item) => {
+        return sum + ((item.price || 0) * item.quantity);
+      }, 0);
+    }, [cart]);
+
+    const discountedTotal = useMemo(() => {
+      return cart.reduce((sum, item) => {
+        const price = getPrice(item);
+        return sum + ((price || 0) * item.quantity);
+      }, 0);
+    }, [cart]);
+
+    const totalSavings = useMemo(() => {
+      return regularTotal - discountedTotal;
+    }, [regularTotal, discountedTotal]);
+
+    const iva = useMemo(() => Math.round(discountedTotal * 0.16), [discountedTotal]);
+    const finalTotal = useMemo(() => Math.round(discountedTotal + iva), [discountedTotal, iva]);
+
+    return (
+      <div className="flex flex-col h-full bg-[#000] text-white">
+        <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/50 backdrop-blur-xl sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+              <ShoppingBag className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold tracking-tight">Mi Lista</h3>
+              <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">{cart.length} Artículos</p>
+            </div>
+          </div>
+          <button onClick={() => setIsCartOpen(false)} className="md:hidden text-white/50 hover:text-white p-2">
+            <ChevronDown className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-8 px-10">
+              <motion.div
+                animate={{ 
+                  y: [0, -12, 0],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ 
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="w-24 h-24 rounded-[32px] bg-white/[0.02] flex items-center justify-center text-white/10 border border-white/[0.05] shadow-2xl"
+              >
+                <Package className="w-12 h-12" />
+              </motion.div>
+              <div className="space-y-2">
+                <p className="text-xl font-bold tracking-tight text-white">Tu lista está vacía</p>
+                <p className="text-sm font-medium text-white/30 leading-relaxed max-w-[200px] mx-auto">
+                  Agrega productos de nuestro catálogo para generar una cotización.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {cart.map((item) => {
+                const basePrice = item.price;
+                const finalPrice = getPrice(item);
+                const isMayoreo = item.constructorMode && item.quantity >= 10 && item.price;
+                
+                return (
+                  <motion.div 
+                    key={item.cartItemId} 
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-white/[0.03] p-5 rounded-[24px] border border-white/[0.06] relative group overflow-hidden hover:bg-white/[0.05] transition-colors will-change-transform"
+                  >
+                    <div className="flex gap-5">
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/[0.03] p-3 flex-shrink-0 flex items-center justify-center">
+                        <img src={item.img} className="w-full h-full object-contain" loading="lazy" />
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                        <div>
+                          <div className="flex justify-between items-start mb-1">
+                            <div className="min-w-0 flex-1">
+                              <p className="font-bold text-sm tracking-tight truncate text-white uppercase">{item.name}</p>
+                              {item.selectedVariant && <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mt-0.5">{item.selectedVariant}</p>}
+                            </div>
+                            <button onClick={() => removeFromCart(item.cartItemId)} className="text-white/20 hover:text-red-400 transition-colors p-1 ml-2">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className={`text-[13px] font-bold ${item.constructorMode ? 'text-orange-400' : 'text-white/80'}`}>
+                              {isMayoreo && <span className="line-through mr-1.5 opacity-20 font-normal italic">${basePrice?.toLocaleString()}</span>}
+                              <span className={isMayoreo ? "text-green-400" : ""}>${finalPrice?.toLocaleString()}</span>
+                              <span className="text-[10px] ml-1 opacity-40 font-medium">c/u</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        {item.constructorMode && item.price && (
+                          <div className="mt-4">
+                            {isMayoreo ? (
+                              <div className="flex items-center gap-1.5 text-green-400 text-[9px] font-black bg-green-500/10 w-fit px-2.5 py-1 rounded-full border border-green-500/10 uppercase tracking-widest">
+                                <Sparkle className="w-2.5 h-2.5" /> Mayoreo Activo
+                              </div>
+                            ) : (
+                              <div className="space-y-1.5">
+                                <div className="flex justify-between text-[8px] font-black text-white/20 uppercase tracking-[0.15em]">
+                                  <span>Piezas para mayoreo</span>
+                                  <span>{item.quantity}/10</span>
+                                </div>
+                                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                  <motion.div 
+                                    className="h-full bg-orange-500/50" 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(100, (item.quantity / 10) * 100)}%` }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.04]">
+                      <div className="flex items-center bg-white/[0.03] rounded-full p-1 border border-white/[0.05]">
+                        <button onClick={() => updateQuantity(item.cartItemId, -1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Minus className="w-3 h-3"/></button>
+                        <span className="w-8 text-center text-xs font-black tracking-tighter">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.cartItemId, 1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Plus className="w-3 h-3"/></button>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest leading-none mb-1">Subtotal Item</p>
+                        <p className={`text-lg font-black tracking-tighter ${isMayoreo ? 'text-green-400' : 'text-white'}`}>
+                          {finalPrice ? `$${(finalPrice * item.quantity).toLocaleString()}` : 'A cotizar'}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="p-8 border-t border-white/10 bg-[#050505] shadow-[0_-20px_40px_rgba(0,0,0,0.4)] relative z-30">
+          <div className="space-y-5 mb-10 text-[13px]">
+            {totalSavings > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex justify-between text-green-400 font-bold bg-green-500/[0.03] p-4 rounded-2xl border border-green-500/10"
+              >
+                <div className="flex items-center gap-2">
+                  <Sparkle className="w-4 h-4" />
+                  <span>Ahorro aplicado:</span>
+                </div>
+                <span>-${totalSavings.toLocaleString()}</span>
+              </motion.div>
+            )}
+            
+            <div className="space-y-3 px-1">
+              <div className="flex justify-between text-white/30 font-bold uppercase tracking-widest text-[10px]">
+                <span>Base Gravable</span>
+                <span className="text-white/60">${discountedTotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-white/30 font-bold uppercase tracking-widest text-[10px]">
+                <span>IVA Trasladado (16%)</span>
+                <span className="text-white/60">${iva.toLocaleString()}</span>
+              </div>
+              <div className="pt-6 mt-4 border-t border-white/5 flex justify-between items-end">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-accent font-black uppercase tracking-[0.3em] mb-1">Total a Pagar</span>
+                  <span className="text-white font-black text-3xl tracking-[-0.05em] leading-none">
+                    ${finalTotal.toLocaleString()}
+                  </span>
+                </div>
+                <div className="text-right">
+                   <p className="text-[9px] text-white/20 font-bold leading-tight">Moneda Nacional MXN<br/>Precios sujetos a cambio</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <motion.a 
+            href={whatsappUrl}
+            target="_blank"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full bg-accent text-white py-5 rounded-2xl font-black text-sm tracking-[0.1em] uppercase hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(255,87,34,0.3)] group"
+          >
+            Enviar Cotización <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </motion.a>
+        </div>
+      </div>
+    );
+  });
+
+  // Advanced Scroll Parallax Hook - Optimized
   const { scrollYProgress } = useScroll();
   const springConfig = isLowPowerMode 
-    ? { stiffness: 1000, damping: 100 } // Near instant on mobile
+    ? { stiffness: 1000, damping: 100 } 
     : { stiffness: 100, damping: 30, restDelta: 0.001 };
     
   const smoothY = useSpring(scrollYProgress, springConfig);
 
-  const y1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -600]);
-  const y2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 400]);
-  const rotate1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 45]);
-  const rotate2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -30]);
+  // Parallax only for PC/High Power
+  const y1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -300]);
+  const y2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -500]);
+  const rotate1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 30]);
+  const rotate2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -20]);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 30);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { name: "Inicio", href: "#" },
-    { name: "Materiales", href: "#materiales" },
-    { name: "Marcas", href: "#marcas" },
-    { name: "Historia", href: "#historia" },
-    { name: "Ubicación", href: "#contacto" },
+    { name: 'Inicio', href: '#inicio' },
+    { name: 'Servicios', href: '#servicios' },
+    { name: 'Historia', href: '#historia' },
+    { name: 'Ubicación', href: '#contacto' },
   ];
 
+  useEffect(() => {
+    if (activeModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [activeModal]);
+
   return (
-    <div className="min-h-screen bg-bg text-text-primary">
-      {/* Glow Sphere Background Effect - ALWAYS VISIBLE */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="main-glow" />
-        <div className="secondary-glow" />
-      </div>
+    <div className="min-h-screen bg-transparent text-text-primary overflow-x-hidden selection:bg-accent/30">
+      {/* Background - Replaces the mesh with solid deep black */}
+      <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none translate-z-0" />
 
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-bg/80 backdrop-blur-md border-b border-border py-4" : "bg-transparent py-8"}`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-bg/80 backdrop-blur-xl border-b border-white/5 py-4" : "bg-transparent py-8"}`}>
         <div className="section-container flex items-center justify-between">
-          <div className="flex items-center gap-3 group">
-            <div className="relative">
-              <img 
-                src="/logo.png?v=2.5" 
-                alt="DICON" 
-                className="h-12 w-auto transition-transform group-hover:scale-110"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }} 
-              />
-              <div className="absolute -inset-1 bg-accent/20 blur opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-3 group cursor-pointer"
+          >
+            <img 
+              src="/logo.png" 
+              alt="DICON" 
+              className="h-10 w-auto"
+              loading="lazy"
+            />
+            <div className="text-2xl font-black tracking-[-0.05em] text-white">
+              Dicon
             </div>
-            <div className="text-2xl font-black tracking-tighter text-text-primary">
-              DI<span className="text-accent drop-shadow-[0_0_15px_var(--color-accent-glow)]">CON</span>
-            </div>
-          </div>
+          </motion.div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10">
@@ -338,7 +683,7 @@ export default function App() {
               <a 
                 key={link.name} 
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-accent ${scrolled || scrolled === false ? "text-text-secondary" : "text-white"}`}
+                className="text-sm font-medium transition-colors hover:text-white text-white/50"
               >
                 {link.name}
               </a>
@@ -346,241 +691,108 @@ export default function App() {
             <a 
               href="https://wa.me/5216568079485" 
               target="_blank" 
-              className="bg-accent text-white px-7 py-3 rounded-lg text-sm font-bold shadow-[0_10px_20px_var(--color-accent-glow)] hover:scale-105 transition-transform"
+              className="bg-accent text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-orange-600 transition-all"
             >
-              Solicitar Cotización
+              Contactar
             </a>
           </div>
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden p-2 text-text-primary"
+            className="md:hidden p-2 text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute top-full left-0 w-full bg-card-bg border-b border-border py-8 md:hidden shadow-2xl"
-          >
-            <div className="flex flex-col items-center gap-6">
-              {navLinks.map((link) => (
-                <a 
-                  key={link.name} 
-                  href={link.href}
-                  className="text-lg font-bold text-text-primary hover:text-accent"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
-              <a 
-                href="https://wa.me/5216568079485" 
-                className="bg-accent text-white px-10 py-4 rounded-lg font-bold mt-4 shadow-lg shadow-accent/20"
-              >
-                Contacto Directo
-              </a>
-            </div>
-          </motion.div>
-        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-center pt-32 pb-20 overflow-hidden">
-        {/* Animated Background Blobs - Disabled on low power/mobile for performance */}
-        {!isLowPowerMode && (
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div 
-              animate={{ 
-                x: [0, 50, 0],
-                y: [0, 30, 0],
-              }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute top-[10%] left-[5%] w-96 h-96 bg-accent/5 blur-[120px] rounded-full will-change-transform"
-            />
-            <motion.div 
-              animate={{ 
-                x: [0, -40, 0],
-                y: [0, 60, 0],
-              }}
-              transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 2 }}
-              className="absolute bottom-[20%] right-[10%] w-[500px] h-[500px] bg-accent/10 blur-[150px] rounded-full will-change-transform"
-            />
-          </div>
-        )}
+      <section className="relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg">
+        {/* Glows */}
+        <div className="main-glow" />
+        <div className="secondary-glow" />
 
         <div className="section-container relative z-10 w-full">
-          <div className="flex flex-col items-center text-center mb-24">
-            {/* Floating Particles (Cement Dust) - High performance mode only */}
-            {!isLowPowerMode && (
-              <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
-                {[...Array(20)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ 
-                      x: Math.random() * 100 + "%", 
-                      y: Math.random() * 100 + "%",
-                      opacity: Math.random() * 0.5 + 0.1 
-                    }}
-                    animate={{ 
-                      y: [null, (Math.random() - 0.5) * 100 + "%"],
-                      x: [null, (Math.random() - 0.5) * 50 + "%"],
-                    }}
-                    transition={{ 
-                      duration: Math.random() * 10 + 10, 
-                      repeat: Infinity, 
-                      ease: "linear" 
-                    }}
-                    className="absolute w-1 h-1 bg-white/10 rounded-full blur-[1px]"
-                  />
-                ))}
-              </div>
-            )}
-
+          <div className="flex flex-col items-center text-center mb-20 md:mb-32">
             <motion.div 
               initial="hidden"
               animate="visible"
               variants={containerVariants}
-              className="max-w-5xl"
+              className="max-w-6xl"
             >
-              <motion.span 
-                variants={itemVariants} 
-                className="inline-block bg-accent/20 text-accent px-4 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-[2px] mb-8 border border-accent/20 italic"
-              >
-                Líderes en Ciudad Juárez
-              </motion.span>
-              
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="will-change-transform"
-              >
-                <motion.h1 
-                  variants={itemVariants}
-                  className="text-6xl sm:text-7xl md:text-[10rem] font-black leading-[0.85] tracking-[-0.05em] mb-12 text-gradient uppercase px-4 sm:px-0"
-                >
-                  Calidad para <br />
-                  <span className="text-white">Ferreterías</span> <br />
-                  & Obras.
-                </motion.h1>
+              <motion.div variants={itemVariants} className="inline-block px-4 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] mb-8">
+                <span className="text-[10px] sm:text-xs font-bold tracking-[3px] text-white/50">
+                  LÍDERES EN CIUDAD JUÁREZ
+                </span>
               </motion.div>
+              
+              <motion.h1 
+                variants={itemVariants}
+                className="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black leading-[0.9] tracking-[-0.05em] mb-12 text-white"
+              >
+                Calidad para <br />
+                <span className="text-white/60">Ferreterías</span> <br />
+                & Obras.
+              </motion.h1>
 
               <motion.p 
                 variants={itemVariants}
-                className="text-lg sm:text-xl md:text-2xl text-text-secondary leading-relaxed mb-16 max-w-2xl mx-auto font-medium px-4"
+                className="text-base sm:text-lg md:text-xl text-white/50 leading-[1.6] mb-16 max-w-2xl mx-auto font-normal"
               >
-                Suministramos los materiales esenciales que sostienen a Juárez. Logística especializada para ferreterías locales y grandes proyectos de construcción.
+                Suministramos los materiales esenciales que sostienen a Juárez. Logística especializada para ferreterías y proyectos de construcción.
               </motion.p>
               
               <motion.div 
                 variants={itemVariants}
-                className="flex flex-wrap justify-center gap-4 sm:gap-6 px-4"
+                className="flex flex-wrap justify-center gap-6"
               >
-                <a href="#materiales" className="w-full sm:w-auto bg-accent text-white px-10 py-5 rounded-2xl font-black text-lg sm:text-xl shadow-[0_20px_40px_var(--color-accent-glow)] hover:bg-orange-600 transition-all flex items-center justify-center gap-3 group">
-                  Ver Catálogo <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                <a href="#catalogo" className="w-full sm:w-auto bg-accent text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-orange-600 transition-all flex items-center justify-center gap-3 group">
+                  Ver Catálogo <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </a>
-                <button 
-                  onClick={() => setIsCartOpen(true)}
-                  className="w-full sm:w-auto bg-white/5 backdrop-blur-xl text-white border border-white/10 px-10 py-5 rounded-2xl font-black text-lg sm:text-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3 group"
-                >
-                  <div className="relative">
-                    <Box className="w-6 h-6 text-accent" />
-                    {cart.length > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-accent text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
-                        {cart.length}
-                      </span>
-                    )}
-                  </div>
-                  Mi Lista
-                </button>
               </motion.div>
             </motion.div>
           </div>
 
-          {/* Stats Grid - Moved below and performance optimized */}
+          {/* Stats Grid */}
           <motion.div 
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true }}
             variants={containerVariants}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 relative max-w-7xl mx-auto px-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative"
           >
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-accent/5 blur-xl -z-10"></div>
-            
-            <motion.div 
-              variants={itemVariants}
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group will-change-transform"
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-                <ShieldCheck className="w-10 h-10" />
-              </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">10+</div>
-              <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Años de Confianza</div>
-            </motion.div>
-
-            <motion.div 
-              variants={itemVariants}
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group lg:mt-4 will-change-transform"
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-                <Truck className="w-10 h-10" />
-              </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">1k+</div>
-              <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Clientes en Juárez</div>
-            </motion.div>
-
-            <motion.div 
-              variants={itemVariants}
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group will-change-transform"
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-                <Zap className="w-10 h-10" />
-              </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">24/7</div>
-              <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Soporte Logístico</div>
-            </motion.div>
-
-            <motion.div 
-              variants={itemVariants}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
-              whileHover={{ y: -20, scale: 1.02 }}
-              className="glass-card p-8 border border-white/5 shadow-2xl relative overflow-hidden group lg:mt-4 will-change-transform"
-            >
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-                <Box className="w-10 h-10" />
-              </div>
-              <div className="text-4xl font-black text-accent mb-2 drop-shadow-[0_0_15px_var(--color-accent-glow)]">100%</div>
-              <div className="text-[10px] text-text-secondary uppercase tracking-[2px] font-black">Garantía de Entrega</div>
-            </motion.div>
+            {[
+              { label: "1.5", sub: "Años de experiencia", icon: <ShieldCheck /> },
+              { label: "1k+", sub: "Clientes", icon: <Truck /> },
+              { label: "24/7", sub: "Soporte", icon: <Zap /> },
+              { label: "100%", sub: "Garantía", icon: <Box /> },
+            ].map((stat, i) => (
+              <motion.div 
+                key={i}
+                variants={itemVariants}
+                className="glass-card p-10 flex flex-col items-center text-center group will-change-transform"
+              >
+                <div className="text-accent mb-6 transition-transform group-hover:scale-110">{stat.icon}</div>
+                <div className="text-5xl font-black text-white mb-2 tracking-tight">{stat.label}</div>
+                <div className="text-sm text-white/40 font-medium">{stat.sub}</div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Brands Marquee */}
-      <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-bg relative">
+      {/* Brands Marquee - GPU Accelerated */}
+      <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-bg relative contain-paint">
         <div className="absolute inset-0 bg-black/60 z-0 pointer-events-none" />
         <div className="relative z-10">
-          <div className="flex animate-marquee-fast md:animate-marquee-slow whitespace-nowrap gap-20 items-center will-change-transform translate-z-0">
+          <div className="flex animate-marquee-fast md:animate-marquee-slow whitespace-nowrap gap-20 items-center will-change-transform translate-x-0 force-gpu">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
               <span 
                 key={i} 
-                className="text-2xl md:text-4xl font-black text-white/20 hover:text-accent transition-colors cursor-default select-none tracking-tighter filter grayscale brightness-50 contrast-125"
+                className="text-2xl md:text-5xl font-bold text-white/10 hover:text-accent transition-colors cursor-default select-none tracking-tight"
               >
-                {brand}
+                {brand.toLowerCase()}
               </span>
             ))}
           </div>
@@ -610,8 +822,8 @@ export default function App() {
             >
               <div className="p-8 border-b border-border flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-black tracking-tight uppercase">Mi Lista</h3>
-                  <p className="text-text-secondary text-sm font-medium">{cart.length} materiales seleccionados</p>
+                  <h3 className="text-2xl font-bold tracking-tight">Mi Lista</h3>
+                  <p className="text-white/50 text-sm font-medium">{cart.length} materiales seleccionados</p>
                 </div>
                 <button onClick={() => setIsCartOpen(false)} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
                   <X className="w-6 h-6" />
@@ -622,73 +834,90 @@ export default function App() {
                 {cart.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
                     <Box className="w-20 h-20 mb-6" />
-                    <p className="text-xl font-bold uppercase tracking-widest">Tu lista está vacía</p>
-                    <p className="text-sm mt-2">Agrega materiales desde el catálogo para cotizar.</p>
+                    <p className="text-xl font-bold tracking-tight">Tu lista está vacía</p>
+                    <p className="text-sm mt-2">Agrega productos desde el catálogo para cotizar.</p>
                   </div>
                 ) : (
-                  cart.map((item) => (
-                    <div key={item.id} className="flex gap-4 items-center bg-bg/40 p-5 rounded-2xl border border-border/50 group">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                        <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-lg uppercase tracking-tight leading-none mb-1 truncate">{item.name}</p>
-                        {item.selectedSize ? (
-                          <p className="text-accent text-[10px] font-black uppercase tracking-widest mb-2">
-                            Medida: {item.selectedSize}
-                          </p>
-                        ) : (
-                          <p className="text-[10px] text-text-secondary uppercase tracking-wider mb-2">Material Estándar</p>
-                        )}
-                        
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center bg-white/5 border border-white/10 rounded-lg p-1">
-                            <button 
-                              onClick={() => updateQuantity(item.cartItemId, -1)}
-                              className="w-8 h-8 flex items-center justify-center text-text-secondary hover:text-accent transition-colors"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="w-8 text-center text-sm font-black">{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQuantity(item.cartItemId, 1)}
-                              className="w-8 h-8 flex items-center justify-center text-text-secondary hover:text-accent transition-colors"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
+                  <>
+                    {cart.map((item) => {
+                      const finalPrice = getPrice(item);
+                      return (
+                        <motion.div 
+                          key={item.cartItemId} 
+                          layout
+                          className="flex gap-4 items-center bg-bg/40 p-5 rounded-2xl border border-border/50 group relative"
+                        >
+                          <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
                           </div>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => removeFromCart(item.cartItemId)}
-                        className="p-2 text-text-secondary/50 hover:text-red-500 transition-colors"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                  ))
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start">
+                              <p className="font-bold text-sm uppercase tracking-tight leading-none mb-1 truncate pr-2">{item.name}</p>
+                              <button 
+                                onClick={() => removeFromCart(item.cartItemId)}
+                                className="p-1 text-text-secondary/50 hover:text-red-500 transition-colors"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className={`text-white font-bold text-xs ${item.constructorMode ? 'text-orange-400' : ''}`}>
+                                ${finalPrice} c/u {item.constructorMode && <span className="text-[8px] ml-1 opacity-60 italic">CONSTRUCTORA (MAYOREO)</span>}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center bg-white/5 border border-white/10 rounded-lg p-1">
+                                <button 
+                                  onClick={() => updateQuantity(item.cartItemId, -1)}
+                                  className="w-6 h-6 flex items-center justify-center text-text-secondary hover:text-accent transition-colors"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <motion.span 
+                                  key={item.quantity}
+                                  initial={{ y: -5, opacity: 0 }}
+                                  animate={{ y: 0, opacity: 1 }}
+                                  className="w-6 text-center text-xs font-black"
+                                >
+                                  {item.quantity}
+                                </motion.span>
+                                <button 
+                                  onClick={() => updateQuantity(item.cartItemId, 1)}
+                                  className="w-6 h-6 flex items-center justify-center text-text-secondary hover:text-accent transition-colors"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <p className="text-xs font-black text-accent">
+                                {finalPrice ? `$${((finalPrice || 0) * item.quantity).toLocaleString()}` : 'A Cotizar'}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </>
                 )}
               </div>
 
               <div className="p-8 border-t border-border bg-bg/50">
                 {cart.length > 0 && (
                   <div className="space-y-4">
-                    <p className="text-[10px] text-text-secondary leading-relaxed mb-4 text-center">
-                      Al hacer clic en cotizar, se abrirá WhatsApp con tu lista detallada para que un asesor te atienda personalmente.
-                    </p>
+                    <div className="flex justify-between text-xs text-text-secondary font-bold uppercase tracking-widest"><span>Subtotal (Sin IVA):</span><span>${totalCart.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-xs text-text-secondary font-bold uppercase tracking-widest"><span>IVA (16%):</span><span>${(totalCart * 0.16).toLocaleString()}</span></div>
+                    <div className="flex justify-between items-center mb-6 pt-4 border-t border-white/5">
+                       <span className="text-white font-black uppercase tracking-widest text-sm">Total:</span>
+                       <span className="text-[#FF5722] text-3xl font-black italic tracking-tighter drop-shadow-[0_0_15px_rgba(255,87,34,0.3)]">${(totalCart * 1.16).toLocaleString()}</span>
+                    </div>
                     <a 
                       href={whatsappUrl}
                       target="_blank"
-                      className="bg-accent text-white w-full py-6 rounded-2xl font-black text-lg shadow-[0_20px_40px_var(--color-accent-glow)] hover:bg-orange-600 transition-all flex items-center justify-center gap-3"
+                      className="bg-[#FF5722] text-white w-full py-6 rounded-2xl font-black text-lg shadow-[0_20px_40px_rgba(255,87,34,0.3)] hover:bg-orange-600 transition-all flex items-center justify-center gap-3"
                     >
-                      COTIZAR LISTA EN WHATSAPP <ArrowRight className="w-6 h-6" />
+                      PEDIR POR WHATSAPP <ArrowRight className="w-6 h-6" />
                     </a>
-                    <button 
-                      onClick={() => setIsCartOpen(false)}
-                      className="w-full py-4 text-text-secondary text-sm font-bold hover:text-white transition-colors"
-                    >
-                      Seguir explorando
-                    </button>
                   </div>
                 )}
               </div>
@@ -716,9 +945,9 @@ export default function App() {
       </AnimatePresence>
 
       {/* Story / History Section */}
-      <section id="historia" className="py-40 relative overflow-hidden bg-bg">
+      <section id="historia" className="py-24 md:py-40 relative overflow-hidden bg-transparent">
         {/* Glow behind centerpiece */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/10 blur-[120px] rounded-full pointer-events-none" />
         
         <div className="section-container relative z-10 text-center">
           <motion.div 
@@ -728,8 +957,8 @@ export default function App() {
             variants={containerVariants}
             className="max-w-4xl mx-auto"
           >
-            <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[6px] uppercase mb-6 block italic">NUESTRO ORIGEN</motion.span>
-            <motion.h2 variants={itemVariants} className="text-6xl md:text-8xl font-black mb-16 tracking-tight text-gradient uppercase">Nuestra Historia</motion.h2>
+            <motion.span variants={itemVariants} className="text-white/40 font-bold text-xs tracking-[6px] uppercase mb-6 block">Nuestro origen</motion.span>
+            <motion.h2 variants={itemVariants} className="text-5xl md:text-8xl font-black mb-16 tracking-[-0.05em] text-white">Nuestra historia</motion.h2>
 
             {/* High-End Centerpiece Animation */}
             <motion.div 
@@ -740,7 +969,7 @@ export default function App() {
               className="relative mb-24 flex justify-center"
             >
               <motion.div
-                animate={isLowPowerMode ? {} : { 
+                animate={{ 
                   y: [0, -20, 0],
                   rotate: [0, 1, -1, 0]
                 }}
@@ -749,38 +978,38 @@ export default function App() {
                   repeat: Infinity, 
                   ease: "easeInOut" 
                 }}
-                style={isLowPowerMode ? {} : { y: y1 }}
+                style={isLowPowerMode ? { scale: 0.8 } : { y: y1 }}
                 className="will-change-transform"
               >
                 <img 
-                  src="/casco2.png?v=2.5" 
+                  src="/casco2.png" 
                   alt="Casco Pro DICON" 
+                  loading="lazy"
                   className="w-[300px] md:w-[500px] grayscale brightness-90 drop-shadow-[0_20px_60px_rgba(255,87,34,0.2)]"
-                  onError={(e) => (e.currentTarget.style.display = 'none')}
                 />
               </motion.div>
             </motion.div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
               <motion.div variants={itemVariants} className="glass-card p-10 border border-white/5 relative group hover:border-accent/30 transition-colors">
-                <div className="text-accent font-black text-3xl mb-6 opacity-30 group-hover:opacity-100 transition-opacity italic">01</div>
-                <h4 className="text-xl font-black mb-4 text-white uppercase tracking-tight">El Inicio</h4>
+                <div className="text-accent font-bold text-3xl mb-6 opacity-30 group-hover:opacity-100 transition-opacity">01</div>
+                <h4 className="text-xl font-bold mb-4 text-white tracking-tight">El inicio</h4>
                 <p className="text-text-secondary leading-relaxed font-medium text-sm">
                   DICON nació con una visión clara: ser el pilar logístico de Ciudad Juárez. Comenzamos entendiendo que cada bulto de cemento es el inicio de un hogar o un negocio.
                 </p>
               </motion.div>
 
               <motion.div variants={itemVariants} className="glass-card p-10 border border-white/5 relative group hover:border-accent/30 transition-colors">
-                <div className="text-accent font-black text-3xl mb-6 opacity-30 group-hover:opacity-100 transition-opacity italic">02</div>
-                <h4 className="text-xl font-black mb-4 text-white uppercase tracking-tight">Confianza</h4>
+                <div className="text-accent font-bold text-3xl mb-6 opacity-30 group-hover:opacity-100 transition-opacity">02</div>
+                <h4 className="text-xl font-bold mb-4 text-white tracking-tight">Confianza</h4>
                 <p className="text-text-secondary leading-relaxed font-medium text-sm">
                   Nos especializamos en el suministro estratégico para ferreterías y grandes constructoras. Nuestra reputación se forjó en la puntualidad y la calidad innegociable.
                 </p>
               </motion.div>
 
               <motion.div variants={itemVariants} className="glass-card p-10 border border-white/5 relative group hover:border-accent/30 transition-colors">
-                <div className="text-accent font-black text-3xl mb-6 opacity-30 group-hover:opacity-100 transition-opacity italic">03</div>
-                <h4 className="text-xl font-black mb-4 text-white uppercase tracking-tight">El Futuro</h4>
+                <div className="text-accent font-bold text-3xl mb-6 opacity-30 group-hover:opacity-100 transition-opacity">03</div>
+                <h4 className="text-xl font-bold mb-4 text-white tracking-tight">El futuro</h4>
                 <p className="text-text-secondary leading-relaxed font-medium text-sm">
                   No somos solo una comercializadora; somos un aliado estratégico. Seguimos innovando en logística para que Juárez nunca deje de crecer.
                 </p>
@@ -790,441 +1019,481 @@ export default function App() {
         </div>
       </section>
 
-      {/* Categories / Catalog */}
-      <section id="materiales" className="py-32 relative overflow-hidden">
-        {/* Advanced Decorative Parallax Elements */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <motion.div 
-            style={{ 
-              y: y1,
-              rotate: rotate1
-            }}
-            className="absolute right-[-10%] top-[5%] hidden lg:block opacity-20 pointer-events-none will-change-transform"
-          >
-            <img 
-              src="/block2.png?v=2.5"
-              className="w-[600px] grayscale brightness-75 drop-shadow-[0_0_30px_rgba(255,87,34,0.1)]" 
-              alt="Deco Block"
-            />
-          </motion.div>
-
-          {!isLowPowerMode && (
+      {/* NUEVA SECCIÓN: ¿A QUIÉN LE SERVIMOS? */}
+      <section id="servicios" className="py-32 relative overflow-hidden bg-transparent contain-layout">
+        {/* Background Decorations - Cement Bag & Tools */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {!isLowPowerMode ? (
             <>
-              <motion.div 
-                style={{ y: y1 }}
-                className="absolute left-[-8%] top-[75%] hidden lg:block opacity-30 pointer-events-none will-change-transform"
-              >
-                <img 
-                  src="/pvc_2_final.png?v=2.5"
-                  className="w-[450px] grayscale brightness-90 -rotate-12" 
-                  alt="Deco PVC"
-                />
-              </motion.div>
-
-              <motion.div 
-                style={{ y: y2 }}
-                className="absolute right-[-8%] top-[60%] hidden lg:block opacity-30 pointer-events-none will-change-transform"
-              >
-                <img 
-                  src="/hola.png?v=2.5"
-                  className="w-[400px] rotate-12" 
-                  alt="Deco Rodillo"
-                  onError={(e) => {
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=600";
-                  }}
-                />
-              </motion.div>
+              <motion.img 
+                src="/mortero.png" 
+                alt="Saco de Cemento DICON"
+                loading="lazy"
+                className="absolute top-20 left-[-5%] w-72 md:w-[600px] rotate-12 opacity-15 blur-[1px] drop-shadow-2xl"
+                animate={{ 
+                  y: [0, 40, 0],
+                  rotate: [12, 10, 12],
+                  scale: [1, 1.02, 1]
+                }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.img 
+                src="/block2.png" 
+                alt="Block de Concreto DICON"
+                loading="lazy"
+                className="absolute bottom-10 right-[-10%] w-64 md:w-[600px] -rotate-12 opacity-15 blur-[1px] drop-shadow-2xl"
+                animate={{ 
+                  y: [0, -50, 0],
+                  rotate: [-12, -8, -12],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              />
+               <motion.img 
+                src="/block2.png" 
+                className="absolute top-1/2 right-[5%] w-40 opacity-5 grayscale"
+                animate={{ y: [0, 100, 0], rotate: [0, 360] }}
+                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              />
+            </>
+          ) : (
+            <>
+              <img 
+                src="/mortero.png" 
+                alt="Saco de Cemento DICON"
+                loading="lazy"
+                className="absolute top-20 left-[-5%] w-72 md:w-[400px] rotate-12 opacity-10"
+              />
+              <img 
+                src="/block2.png" 
+                alt="Block de Concreto DICON"
+                loading="lazy"
+                className="absolute bottom-10 right-[-10%] w-64 md:w-[400px] -rotate-12 opacity-10"
+              />
             </>
           )}
         </div>
 
         <div className="section-container relative z-10">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "0px" }}
-            variants={containerVariants}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8"
-          >
-            <div className="max-w-2xl">
-              <motion.span variants={itemVariants} className="text-accent font-bold text-xs tracking-[4px] uppercase mb-4 block italic">SUMINISTRO ESTRATÉGICO</motion.span>
-              <motion.h2 variants={itemVariants} className="text-5xl md:text-8xl font-black mb-8 tracking-tight text-gradient uppercase">Nuestros Materiales</motion.h2>
-              <motion.p variants={itemVariants} className="text-text-secondary font-medium text-xl leading-relaxed">
-                Logística de alto impacto para ferreterías y constructoras líderes en la región.
-              </motion.p>
-            </div>
-          </motion.div>
-          
-          <div className="space-y-12">
-            {/* LARGE CATEGORY: Materiales */}
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
+          <div className="text-center mb-20">
+            <motion.span 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              variants={itemVariants}
-              className={`relative overflow-hidden group rounded-[40px] md:rounded-[60px] bg-card-bg/80 border border-white/10 p-8 md:p-16 lg:p-24 shadow-2xl ${isLowPowerMode ? "" : "backdrop-blur-md"}`}
+              className="text-white/40 font-bold text-xs tracking-[6px] uppercase mb-4 block"
             >
-              <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-accent/20 via-transparent to-transparent pointer-events-none transition-transform duration-700 group-hover:scale-110"></div>
-              <div className="relative z-10 flex flex-col lg:flex-row gap-10 lg:gap-16 items-center">
-                <div className="flex-1 w-full text-center lg:text-left">
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-[32px] flex items-center justify-center text-accent mb-8 md:mb-12 bg-accent/10 shadow-[0_0_50px_rgba(255,87,34,0.15)] ring-1 ring-white/10 mx-auto lg:mx-0">
-                    <Construction className="w-10 h-10 md:w-12 md:h-12" />
-                  </div>
-                  <h3 className="text-4xl md:text-5xl lg:text-8xl font-black mb-6 md:mb-10 leading-none tracking-tighter uppercase">Nuestros Materiales</h3>
-                  <p className="text-text-secondary text-lg md:text-2xl font-medium leading-relaxed mb-10 md:mb-16 max-w-xl mx-auto lg:mx-0">
-                    Suministro estratégico para ferreterías y constructoras. Los pilares de Juárez en un solo lugar.
-                  </p>
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedCategory(CATEGORIES.find(c => c.id === 'materiales')!)}
-                    className="bg-accent text-white px-8 md:px-16 py-5 md:py-8 rounded-[32px] font-black text-xl md:text-2xl shadow-[0_20px_40px_var(--color-accent-glow)] hover:bg-orange-600 transition-all flex items-center gap-4 md:gap-6 group/btn w-fit mx-auto lg:mx-0"
-                  >
-                    EXPLORAR MATERIALES <ArrowRight className="w-6 h-6 md:w-8 md:h-8 group-hover/btn:translate-x-3 transition-transform" />
-                  </motion.button>
-                </div>
-                <div className="flex-1 relative hidden lg:block">
-                  <div className="grid grid-cols-2 gap-6 scale-90">
-                    {CATEGORIES[0].products.slice(0, 4).map((p, idx) => (
-                      <motion.div 
-                        key={p.id}
-                        animate={isLowPowerMode ? {} : { y: idx % 2 === 0 ? [0, -20, 0] : [0, 20, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: idx * 0.5 }}
-                        className="aspect-square bg-bg/40 rounded-[48px] border border-border/50 overflow-hidden shadow-2xl"
-                      >
-                        <img 
-                          src={p.img} 
-                          alt={p.name} 
-                          className="w-full h-full object-cover grayscale brightness-110 contrast-125 opacity-80 group-hover:opacity-100 transition-opacity" 
-                        />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
+              Soluciones Especializadas
+            </motion.span>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-5xl md:text-8xl font-black tracking-tighter uppercase italic text-white"
+            >
+              ¿A quién le servimos?
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[1400px] mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -15 }}
+              onClick={() => setActiveModal('publico')}
+              className="glass-card p-12 border border-white/10 group cursor-pointer hover:border-accent shadow-2xl flex flex-col items-center justify-center text-center relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-24 h-24 rounded-[32px] bg-accent/10 flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform shadow-[0_0_40px_rgba(242,113,33,0.2)]">
+                <Palette className="w-12 h-12" />
               </div>
+              <span className="text-[10px] text-accent font-black tracking-[4px] uppercase mb-4 italic">Individual y Menudeo</span>
+              <h3 className="text-4xl font-black mb-6 tracking-[-0.05em] leading-tight">Público general</h3>
+              <p className="text-base text-white/50 leading-relaxed mb-10 font-normal max-w-[280px]">
+                Suministro directo para tu hogar o pequeñas reparaciones con calidad industrial certificada.
+              </p>
+              <motion.div className="flex items-center gap-3 text-accent font-black text-xs uppercase tracking-[2px] group-hover:translate-x-2 transition-transform">
+                Ver Catálogo <ChevronRight className="w-4 h-4" />
+              </motion.div>
             </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* MEDIUM CATEGORY: Plomeria */}
-              <motion.div 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={itemVariants}
-                className={`relative overflow-hidden group rounded-[60px] bg-card-bg/60 border border-white/5 p-12 lg:p-16 shadow-xl ${isLowPowerMode ? "" : "backdrop-blur-sm"}`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 via-transparent to-transparent pointer-events-none transition-opacity group-hover:opacity-100 opacity-40"></div>
-                <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full"></div>
-                <div className="relative z-10 flex flex-col h-full justify-between">
-                  <div>
-                    <div className="w-20 h-20 rounded-[28px] flex items-center justify-center text-blue-400 mb-8 bg-blue-500/10 ring-1 ring-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.1)]">
-                      <Droplets className="w-10 h-10" />
-                    </div>
-                    <h3 className="text-4xl lg:text-5xl font-black mb-6 tracking-tight uppercase">Plomería</h3>
-                    <p className="text-text-secondary text-lg font-medium leading-relaxed mb-12">
-                      Conexiones, válvulas y tubería industrial de alta calidad.
-                    </p>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedCategory(CATEGORIES.find(c => c.id === 'plomeria')!)}
-                    className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-5 rounded-[24px] font-bold text-lg transition-all flex items-center gap-4 group/btn w-fit"
-                  >
-                    VER PLOMERÍA <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
-                  </button>
-                </div>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -15 }}
+              transition={{ delay: 0.1 }}
+              onClick={() => setActiveModal('constructora')}
+              className="glass-card p-12 border border-white/10 group cursor-pointer hover:border-accent shadow-2xl flex flex-col items-center justify-center text-center relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-24 h-24 rounded-[32px] bg-accent/10 flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform shadow-[0_0_40px_rgba(242,113,33,0.2)]">
+                <Construction className="w-12 h-12" />
+              </div>
+              <span className="text-[10px] text-accent font-black tracking-[4px] uppercase mb-4 italic">Mayoreo y Logística</span>
+              <h3 className="text-4xl font-black mb-6 tracking-[-0.05em] leading-none">Constructoras <br /> & ferreterías</h3>
+              <p className="text-sm text-text-secondary leading-relaxed mb-10 font-medium max-w-[280px]">
+                Descuentos por volumen superiores al 15% y logística estratégica para Juárez.
+              </p>
+              <motion.div className="flex items-center gap-3 text-accent font-black text-xs uppercase tracking-[2px] group-hover:translate-x-2 transition-transform">
+                Acceso Mayoreo <ChevronRight className="w-4 h-4" />
               </motion.div>
+            </motion.div>
 
-              {/* MEDIUM CATEGORY: Acabados */}
-              <motion.div 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={itemVariants}
-                className={`relative overflow-hidden group rounded-[60px] bg-card-bg/60 border border-white/5 p-12 lg:p-16 shadow-xl ${isLowPowerMode ? "" : "backdrop-blur-sm"}`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-transparent pointer-events-none transition-opacity group-hover:opacity-100 opacity-40"></div>
-                <div className="absolute -right-20 -top-20 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full"></div>
-                <div className="relative z-10 flex flex-col h-full justify-between">
-                  <div>
-                    <div className="w-20 h-20 rounded-[28px] flex items-center justify-center text-purple-400 mb-8 bg-purple-500/10 ring-1 ring-purple-500/20 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
-                      <Palette className="w-10 h-10" />
-                    </div>
-                    <h3 className="text-4xl lg:text-5xl font-black mb-6 tracking-tight uppercase text-glow-purple">Pintura y Adhesivos</h3>
-                    <p className="text-text-secondary text-lg font-medium leading-relaxed mb-12">
-                      Recubrimientos especiales y adhesivos 3B de alto nivel.
-                    </p>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedCategory(CATEGORIES.find(c => c.id === 'acabados')!)}
-                    className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-5 rounded-[24px] font-bold text-lg transition-all flex items-center gap-4 group/btn w-fit"
-                  >
-                    VER CATÁLOGO <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
-                  </button>
-                </div>
-              </motion.div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -15 }}
+              transition={{ delay: 0.2 }}
+              onClick={() => setActiveModal('maquila')}
+              className="glass-card p-12 border border-white/10 group cursor-pointer hover:border-accent shadow-2xl flex flex-col items-center justify-center text-center relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-24 h-24 rounded-[32px] bg-accent/10 flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform shadow-[0_0_40px_rgba(242,113,33,0.2)]">
+                <Zap className="w-12 h-12" />
+              </div>
+              <span className="text-[10px] text-accent font-black tracking-[4px] uppercase mb-4 italic">MRO e Industrial</span>
+              <h3 className="text-4xl font-black mb-6 tracking-[-0.05em] leading-none">Industria <br /> maquiladora</h3>
+              <p className="text-sm text-text-secondary leading-relaxed mb-10 font-medium max-w-[280px]">
+                Suministro especializado manufactura avanzada con respuesta inmediata 24/7.
+              </p>
+              <div className="flex items-center gap-3 text-accent font-black text-xs uppercase tracking-[2px] group-hover:translate-x-2 transition-transform">
+                Área Industrial <ChevronRight className="w-4 h-4" />
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Catalog Modal */}
+      {/* FULLSCREEN MODALS */}
       <AnimatePresence>
-        {selectedCategory && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-bg/95" 
-              onClick={() => setSelectedCategory(null)} 
-            />
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, scale: 0.98 }} 
-              className={`relative bg-card-bg border border-border w-full max-w-5xl max-h-[90vh] rounded-[40px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col will-change-transform ${isLowPowerMode ? "" : "backdrop-blur-xl"}`}
-            >
-              <div className="p-8 border-b border-border flex items-center justify-between bg-bg/50">
-                <div>
-                  <h3 className="text-3xl font-black tracking-tight uppercase">{selectedCategory.name}</h3>
-                  <p className="text-text-secondary text-sm font-medium">Suministro oficial DICON para Juárez.</p>
-                </div>
-                <button className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors" onClick={() => setSelectedCategory(null)}><X className="w-6 h-6" /></button>
+        {activeModal && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            className="fixed inset-0 z-[200] bg-bg flex flex-col overflow-hidden"
+          >
+            {/* Modal Header Fijo */}
+            <header className="flex items-center justify-between px-6 md:px-12 py-6 bg-bg/95 backdrop-blur-3xl border-b border-white/5 relative z-[210]">
+              <div className="flex items-center gap-4">
+                <img src="/logo.png" alt="DICON" className="h-8 w-auto" />
+                <span className="text-lg font-bold tracking-tight text-white border-l border-white/10 pl-4">
+                  {`Catálogo — ${activeModal === 'publico' ? 'Público General' : activeModal === 'constructora' ? 'Constructoras' : 'Industria Maquiladora'}`}
+                </span>
               </div>
 
-              <div className="p-8 overflow-y-auto custom-scrollbar overscroll-contain pb-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {selectedCategory.products.map(product => {
-                    const CardComponent = isLowPowerMode ? "div" : motion.div;
-                    return (
-                      <CardComponent 
-                        key={product.id} 
-                        {...(!isLowPowerMode && {
-                          initial: { opacity: 0, y: 10 },
-                          animate: { opacity: 1, y: 0 }
-                        })}
-                        className="bg-bg/60 border border-border/50 rounded-[32px] overflow-hidden flex flex-col sm:flex-row shadow-lg will-change-transform"
-                      >
-                        <div className="w-full sm:w-1/3 h-48 sm:h-auto relative bg-bg/80">
-                          <img 
-                            src={product.img} 
-                            alt={product.name} 
-                            className="w-full h-full object-cover" 
-                            referrerPolicy="no-referrer" 
-                            onError={(e) => {
-                              if (!imageErrors.includes(product.name)) {
-                                setImageErrors(prev => [...prev, product.name]);
-                              }
-                              e.currentTarget.src = "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=600";
-                            }}
-                          />
-                        </div>
-                        <div className="p-6 w-full sm:w-2/3 flex flex-col justify-between">
-                          <div>
-                            <div className="flex justify-between items-start mb-2">
-                              <h4 className="font-bold text-xl">{product.name}</h4>
-                            </div>
-                            <p className="text-text-secondary text-[11px] leading-relaxed mb-4 font-medium italic">
-                              {product.description}
-                            </p>
+              <div className="flex items-center gap-4">
+                {activeModal !== 'maquila' && (
+                  <button 
+                    onClick={() => setIsCartOpen(!isCartOpen)}
+                    className={`px-6 py-2 rounded-full font-bold text-sm transition-all flex items-center gap-2 ${isCartOpen ? 'bg-white text-black' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
+                  >
+                    <ShoppingBag className="w-4 h-4" /> 
+                    <span className="hidden sm:inline">{isCartOpen ? 'Cerrar Lista' : 'Ver Mi Lista'}</span>
+                    {cart.length > 0 && <span className="ml-1 bg-accent text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">{cart.length}</span>}
+                  </button>
+                )}
+                <button 
+                  onClick={() => { setActiveModal(null); setIsCartOpen(false); }}
+                  className="w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center transition-all border border-white/10 group"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            </header>
 
-                            {product.sizes && (
-                              <div className="mb-6">
-                                <p className="text-[10px] text-text-secondary uppercase tracking-widest mb-3 font-bold">
-                                  {product.selectionLabel || "Seleccionar Medida"}:
-                                </p>
-                                <div className="flex gap-2 flex-wrap">
-                                  {product.sizes.map((size: string) => (
-                                    <button
-                                      key={size}
-                                      onClick={() => setProductSizes(prev => ({ ...prev, [product.id]: size }))}
-                                      className={`px-4 py-2 rounded-lg text-xs font-black transition-all border ${
-                                        productSizes[product.id] === size 
-                                        ? "bg-accent border-accent text-white shadow-lg shadow-accent/20" 
-                                        : "bg-white/5 border-white/10 text-text-secondary hover:border-accent/40"
-                                      }`}
-                                    >
-                                      {size}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+              {/* Columna Izquierda: Catálogo */}
+              <div className={`flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12 transition-all duration-500`}>
+                <div className="max-w-[1400px] mx-auto">
+                  <div className="mb-16">
+                     <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
+                       {activeModal === 'publico' ? 'Público general' : activeModal === 'constructora' ? 'Constructoras' : 'Suministro industria'}
+                     </h2>
+                     <p className="text-white/40 text-lg font-medium">Selecciona los materiales para tu próximo proyecto.</p>
+                  </div>
+
+                  {/* MODAL 1 — PÚBLICO GENERAL */}
+                  {activeModal === 'publico' && (
+                    <div className="space-y-32 pb-40">
+                      {Object.entries(PUBLICO_PRODUCTS).map(([category, products]) => (
+                        <div key={category}>
+                          <div className="flex items-center gap-6 mb-8">
+                             <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
+                             <div className="flex-1 h-px bg-white/5" />
                           </div>
-                          <div className="grid grid-cols-1 gap-3">
-                            <button 
-                              disabled={product.sizes && !productSizes[product.id]}
-                              onClick={() => {
-                                addToCart(product);
-                                setSelectedCategory(null);
-                                setIsCartOpen(true);
-                              }}
-                              className={`py-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 ${
-                                product.sizes && !productSizes[product.id]
-                                ? "bg-white/5 text-white/30 cursor-not-allowed"
-                                : "bg-accent text-white shadow-lg shadow-accent/20 hover:bg-orange-600"
-                              }`}
-                            >
-                              <Box className="w-4 h-4" /> 
-                              {product.sizes && !productSizes[product.id] ? (product.selectionLabel ? `SELECCIONA ${product.selectionLabel.split(' ')[1].toUpperCase()}` : "SELECCIONA MEDIDA") : "AGREGAR A MI LISTA"}
-                            </button>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {(products as any[]).map((product) => (
+                              <ProductCard 
+                                key={product.id} 
+                                product={product} 
+                                addToCart={addToCart} 
+                                isLowPowerMode={isLowPowerMode}
+                              />
+                            ))}
                           </div>
                         </div>
-                      </CardComponent>
-                    );
-                  })}
+                      ))}
+
+                      {/* Herramientas y Ferretería Card */}
+                      <div>
+                        <div className="flex items-center gap-6 mb-8">
+                           <h3 className="text-2xl font-bold text-white tracking-tight">Ferretería & herramientas</h3>
+                           <div className="flex-1 h-px bg-white/5" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {QUOTE_CARDS_PUBLIC.map((card, idx) => (
+                            <QuoteCard key={idx} card={card} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MODAL 2 — CONSTRUCTORAS */}
+                  {activeModal === 'constructora' && (
+                    <div className="space-y-32 pb-40">
+                      {Object.entries(CONSTRUCTORA_PRODUCTS).map(([category, products]) => (
+                        <div key={category}>
+                          <div className="flex items-center gap-6 mb-8">
+                             <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
+                             <div className="flex-1 h-px bg-white/5" />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {(products as any[]).map((product) => (
+                              <ProductCard 
+                                key={product.id} 
+                                product={product} 
+                                addToCart={addToCart} 
+                                isLowPowerMode={isLowPowerMode}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Constructor Quote Cards */}
+                      <div>
+                        <div className="flex items-center gap-6 mb-8">
+                           <h3 className="text-2xl font-bold text-white tracking-tight">Suministro especializado</h3>
+                           <div className="flex-1 h-px bg-white/5" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {QUOTE_CARDS_CONSTRUCTORA.map((card, idx) => (
+                            <QuoteCard key={idx} card={card} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* MODAL 3 — INDUSTRIA MAQUILADORA */}
+                  {activeModal === 'maquila' && (
+                    <div className="space-y-32 pb-40">
+                       <h3 className="text-2xl font-bold text-white tracking-tight mb-8">Suministro industrial MRO</h3>
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {QUOTE_CARDS_MAQUILA.map((card, idx) => (
+                            <QuoteCard key={idx} card={card} />
+                          ))}
+                        </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </motion.div>
-          </div>
+
+              {/* Columna Derecha: Carrito Drawer/Sidebar */}
+              {activeModal !== 'maquila' && (
+                <div 
+                  className={`
+                    fixed md:relative top-0 right-0 h-full z-[220] md:z-auto
+                    transition-all duration-500 ease-[0.25, 0.1, 0.25, 1]
+                    bg-bg border-l border-white/5
+                    ${isCartOpen 
+                      ? 'w-full md:w-[300px] lg:w-[380px] translate-x-0 opacity-100' 
+                      : 'w-full md:w-[300px] lg:w-[380px] translate-x-full md:translate-x-0 opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto'}
+                  `}
+                >
+                  <CartContent />
+                </div>
+              )}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Contact & Location */}
-      <section id="contacto" className="py-32 bg-card-bg/50 border-y border-border">
+      <section id="contacto" className="py-24 md:py-40 relative bg-bg border-t border-border">
         <div className="section-container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="bg-bg h-[600px] rounded-[32px] overflow-hidden border border-border relative group">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="h-[500px] rounded-[40px] overflow-hidden border border-border relative group shadow-2xl"
+            >
               <img 
                 src="/dicon_building.png" 
-                className="w-full h-full object-cover opacity-100"
-                alt="Fachada DICON Juárez"
+                loading="lazy"
+                className="w-full h-full object-cover grayscale transition-transform duration-1000 group-hover:scale-105"
+                alt="DICON Juárez"
                 referrerPolicy="no-referrer"
-                onError={(e) => {
-                  /* Si la imagen local no carga, intentamos con un placeholder de alta calidad */
-                  e.currentTarget.src = "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=1200";
-                }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-bg/80 to-transparent" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                 <div className="bg-bg/90 backdrop-blur-xl p-10 rounded-[32px] border border-border shadow-2xl max-w-sm text-center">
-                    <div className="bg-accent w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-accent/40">
-                      <MapPin className="text-white" />
+              <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors" />
+              <div className="absolute inset-x-8 bottom-8">
+                 <div className="glass-card p-8 border border-white/10 backdrop-blur-2xl">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="bg-accent p-2 rounded-lg text-white shadow-lg"><MapPin className="w-5 h-5" /></div>
+              <h4 className="font-bold text-white tracking-tight">Centro de suministro</h4>
                     </div>
-                    <p className="font-bold text-xl mb-3">Centro Operativo Juárez</p>
-                    <p className="text-sm text-text-secondary leading-relaxed font-medium">Calle Nahoas 3139, Aztecas, Ciudad Juárez, MX</p>
-                    <button className="mt-8 text-accent font-bold text-sm hover:underline" onClick={() => window.open('https://www.google.com/maps/place/DICON/@31.6928315,-106.4823988,17z/data=!3m1!4b1!4m6!3m5!1s0x86e75f8fcecb5137:0xfa49371da445cda!8m2!3d31.692827!4d-106.4798239!16s%2Fg%2F11yqjk8gw7', '_blank')}>Obtener direcciones</button>
+                    <p className="text-gray-400 text-sm font-medium">Calle Nahoas 3139, Aztecas, Ciudad Juárez, MX</p>
                  </div>
               </div>
-            </div>
+            </motion.div>
 
             <div>
-              <span className="text-accent font-bold text-xs tracking-[4px] uppercase mb-6 block">CONECTA CON NOSOTROS</span>
-              <h2 className="text-5xl md:text-6xl font-extrabold mb-10 tracking-tighter text-gradient leading-tight">Expertos en Suministro</h2>
-              <p className="text-text-secondary mb-10 leading-relaxed font-medium">Contamos con almacén propio para responder a la velocidad de tu obra. En DICON, ser profesionales no es una opción, es nuestro estándar.</p>
+              <motion.span 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+              className="text-accent font-bold text-xs tracking-[6px] uppercase mb-8 block"
+              >
+                CONTACTO LOGÍSTICO
+              </motion.span>
+              <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-[-0.05em] leading-none text-white">
+                Conecta con <br/> el <span className="text-accent">Suministro.</span>
+              </h2>
               
-              <div className="space-y-10">
-                <div className="flex gap-6 items-start group">
-                  <div className="bg-accent/5 p-4 rounded-2xl text-accent border border-accent/10 group-hover:bg-accent group-hover:text-white transition-colors">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg mb-1">Línea Directa</h4>
-                    <p className="text-text-secondary font-medium">656 634 8189</p>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+                <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
+                  <div className="text-accent mb-4"><Phone className="w-6 h-6" /></div>
+                  <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Ventas</p>
+                  <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
                 </div>
-
-                <div className="flex gap-6 items-start group">
-                  <div className="bg-accent/5 p-4 rounded-2xl text-accent border border-accent/10 group-hover:bg-accent group-hover:text-white transition-colors">
-                    <MessageCircle className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg mb-1">WhatsApp Business</h4>
-                    <p className="text-text-secondary font-medium">+52 1 656 807 9485</p>
-                  </div>
+                <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
+                  <div className="text-accent mb-4"><MessageCircle className="w-6 h-6" /></div>
+                  <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">WhatsApp</p>
+                  <p className="text-white font-black text-xl uppercase italic">+52 1 656 807 9485</p>
                 </div>
+              </div>
 
-                <a href="https://www.facebook.com/diconjrz?locale=es_LA" target="_blank" rel="noopener noreferrer" className="flex gap-6 items-start group">
-                  <div className="bg-accent/5 p-4 rounded-2xl text-accent border border-accent/10 group-hover:bg-accent group-hover:text-white transition-colors">
-                    <Facebook className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg mb-1">Facebook Dicon</h4>
-                    <p className="text-text-secondary font-medium text-xs">Visita nuestra página</p>
-                  </div>
-                </a>
-
+              <div className="flex gap-6">
+                 <a href="https://www.facebook.com/diconjrz" target="_blank" className="bg-white/5 p-4 rounded-xl text-white hover:bg-accent transition-all"><Facebook /></a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section - Recommendation for further engagement */}
-      <section className="py-24 bg-bg">
+      {/* FAQ Section */}
+      <section className="py-24 md:py-40 bg-bg">
         <div className="section-container">
-          <div className="text-center mb-20">
-            <span className="text-accent font-bold text-xs tracking-[4px] uppercase mb-4 block">CENTRO DE AYUDA</span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">Dudas Frecuentes</h2>
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-8xl font-black tracking-[-0.05em] text-white">Preguntas frecuentes</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Puedo ir a recoger la mercancía?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">¡Claro que sí! Puedes visitarnos directamente en nuestro centro operativo para recoger tus materiales de forma inmediata y segura.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Tienen precio de mayoreo?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Claro, somos distribuidores directos. Entre más necesites, mejoramos el presupuesto para tu ferretería o constructora.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Cómo solicito una cotización?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Puedes agregar productos a tu lista en esta web y enviarla por WhatsApp, o llamarnos directamente.</p>
-            </div>
-            <div className="p-8 rounded-[32px] bg-card-bg/30 border border-white/5">
-              <h4 className="font-bold text-lg mb-3 text-accent uppercase">¿Aceptan pagos con tarjeta?</h4>
-              <p className="text-text-secondary text-sm leading-relaxed">Aceptamos transferencias, depósitos y pagos con tarjeta directamente en nuestro centro operativo.</p>
-            </div>
+
+          <div className="max-w-4xl mx-auto space-y-4">
+            {[
+              { q: "¿Tienen entrega a domicilio?", a: "Sí, contamos con flotilla propia para entregas en todo Ciudad Juárez y alrededores." },
+              { q: "¿Manejan precios de mayoreo?", a: "Absolutamente. Tenemos escalas de precios para ferreterías y constructoras según volumen." },
+              { q: "¿Los materiales son certificados?", a: "Solo trabajamos con marcas líderes y materiales que cumplen con todas las normas de calidad." },
+              { q: "¿Tienen tienda física?", a: "Contamos con nuestro centro de distribución donde puedes recoger materiales o ver muestras." }
+            ].map((faq, idx) => (
+              <motion.div 
+                key={idx}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={itemVariants}
+                className="glass-card border border-white/5 overflow-hidden"
+              >
+                <button 
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full p-8 flex items-center justify-between text-left group"
+                >
+                  <div className="flex items-center gap-6">
+                    <span className="text-accent font-black text-2xl group-hover:scale-125 transition-transform">{idx + 1}</span>
+                    <span className="text-lg md:text-2xl font-bold tracking-tight text-white">{faq.q}</span>
+                  </div>
+                  <ChevronDown className={`transition-transform duration-500 text-accent ${openFaq === idx ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {openFaq === idx && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="px-8 pb-8"
+                    >
+                      <p className="text-gray-400 font-medium italic border-l-2 border-accent pl-6 py-2">{faq.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-20 bg-bg border-t border-border">
-        <div className="section-container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-12">
-            <div className="flex flex-col items-center md:items-start gap-4">
-              <div className="flex items-center gap-3">
-                <img 
-                  src="/logo.png?v=2.5" 
-                  alt="DICON" 
-                  className="h-8 w-auto opacity-80"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }} 
-                />
-                <div className="text-2xl font-extrabold tracking-tighter text-text-primary">
-                  DI<span className="text-accent">CON</span>
-                </div>
-              </div>
-              <p className="text-text-secondary text-sm font-medium italic">"Cimientos sólidos para proyectos extraordinarios."</p>
+      <footer className="bg-bg py-24 border-t border-border">
+        <div className="section-container text-center">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-16 px-4">
+            <div className="flex items-center gap-4">
+              <img src="/logo.png" alt="DICON" className="h-10 w-auto" />
+              <span className="text-3xl font-black tracking-[-0.05em] text-white">Dicon <span className="text-accent">Juárez</span></span>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+              {navLinks.map(link => (
+                <a key={link.name} href={link.href} className="text-xs font-black uppercase tracking-[3px] text-white/50 hover:text-accent transition-colors">
+                  {link.name}
+                </a>
+              ))}
             </div>
 
-            <div className="text-right flex flex-col items-center md:items-end gap-2">
-              <div className="text-xs text-text-secondary font-medium">
-                Llámanos ahora: <span className="text-text-primary ml-2">+52 656 634 8189</span>
-              </div>
-              <div className="text-xs text-text-secondary font-medium">
-                Ubicación: <span className="text-text-primary ml-2">Ciudad Juárez, MX</span>
-              </div>
-            </div>
+            <p className="text-accent font-bold text-2xl tracking-tight">656 634 8189</p>
           </div>
-          <div className="mt-16 pt-8 border-t border-border text-center">
-            <p className="text-[10px] text-text-secondary uppercase tracking-[4px] font-bold opacity-30">
-              © 2026 DICON DISTRIBUIDORA
+
+          <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-[10px] text-gray-500 uppercase tracking-[6px] font-bold">
+              © 2026 DICON — Todos los derechos reservados
             </p>
-            <p className="text-text-secondary text-xs opacity-50 mt-4">
-              Sistema v2.5 - REVOLUCIÓN
-            </p>
-            {imageErrors.length > 0 && (
-              <p className="text-red-500 text-[10px] mt-2">
-                Errores detectados: {imageErrors.length} ({imageErrors.slice(0, 3).join(", ")})
-              </p>
-            )}
+            <div className="flex gap-10">
+               <span className="text-[10px] text-gray-500 uppercase tracking-[3px] font-bold cursor-pointer hover:text-accent">Dicon Juárez — Suministro industrial</span>
+            </div>
           </div>
         </div>
       </footer>
-      
-      {/* Marquee Animation */}
+
+      {/* Floating Cart Button (Mobile) */}
+      <AnimatePresence>
+        {cart.length > 0 && !isCartOpen && !activeModal && (
+          <motion.button
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsCartOpen(true)}
+            className="md:hidden fixed bottom-6 right-6 z-[60] h-16 px-6 bg-accent rounded-full flex items-center justify-center text-white shadow-[0_20px_50px_rgba(249,115,22,0.4)] border border-white/10"
+          >
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <ShoppingCart className="w-7 h-7" />
+                <span className="absolute -top-3 -right-3 bg-white text-accent w-6 h-6 rounded-full text-[10px] font-black flex items-center justify-center border-2 border-accent">
+                  {cart.length}
+                </span>
+              </div>
+              <span className="font-bold text-sm tracking-tight">Ver mi lista</span>
+            </div>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Marquee Animation Styles */}
       <style>{`
         @keyframes marquee {
           0% { transform: translate3d(0, 0, 0); }
@@ -1232,13 +1501,9 @@ export default function App() {
         }
         .animate-marquee-slow {
           animation: marquee 60s linear infinite;
-          backface-visibility: hidden;
-          perspective: 1000px;
         }
         .animate-marquee-fast {
           animation: marquee 40s linear infinite;
-          backface-visibility: hidden;
-          perspective: 1000px;
         }
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
