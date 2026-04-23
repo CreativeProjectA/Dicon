@@ -1542,58 +1542,66 @@ export default function App() {
               </div>
             </motion.div>
 
-            <div className="relative">
-              <motion.span 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-              className="text-accent font-bold text-xs tracking-[6px] uppercase mb-8 block"
-              >
-                CONTACTO LOGÍSTICO
-              </motion.span>
-              <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-[-0.05em] leading-none text-white">
-                Conecta con <br/> el <span className="text-accent">Suministro.</span>
-              </h2>
+            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+              <div className="flex-1">
+                <motion.span 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                className="text-accent font-bold text-xs tracking-[6px] uppercase mb-8 block"
+                >
+                  CONTACTO LOGÍSTICO
+                </motion.span>
+                <h2 className="text-5xl md:text-7xl lg:text-8xl font-black mb-12 tracking-[-0.05em] leading-tight text-white">
+                  Conecta con <br className="hidden sm:block"/> el <span className="text-accent">Suministro.</span>
+                </h2>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 relative z-10">
+                  <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
+                    <div className="text-accent mb-4"><Phone className="w-6 h-6" /></div>
+                    <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Ventas</p>
+                    <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
+                  </div>
+                  <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
+                    <div className="text-accent mb-4"><MessageCircle className="w-6 h-6" /></div>
+                    <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">WhatsApp</p>
+                    <p className="text-white font-black text-xl uppercase italic">+52 1 656 807 9485</p>
+                  </div>
+                </div>
 
-              {/* THE TRUCK - Now on the right side */}
+                <div className="flex gap-6">
+                   <a href="https://www.facebook.com/diconjrz" target="_blank" className="bg-white/5 p-4 rounded-xl text-white hover:bg-accent transition-all"><Facebook /></a>
+                </div>
+              </div>
+
+              {/* THE TRUCK - Now properly positioned in layout */}
               <motion.div
                 initial={{ x: 50, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 1, type: "spring" }}
                 animate={{ 
                   y: [0, -10, 0],
                 }}
                 transition={{ 
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                  default: { duration: 1 }
+                  delay: 0.3, 
+                  duration: 1, 
+                  type: "spring",
+                  y: { 
+                    duration: 4, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }
                 }}
-                className="hidden lg:block absolute -right-24 top-0 w-[400px] z-20 pointer-events-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                className="w-full max-w-[400px] lg:w-[400px] z-20 pointer-events-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
               >
                 <img 
                   src="/camion.png" 
-                  alt="Dicon" 
-                  className="w-full h-auto"
+                  alt="Dicon Truck" 
+                  className="w-full h-auto grayscale brightness-75 contrast-110"
+                  style={{ filter: 'grayscale(1) brightness(0.75)' }}
                   loading="lazy"
                   decoding="async"
                 />
               </motion.div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 relative z-10">
-                <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
-                  <div className="text-accent mb-4"><Phone className="w-6 h-6" /></div>
-                  <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Ventas</p>
-                  <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
-                </div>
-                <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
-                  <div className="text-accent mb-4"><MessageCircle className="w-6 h-6" /></div>
-                  <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">WhatsApp</p>
-                  <p className="text-white font-black text-xl uppercase italic">+52 1 656 807 9485</p>
-                </div>
-              </div>
-
-              <div className="flex gap-6">
-                 <a href="https://www.facebook.com/diconjrz" target="_blank" className="bg-white/5 p-4 rounded-xl text-white hover:bg-accent transition-all"><Facebook /></a>
-              </div>
             </div>
           </div>
         </div>
