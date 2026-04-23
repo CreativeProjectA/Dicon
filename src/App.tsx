@@ -153,7 +153,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
           {card.items}
         </p>
         <button 
-          onClick={() => window.open(`https://wa.me/5216563222670?text=${encodeURIComponent(card.msg)}`, '_blank')}
+          onClick={() => window.open(`https://wa.me/526566348189?text=${encodeURIComponent(card.msg)}`, '_blank')}
           className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
           Cotizar por WhatsApp
@@ -180,7 +180,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
         {card.items}
       </p>
       <button 
-        onClick={() => window.open(`https://wa.me/5216563222670?text=${encodeURIComponent(card.msg)}`, '_blank')}
+        onClick={() => window.open(`https://wa.me/526566348189?text=${encodeURIComponent(card.msg)}`, '_blank')}
         className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-sm"
       >
         Cotizar por WhatsApp
@@ -237,11 +237,11 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
           </div>
         )}
 
-        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform">
+        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
           <img 
             src={product.img} 
             alt={product.name}
-            className="w-full h-full object-contain" 
+            className="w-full h-full object-contain pointer-events-none" 
             loading="lazy"
             decoding="async"
           />
@@ -327,11 +327,11 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
         </div>
       )}
 
-      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform">
+      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
         <img 
           src={product.img} 
           alt={product.name}
-          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" 
+          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
           loading="lazy"
           decoding="async"
         />
@@ -440,9 +440,20 @@ export default function App() {
     };
   }, []);
 
-  const scrollToSection = (ref: { current: HTMLElement | null }) => {
+  useEffect(() => {
+    if (activeModal || isCartOpen || isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [activeModal, isCartOpen, isMenuOpen]);
+
+  const scrollToSection = useCallback((ref: { current: HTMLElement | null }) => {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  }, []);
 
   // Cart logic - Precision fix
   const getPrice = useCallback((item: any) => {
@@ -517,7 +528,7 @@ export default function App() {
     return encodeURIComponent(header + items + "\n\n" + subtotalStr + "\n" + ivaStr + "\n" + totalStr + footer);
   }, [cart, getPrice, totalCart]);
 
-  const whatsappUrl = `https://wa.me/5216563222670?text=${generateWhatsAppMessage()}`;
+  const whatsappUrl = `https://wa.me/526566348189?text=${generateWhatsAppMessage()}`;
 
   const CartContent = memo(() => {
     const regularTotal = useMemo(() => {
@@ -817,7 +828,7 @@ export default function App() {
               </a>
             ))}
             <a 
-              href="https://wa.me/5216568079485" 
+              href="https://wa.me/526566348189" 
               target="_blank" 
               className="bg-accent text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-orange-600 transition-all"
             >
@@ -870,7 +881,7 @@ export default function App() {
                   </motion.a>
                 ))}
                 <motion.a
-                  href="https://wa.me/5216568079485"
+                  href="https://wa.me/526566348189"
                   target="_blank"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -972,20 +983,20 @@ export default function App() {
       {/* Brands Marquee - GPU Accelerated */}
       <section id="marcas" className="py-24 border-y border-border overflow-hidden bg-[#0a0a0a] relative contain-paint">
         <div className="absolute inset-0 bg-accent/5 z-0 pointer-events-none" />
-        <div className="relative z-10">
-          <div className="flex animate-marquee-fast md:animate-marquee-slow whitespace-nowrap gap-20 items-center will-change-transform translate-x-0 force-gpu">
+        <div className="relative z-10 flex overflow-hidden">
+          <div className="flex animate-marquee-fast md:animate-marquee-slow whitespace-nowrap gap-20 items-center will-change-transform translate-x-0 force-gpu py-4">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
               <span 
                 key={i} 
-                className="text-2xl md:text-5xl font-black text-accent/20 hover:text-accent transition-all duration-500 cursor-default select-none tracking-tighter uppercase"
+                className="text-2xl md:text-5xl font-black text-accent/20 hover:text-accent transition-all duration-500 cursor-default select-none tracking-tighter uppercase backface-visibility-hidden"
               >
                 {brand}
               </span>
             ))}
           </div>
           {/* Fades */}
-          <div className="absolute inset-y-0 left-0 w-24 md:w-40 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10" />
+          <div className="absolute inset-y-0 left-0 w-24 md:w-60 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 md:w-60 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
         </div>
       </section>
 
@@ -1590,16 +1601,23 @@ export default function App() {
                 </h2>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 relative z-10">
-                  <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
-                    <div className="text-accent mb-4"><Phone className="w-6 h-6" /></div>
+                  <a 
+                    href="tel:526566348189"
+                    className="glass-card p-8 border border-white/5 hover:border-accent transition-colors block group"
+                  >
+                    <div className="text-accent mb-4 group-hover:scale-110 transition-transform"><Phone className="w-6 h-6" /></div>
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Ventas</p>
                     <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
-                  </div>
-                  <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
-                    <div className="text-accent mb-4"><MessageCircle className="w-6 h-6" /></div>
+                  </a>
+                  <a 
+                    href="https://wa.me/526566348189"
+                    target="_blank"
+                    className="glass-card p-8 border border-white/5 hover:border-accent transition-colors block group"
+                  >
+                    <div className="text-accent mb-4 group-hover:scale-110 transition-transform"><MessageCircle className="w-6 h-6" /></div>
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">WhatsApp</p>
-                    <p className="text-white font-black text-xl uppercase italic">+52 1 656 807 9485</p>
-                  </div>
+                    <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
+                  </a>
                 </div>
 
                 <div className="flex gap-6">
@@ -1744,7 +1762,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Marquee Animation Styles */}
+      {/* Marquee Animation Styles & Technical Cleanups */}
       <style>{`
         @keyframes marquee {
           0% { transform: translate3d(0, 0, 0); }
@@ -1754,7 +1772,7 @@ export default function App() {
           animation: marquee 60s linear infinite;
         }
         .animate-marquee-fast {
-          animation: marquee 40s linear infinite;
+          animation: marquee 30s linear infinite;
         }
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
@@ -1763,15 +1781,27 @@ export default function App() {
           background: rgba(255, 255, 255, 0.05);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: var(--color-accent);
+          background: #ff5722;
           border-radius: 10px;
         }
         section {
           content-visibility: auto;
-          contain-intrinsic-size: 1px 1000px;
+          contain-intrinsic-size: 10px 1000px;
         }
-        #inicio, nav {
+        #inicio, nav, header {
           content-visibility: visible;
+        }
+        .force-gpu {
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>
