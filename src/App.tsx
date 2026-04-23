@@ -53,7 +53,7 @@ const BRANDS = [
   "MAXIMO",
   "TRUPER",
   "AXEL",
-  "3B"
+  "ATLAS"
 ];
 
 const BRANDS_INDUSTRIAL = [
@@ -75,9 +75,9 @@ const INDUSTRIAL_CLIENTS = [
 
 const PUBLICO_PRODUCTS = {
   "Materiales de Construcción": [
-    { id: 2, name: "Cemento Chihuahua", price: 210, unit: "bulto", img: "/cemento.png", variants: ["50kg - Resistencia CPC 30R"] },
+    { id: 2, name: "Cemento Chihuahua", price: 210, unit: "bulto", img: "/cemento.png", variants: ["25kg - Resistencia CPC 30R"] },
     { id: 3, name: "Block de concreto", price: 12, unit: "pieza", img: "/block.png", variants: ["4\" (10x20x40cm)", "6\" (15x20x40cm)", "8\" (20x20x40cm)"] },
-    { id: 4, name: "Mortero Chuviscar", price: 95, unit: "bulto", img: "/mortero.png", variants: ["50kg - Alta adherencia"] },
+    { id: 4, name: "Mortero Chuviscar", price: 95, unit: "bulto", img: "/mortero.png", variants: ["25kg - Alta adherencia"] },
     { id: 5, name: "Yeso Máximo", price: 85, unit: "bulto", img: "/yeso.png", variants: ["40kg - Acabado extra fino"] },
     { id: 1, name: "Varilla corrugada", price: 180, unit: "pieza", img: "/varilla.png", variants: ["3/8\" (9.5mm) - 12m", "1/2\" (12.7mm) - 12m", "5/8\" (15.9mm) - 12m"] },
     { id: 6, name: "Castillo Armado", price: null, unit: "tramo", img: "/castillo.png", variants: ["15x15-4 (2.5m)", "15x20-4 (3.0m)"] },
@@ -93,7 +93,7 @@ const PUBLICO_PRODUCTS = {
   "Pintura y Recubrimientos": [
     { id: 50, name: "Impermeabilizante Axel", price: 320, unit: "cubeta", img: "/axel.png", variants: ["19L - 3 Años", "19L - 5 Años", "19L - 10 Años"] },
     { id: 51, name: "Pintura Tráfico", price: 280, unit: "cubeta", img: "/trafico.png", variants: ["19L - Amarillo Industrial", "19L - Blanco"] },
-    { id: 52, name: "Pega Azulejo 3B", price: 280, unit: "bulto", img: "/pega.png", variants: ["20kg - Piso sobre Piso", "20kg - Estándar"] },
+    { id: 52, name: "Pega Azulejo Atlas", price: 280, unit: "bulto", img: "/pega azulejo a.png", variants: ["20kg - Piso sobre Piso", "20kg - Estándar"] },
   ]
 };
 
