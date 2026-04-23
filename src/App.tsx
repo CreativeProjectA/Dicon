@@ -31,7 +31,8 @@ import {
   Trash2,
   ShoppingBag,
   Package,
-  ShoppingCart
+  ShoppingCart,
+  ExternalLink
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
 
@@ -561,8 +562,8 @@ export default function App() {
               <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">{cart.length} Artículos</p>
             </div>
           </div>
-          <button onClick={() => setIsCartOpen(false)} className="md:hidden text-white/50 hover:text-white p-2">
-            <ChevronDown className="w-6 h-6" />
+          <button onClick={() => setIsCartOpen(false)} className="text-white/50 hover:text-white p-2">
+            <X className="w-6 h-6" />
           </button>
         </div>
 
@@ -743,7 +744,7 @@ export default function App() {
     
   const smoothY = useSpring(scrollYProgress, springConfig);
 
-  // Parallax ranges - Much more subtle on Mobile (isLowPowerMode)
+  // Parallax ranges - Completely disabled on Mobile (isLowPowerMode) for zero lag
   const y1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -300]);
   const y2 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -500]);
   const rotate1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, 30]);
@@ -894,7 +895,7 @@ export default function App() {
       </nav>
 
       {/* Hero Section */}
-      <section id="inicio" className="hero-section relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg">
+      <section id="inicio" className="hero-section relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg contain-paint">
         {/* Glows */}
         <div className="main-glow" />
         <div className="secondary-glow" />
@@ -1136,7 +1137,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Story / History Section */}
-      <section id="historia" className="py-24 md:py-40 relative overflow-hidden bg-transparent">
+      <section id="historia" className="py-24 md:py-40 relative overflow-hidden bg-transparent contain-paint">
         {/* Glow behind centerpiece */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/10 blur-[120px] rounded-full pointer-events-none" />
         
@@ -1393,9 +1394,9 @@ export default function App() {
               </div>
             </header>
 
-            <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+            <div className="flex-1 flex flex-col overflow-hidden relative">
               {/* Columna Izquierda: Catálogo */}
-              <div className={`flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12 transition-all duration-500`}>
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12 transition-all duration-500">
                 <div className="max-w-[1400px] mx-auto">
                   <div className="mb-16">
                      <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
@@ -1491,26 +1492,50 @@ export default function App() {
                   )}
                 </div>
               </div>
-
-              {/* Columna Derecha: Carrito Drawer/Sidebar */}
-              {activeModal !== 'maquila' && (
-                <div 
-                  className={`
-                    fixed md:relative top-0 right-0 h-full z-[220] md:z-auto
-                    transition-all duration-500 ease-[0.25, 0.1, 0.25, 1]
-                    bg-bg border-l border-white/5
-                    ${isCartOpen 
-                      ? 'w-full md:w-[300px] lg:w-[380px] translate-x-0 opacity-100' 
-                      : 'w-full md:w-[300px] lg:w-[380px] translate-x-full md:translate-x-0 opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto'}
-                  `}
-                >
-                  <CartContent />
-                </div>
-              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* GLOBAL CART DRAWER */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <div className="fixed inset-0 z-[500] flex justify-end">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCartOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-[420px] h-full shadow-2xl"
+            >
+              <CartContent />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* FLOATING CART BUTTON */}
+      <div className="fixed bottom-8 right-8 z-[100] flex flex-col gap-4">
+        <motion.button 
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsCartOpen(true)}
+          className="bg-accent text-white w-16 h-16 rounded-full shadow-[0_15px_30px_rgba(255,87,34,0.4)] flex items-center justify-center relative border border-white/20 group overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+          <ShoppingBag className="w-7 h-7 relative z-10" />
+          <div className="absolute top-0 right-0 bg-white text-accent min-w-[24px] h-6 px-1 rounded-full text-xs font-black flex items-center justify-center border-2 border-accent shadow-lg">
+            {cart.length}
+          </div>
+        </motion.button>
+      </div>
 
       {/* Contact & Location */}
       <section id="contacto" className="py-24 md:py-40 relative bg-bg border-t border-border">
@@ -1538,6 +1563,14 @@ export default function App() {
                       <h4 className="font-bold text-white tracking-tight">Centro de suministro</h4>
                     </div>
                     <p className="text-gray-400 text-sm font-medium">Calle Nahoas 3139, Aztecas, Ciudad Juárez, MX</p>
+                    <a 
+                      href="https://maps.app.goo.gl/jPKDXjQPvvTWdYzf9" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mt-6 inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-orange-600 transition-all shadow-lg shadow-accent/20"
+                    >
+                      Ver en Google Maps <ExternalLink className="w-4 h-4" />
+                    </a>
                  </div>
               </div>
             </motion.div>
