@@ -136,14 +136,34 @@ html, body {
   will-change: transform;
 }
 
-/* Optimization for mobile and large lists */
-section, .product-grid-item {
+/* Optimization for mobile and large lists - EXTREME PASS */
+section, .product-grid-item, .glass-card {
   content-visibility: auto;
   contain-intrinsic-size: 1px 400px;
+  contain: layout style paint;
 }
 
 .hero-section {
   content-visibility: visible;
+  contain: none;
+}
+
+/* Hardware Acceleration Forces */
+.force-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+/* Smoother image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.image-render-auto {
+  image-rendering: auto;
 }
 
 ::selection {

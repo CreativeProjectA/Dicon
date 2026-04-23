@@ -236,7 +236,7 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
           </div>
         )}
 
-        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden">
+        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform">
           <img 
             src={product.img} 
             alt={product.name}
@@ -326,7 +326,7 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
         </div>
       )}
 
-      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden">
+      <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform">
         <img 
           src={product.img} 
           alt={product.name}
@@ -797,6 +797,7 @@ export default function App() {
               alt="DICON" 
               className="h-10 w-auto"
               loading="lazy"
+              decoding="async"
             />
             <div className="text-2xl font-black tracking-[-0.05em] text-white">
               Dicon
@@ -1175,6 +1176,7 @@ export default function App() {
                   src="/casco2.png" 
                   alt="Casco Pro DICON" 
                   loading="lazy"
+                  decoding="async"
                   className="w-[300px] md:w-[500px] grayscale brightness-90 drop-shadow-[0_20px_60px_rgba(255,87,34,0.2)]"
                 />
               </motion.div>
@@ -1210,56 +1212,45 @@ export default function App() {
       </section>
 
       {/* NUEVA SECCIÓN: ¿A QUIÉN LE SERVIMOS? */}
-      <section id="servicios" className="py-32 relative overflow-hidden bg-transparent contain-layout">
-        {/* Background Decorations - Cement Bag & Tools */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {!isLowPowerMode ? (
+      <section id="servicios" className="py-32 relative overflow-hidden bg-[#09090b] contain-layout">
+        {/* Background Decorations - Orange Glows & Parallax Objects */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
+          <div className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full opacity-50" />
+          <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full opacity-40" />
+          
+          {/* Parallax Objects - Optimized: ONLY Block for a clean, professional technical look */}
+          {!isLowPowerMode && (
             <>
-              <motion.img 
-                src="/mortero.png" 
-                alt="Saco de Cemento DICON"
-                loading="lazy"
-                className="absolute top-20 left-[-5%] w-72 md:w-[600px] rotate-12 opacity-15 blur-[1px] drop-shadow-2xl"
+              {/* Main Technical Element: Block */}
+              <motion.div 
+                style={{ y: y1, rotate: rotate1 }}
                 animate={{ 
-                  y: [0, 40, 0],
-                  rotate: [12, 10, 12],
-                  scale: [1, 1.02, 1]
+                  y: [0, -20, 0],
+                  filter: [
+                    "grayscale(1) brightness(0.4) contrast(1.2) blur(1px)",
+                    "grayscale(1) brightness(0.5) contrast(1.3) blur(1px)",
+                    "grayscale(1) brightness(0.4) contrast(1.2) blur(1px)"
+                  ]
                 }}
-                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <motion.img 
-                src="/block2.png" 
-                alt="Block de Concreto DICON"
-                loading="lazy"
-                className="absolute bottom-10 right-[-10%] w-64 md:w-[600px] -rotate-12 opacity-15 blur-[1px] drop-shadow-2xl"
-                animate={{ 
-                  y: [0, -50, 0],
-                  rotate: [-12, -8, -12],
-                  scale: [1, 1.05, 1]
+                transition={{ 
+                  duration: 10, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
                 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              />
-               <motion.img 
-                src="/block2.png" 
-                className="absolute top-1/2 right-[5%] w-40 opacity-5 grayscale"
-                animate={{ y: [0, 100, 0], rotate: [0, 360] }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              />
-            </>
-          ) : (
-            <>
-              <img 
-                src="/mortero.png" 
-                alt="Saco de Cemento DICON"
-                loading="lazy"
-                className="absolute top-20 left-[-5%] w-72 md:w-[400px] rotate-12 opacity-10"
-              />
-              <img 
-                src="/block2.png" 
-                alt="Block de Concreto DICON"
-                loading="lazy"
-                className="absolute bottom-10 right-[-10%] w-64 md:w-[400px] -rotate-12 opacity-10"
-              />
+                className="absolute top-[25%] left-[-5%] w-[400px] md:w-[600px] opacity-[0.15] pointer-events-none shadow-2xl will-change-transform transition-all"
+              >
+                <img 
+                  src="/block2.png" 
+                  alt="" 
+                  className="w-full h-auto"
+                  style={{ imageRendering: 'auto' }}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </motion.div>
+              
+              {/* Subtle light streak accentuates the industrial feel */}
+              <div className="absolute top-[30%] left-[10%] w-[1px] h-[400px] bg-gradient-to-b from-transparent via-accent/20 to-transparent rotate-[25deg] blur-sm opacity-30" />
             </>
           )}
         </div>
@@ -1347,7 +1338,7 @@ export default function App() {
               <span className="text-[10px] text-accent font-black tracking-[4px] uppercase mb-4 italic">MRO e Industrial</span>
               <h3 className="text-4xl font-black mb-6 tracking-[-0.05em] leading-none">Industria <br /> maquiladora</h3>
               <p className="text-sm text-text-secondary leading-relaxed mb-10 font-medium max-w-[280px]">
-                Suministro especializado manufactura avanzada con respuesta inmediata 24/7.
+                Mantenimiento, Reparación y Operaciones para manufactura avanzada con respuesta 24/7.
               </p>
               <div className="flex items-center gap-3 text-accent font-black text-xs uppercase tracking-[2px] group-hover:translate-x-2 transition-transform">
                 Área Industrial <ChevronRight className="w-4 h-4" />
@@ -1375,6 +1366,7 @@ export default function App() {
                   alt="DICON" 
                   className="h-8 w-auto" 
                   loading="lazy"
+                  decoding="async"
                 />
                 <span className="text-lg font-bold tracking-tight text-white border-l border-white/10 pl-4">
                   {`Catálogo — ${activeModal === 'publico' ? 'Público General' : activeModal === 'constructora' ? 'Constructoras' : 'Industria Maquiladora'}`}
@@ -1533,23 +1525,24 @@ export default function App() {
               <img 
                 src="/dicon_building.png" 
                 loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover grayscale transition-transform duration-1000 group-hover:scale-105"
                 alt="DICON Juárez"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-accent/10 group-hover:bg-transparent transition-colors" />
-              <div className="absolute inset-x-8 bottom-8">
+              <div className="absolute inset-x-8 bottom-8 z-30">
                  <div className="glass-card p-8 border border-white/10 backdrop-blur-2xl">
                     <div className="flex items-center gap-4 mb-4">
                       <div className="bg-accent p-2 rounded-lg text-white shadow-lg"><MapPin className="w-5 h-5" /></div>
-              <h4 className="font-bold text-white tracking-tight">Centro de suministro</h4>
+                      <h4 className="font-bold text-white tracking-tight">Centro de suministro</h4>
                     </div>
                     <p className="text-gray-400 text-sm font-medium">Calle Nahoas 3139, Aztecas, Ciudad Juárez, MX</p>
                  </div>
               </div>
             </motion.div>
 
-            <div>
+            <div className="relative">
               <motion.span 
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -1561,8 +1554,31 @@ export default function App() {
               <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-[-0.05em] leading-none text-white">
                 Conecta con <br/> el <span className="text-accent">Suministro.</span>
               </h2>
+
+              {/* THE TRUCK - Now on the right side */}
+              <motion.div
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 1, type: "spring" }}
+                animate={{ 
+                  y: [0, -10, 0],
+                }}
+                transition={{ 
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                  default: { duration: 1 }
+                }}
+                className="hidden lg:block absolute -right-24 top-0 w-[400px] z-20 pointer-events-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+              >
+                <img 
+                  src="/camion.png" 
+                  alt="Dicon" 
+                  className="w-full h-auto"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </motion.div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 relative z-10">
                 <div className="glass-card p-8 border border-white/5 hover:border-accent transition-colors">
                   <div className="text-accent mb-4"><Phone className="w-6 h-6" /></div>
                   <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Ventas</p>
@@ -1584,8 +1600,31 @@ export default function App() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 md:py-40 bg-bg">
-        <div className="section-container">
+      <section className="py-24 md:py-40 bg-[#0a0a0c] relative overflow-hidden contain-paint">
+        {/* Layered Technical Background for FAQ */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-[#09090b]" />
+          {/* Main animated glow */}
+          {!isLowPowerMode && (
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)]"
+            />
+          )}
+          {isLowPowerMode && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.05)_0%,transparent_70%)] opacity-50" />
+          )}
+          <div className="absolute top-0 left-0 w-full h-full opacity-[0.04] pointer-events-none" 
+               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
+          <div className="absolute -bottom-1/4 -right-1/4 w-[800px] h-[800px] bg-accent/10 blur-[180px] rounded-full opacity-30" />
+          <div className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-white/5 blur-[140px] rounded-full opacity-15" />
+        </div>
+        
+        <div className="section-container relative z-10">
           <div className="text-center mb-24">
             <h2 className="text-5xl md:text-8xl font-black tracking-[-0.05em] text-white">Preguntas frecuentes</h2>
           </div>
