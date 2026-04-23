@@ -761,7 +761,7 @@ const CartContent = memo(({
             </motion.div>
             <h2 className="text-6xl md:text-8xl font-black leading-none tracking-tighter uppercase italic">
               DICON <br />
-              <span className="text-accent underline decoration-white/10 underline-offset-8">Supply</span>
+              <span className="text-accent underline decoration-white/10 underline-offset-8">Industrial Supply</span>
             </h2>
           </div>
 
@@ -811,10 +811,10 @@ const CartContent = memo(({
                   </motion.div>
                 </div>
                 <button 
-                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área Profesional.")}`, '_blank')} 
+                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área de Dicon Industrial Supply.")}`, '_blank')} 
                   className="mt-12 group flex items-center gap-4 bg-accent text-white px-10 py-5 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-xl shadow-accent/20 active:scale-95"
                 >
-                  Solicitar Cotización Profesional <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                  Solicitar Cotización Dicon Supply <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </button>
               </motion.div>
               <motion.div 
@@ -1031,7 +1031,7 @@ const CartContent = memo(({
   const navLinks = [
     { name: 'Inicio', href: '#inicio' },
     { name: 'Catálogo', href: '#registro' },
-    { name: 'DICON Supply', href: '#industrial' },
+    { name: 'Dicon Supply', href: '#industrial' },
     { name: 'Ubicación', href: '#contacto' },
   ];
 
@@ -1416,7 +1416,7 @@ const CartContent = memo(({
                   decoding="async"
                 />
                 <span className="text-lg font-bold tracking-tight text-white border-l border-white/10 pl-4">
-                  {`Catálogo — ${customerInfo.type === 'Ferretería' ? 'Ferreterías' : customerInfo.type === 'Constructora' ? 'Constructoras' : customerInfo.type === 'Industria' ? 'Industria MRO' : 'Público General'}`}
+                  {`Catálogo — ${customerInfo.type === 'Público General' ? 'Público General' : 'Dicon Industrial Supply'}`}
                 </span>
               </div>
 
@@ -1576,10 +1576,10 @@ const CartContent = memo(({
                         </div>
                       </div>
 
-                      {/* Integrated supply Section */}
-                      <div>
+                      {/* Dicon Industrial Supply Section */}
+                      <div id="suministro-mro">
                         <div className="flex items-center gap-6 mb-8">
-                           <h3 className="text-2xl font-bold text-white tracking-tight">Suministro Profesional (MRO)</h3>
+                           <h3 className="text-2xl font-bold text-white tracking-tight">Dicon Industrial Supply (MRO)</h3>
                            <div className="flex-1 h-px bg-white/5" />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
