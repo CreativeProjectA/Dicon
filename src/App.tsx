@@ -39,7 +39,8 @@ import {
   Mail,
   Target,
   Eye,
-  Award
+  Award,
+  Search
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, memo } from "react";
 
@@ -158,7 +159,7 @@ const itemVariants = {
 const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
   if (isLowPowerMode) {
     return (
-      <div className="product-grid-item bg-white/[0.06] p-8 border border-white/[0.08] rounded-[24px] flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform">
+      <div className="product-grid-item bg-white/[0.06] p-8 border border-white/[0.08] rounded-[24px] flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform contain-paint antialiased">
         <div className="flex flex-col gap-4 mb-6">
           <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
             {card.icon || <Package className="w-6 h-6" />}
@@ -184,7 +185,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform"
+      className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform contain-paint backface-visibility-hidden"
     >
       <div className="flex flex-col gap-4 mb-6">
         <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
@@ -206,9 +207,11 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
   );
 });
 
+// Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
 const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
   const [selectedVariant, setSelectedVariant] = useState(product.variants ? product.variants[0] : null);
   const [qty, setQty] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const finalUnitPrice = useMemo(() => {
     if (!product.price) return null;
@@ -231,17 +234,19 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
     return product.constructorMode && qty >= 10 && product.price;
   }, [product.constructorMode, qty, product.price]);
 
-  // Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
   if (isLowPowerMode) {
     return (
-      <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform">
-        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
+      <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform contain-layout">
+        <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout antialiased">
+          <div className={`absolute inset-0 bg-accent/5 transition-opacity duration-1000 ${isLoaded ? 'opacity-0' : 'opacity-100'}`} />
           <img 
             src={product.img} 
             alt={product.name}
-            className="w-full h-full object-contain pointer-events-none" 
+            onLoad={() => setIsLoaded(true)}
+            className={`w-full h-full object-contain pointer-events-none transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`} 
             loading="lazy"
             decoding="async"
+            fetchPriority="low"
           />
         </div>
 
@@ -299,15 +304,18 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-20px" }}
-      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform"
+      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform contain-paint backface-visibility-hidden"
     >
       <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
+        <div className={`absolute inset-0 bg-accent/5 transition-opacity duration-1000 ${isLoaded ? 'opacity-0' : 'opacity-100'}`} />
         <img 
           src={product.img} 
           alt={product.name}
-          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 pointer-events-none" 
+          onLoad={() => setIsLoaded(true)}
+          className={`w-full h-full object-contain group-hover:scale-110 transition-all duration-700 pointer-events-none ${isLoaded ? 'opacity-100' : 'opacity-0'}`} 
           loading="lazy"
           decoding="async"
+          fetchPriority="low"
         />
       </div>
 
@@ -381,6 +389,30 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeModal, setActiveModal] = useState<null | 'publico' | 'constructora' | 'maquila'>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Search optimization - useMemo to prevent recalculating on every re-render
+  const filteredPublicProducts = useMemo(() => {
+    return Object.entries(PUBLICO_PRODUCTS).reduce((acc: any, [category, products]) => {
+      const filtered = (products as any[]).filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (p.variants && p.variants.some((v: string) => v.toLowerCase().includes(searchQuery.toLowerCase())))
+      );
+      if (filtered.length > 0) acc[category] = filtered;
+      return acc;
+    }, {});
+  }, [searchQuery]);
+
+  const filteredConstructoraProducts = useMemo(() => {
+    return Object.entries(CONSTRUCTORA_PRODUCTS).reduce((acc: any, [category, products]) => {
+      const filtered = (products as any[]).filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (p.variants && p.variants.some((v: string) => v.toLowerCase().includes(searchQuery.toLowerCase())))
+      );
+      if (filtered.length > 0) acc[category] = filtered;
+      return acc;
+    }, {});
+  }, [searchQuery]);
 
   const menudeoRef = useRef<HTMLElement>(null);
   const mayoreoRef = useRef<HTMLElement>(null);
@@ -488,17 +520,17 @@ const GlowSpheres = memo(({ isLowPowerMode, smoothY }: any) => {
   const glowY2 = useTransform(smoothY, [0, 1], ["10%", "-10%"]);
   
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden will-change-transform transform-gpu">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden will-change-transform transform-gpu perspective-[1000px]">
       {/* Central Moving Glow */}
       <motion.div 
-        style={{ y: glowY, translateZ: 0 }}
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-accent/10 blur-[180px] rounded-full"
+        style={{ y: glowY, translateZ: 1 }}
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-accent/10 blur-[180px] rounded-full will-change-transform"
       />
       <motion.div 
-        style={{ y: glowY2, translateZ: 0 }}
-        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full translate-x-1/4"
+        style={{ y: glowY2, translateZ: 1 }}
+        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full translate-x-1/4 will-change-transform"
       />
-      <div className="absolute inset-0 bg-[#080808]/40" />
+      <div className="absolute inset-0 bg-[#080808]/40 antialiased" />
     </div>
   );
 });
@@ -564,7 +596,7 @@ const CartContent = memo(({
               >
                 <div className="flex gap-5">
                   <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/[0.03] p-3 flex-shrink-0 flex items-center justify-center">
-                    <img src={item.img} className="w-full h-full object-contain" loading="lazy" decoding="async" />
+                    <img src={item.img} className="w-full h-full object-contain" loading="lazy" decoding="async" alt={item.name} />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
                     <div>
@@ -747,7 +779,7 @@ const CartContent = memo(({
 
   const IndustrialSection = () => {
     return (
-      <section id="industrial" className="py-32 relative bg-bg border-t border-white/5 overflow-hidden">
+      <section id="industrial" className="py-32 relative bg-bg border-t border-white/5 overflow-hidden" style={{ contentVisibility: 'auto' } as any}>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
         <div className="section-container relative z-10">
           <div className="text-center mb-24">
@@ -974,34 +1006,6 @@ const CartContent = memo(({
              </div>
           </div>
 
-          <div className="mt-32">
-             <div className="max-w-4xl mx-auto text-center">
-                <h3 className="text-3xl font-black uppercase tracking-tighter mb-12 italic">Nuestros Objetivos</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                  {[
-                    "Presencia sólida en el mercado con oferta competitiva.",
-                    "Entrega de proyectos en plazos establecidos con calidad.",
-                    "Materiales de primera sin comprometer precios accesibles.",
-                    "Excelencia en cada trabajo cumpliendo expectativas.",
-                    "Profesionalismo y compromiso total en nuestras labores."
-                  ].map((obj, i) => (
-                    <motion.div 
-                      key={i} 
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1 }}
-                      className="flex gap-4 items-start p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] transition-colors group"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 text-accent font-black text-xs group-hover:bg-accent group-hover:text-white transition-all">
-                        {i + 1}
-                      </div>
-                      <p className="text-white/60 text-xs font-bold leading-relaxed uppercase tracking-wider group-hover:text-white/90 transition-colors">{obj}</p>
-                    </motion.div>
-                  ))}
-                </div>
-             </div>
-          </div>
         </div>
       </section>
     );
@@ -1046,7 +1050,7 @@ const CartContent = memo(({
   return (
     <div className="min-h-screen bg-transparent text-text-primary overflow-x-hidden selection:bg-accent/30 font-sans antialiased">
       {/* Background - Replaces the mesh with solid deep black */}
-      <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none translate-z-0 will-change-transform" />
+      <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none translate-z-0 will-change-transform translate-x-0" />
       
       {GlowSpheresCall}
 
@@ -1061,9 +1065,9 @@ const CartContent = memo(({
             <img 
               src="/logo.png" 
               alt="DICON" 
-              className="h-10 w-auto"
-              loading="lazy"
+              className="h-10 w-auto" 
               decoding="async"
+              fetchPriority="high"
             />
             <div className="text-2xl font-black tracking-[-0.05em] text-white">
               Dicon
@@ -1172,7 +1176,7 @@ const CartContent = memo(({
       </nav>
 
       {/* Hero Section */}
-      <section id="inicio" className="hero-section relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg contain-paint">
+      <section id="inicio" className="hero-section relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 overflow-hidden bg-bg contain-paint" style={{ contentVisibility: 'auto' } as any}>
         {/* Glows */}
         <div className="main-glow" />
         <div className="secondary-glow" />
@@ -1346,7 +1350,7 @@ const CartContent = memo(({
       </section>
 
       {/* NUEVA SECCIÓN: ¿A QUIÉN LE SERVIMOS? */}
-      <section id="servicios" className="py-32 relative overflow-hidden bg-[#09090b] contain-layout">
+      <section id="servicios" className="py-32 relative overflow-hidden bg-[#09090b] contain-layout" style={{ contentVisibility: 'auto' } as any}>
         {/* Background Decorations - Orange Glows & Parallax Objects */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
           <div className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full opacity-50" />
@@ -1504,14 +1508,36 @@ const CartContent = memo(({
                      <p className="text-white/40 text-lg font-medium">Selecciona los materiales para tu próximo proyecto.</p>
                   </div>
 
+                  {/* SEARCH BAR */}
+                  <div className="mb-12 sticky top-0 md:top-[-10px] z-50 py-4 bg-black/50 backdrop-blur-md rounded-2xl">
+                    <div className="relative max-w-xl">
+                      <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-accent" />
+                      <input 
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Buscar productos (ej. cemento, pvc, block...)"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-16 pr-6 text-white placeholder:text-white/20 focus:border-accent outline-none transition-all shadow-xl"
+                      />
+                      {searchQuery && (
+                        <button 
+                          onClick={() => setSearchQuery("")}
+                          className="absolute right-6 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-full transition-colors"
+                        >
+                          <X className="w-4 h-4 text-white/40" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                   {/* MODAL 1 — PÚBLICO GENERAL */}
                   {activeModal === 'publico' && (
                     <div className="space-y-32 pb-40">
-                      {Object.entries(PUBLICO_PRODUCTS).map(([category, products]) => (
-                        <div key={category} id={category}>
+                      {Object.entries(filteredPublicProducts).map(([category, products]) => (
+                        <div key={category} id={category} style={{ contentVisibility: 'auto' } as any}>
                           <div className="flex items-center gap-6 mb-8">
-                             <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
-                             <div className="flex-1 h-px bg-white/5" />
+                               <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
+                               <div className="flex-1 h-px bg-white/5" />
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {(products as any[]).map((product) => (
@@ -1525,6 +1551,13 @@ const CartContent = memo(({
                           </div>
                         </div>
                       ))}
+                      {/* No results state */}
+                      {Object.keys(filteredPublicProducts).length === 0 && (
+                        <div className="text-center py-20">
+                          <Package className="w-16 h-16 text-white/5 mx-auto mb-6" />
+                          <p className="text-white/40 font-bold uppercase tracking-widest text-sm">No encontramos productos con ese nombre</p>
+                        </div>
+                      )}
 
                       {/* Herramientas y Ferretería Card */}
                       <div>
@@ -1544,11 +1577,11 @@ const CartContent = memo(({
                   {/* MODAL 2 — CONSTRUCTORAS & FERRETERIAS */}
                   {activeModal === 'constructora' && (
                     <div className="space-y-32 pb-40">
-                      {Object.entries(CONSTRUCTORA_PRODUCTS).map(([category, products]) => (
-                        <div key={category} id={category}>
+                      {Object.entries(filteredConstructoraProducts).map(([category, products]) => (
+                        <div key={category} id={category} style={{ contentVisibility: 'auto' } as any}>
                           <div className="flex items-center gap-6 mb-8">
-                             <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
-                             <div className="flex-1 h-px bg-white/5" />
+                               <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
+                               <div className="flex-1 h-px bg-white/5" />
                           </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {(products as any[]).map((product) => (
@@ -1562,6 +1595,13 @@ const CartContent = memo(({
                           </div>
                         </div>
                       ))}
+                      {/* No results state */}
+                      {Object.keys(filteredConstructoraProducts).length === 0 && (
+                        <div className="text-center py-20">
+                          <Package className="w-16 h-16 text-white/5 mx-auto mb-6" />
+                          <p className="text-white/40 font-bold uppercase tracking-widest text-sm">No encontramos productos con ese nombre</p>
+                        </div>
+                      )}
 
                       {/* Constructor Quote Cards */}
                       <div>
