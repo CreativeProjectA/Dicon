@@ -1606,39 +1606,10 @@ export default function App() {
                    <a href="https://www.facebook.com/diconjrz" target="_blank" className="bg-white/5 p-4 rounded-xl text-white hover:bg-accent transition-all"><Facebook /></a>
                 </div>
               </div>
-
-              {/* THE TRUCK - Now properly positioned in layout */}
-              <motion.div
-                initial={{ x: 50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
-                animate={{ 
-                  y: [0, -10, 0],
-                }}
-                transition={{ 
-                  delay: 0.3, 
-                  duration: 1, 
-                  type: "spring",
-                  y: { 
-                    duration: 4, 
-                    repeat: Infinity, 
-                    ease: "easeInOut" 
-                  }
-                }}
-                className="w-full max-w-[400px] lg:w-[400px] z-20 pointer-events-none drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
-              >
-                <img 
-                  src="/camion.png" 
-                  alt="Dicon Truck" 
-                  className="w-full h-auto grayscale brightness-75 contrast-110"
-                  style={{ filter: 'grayscale(1) brightness(0.75)' }}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
+             </div>
+           </div>
+         </div>
+       </section>
 
       {/* FAQ Section */}
       <section className="py-24 md:py-40 bg-[#0a0a0c] relative overflow-hidden contain-paint">
@@ -1794,6 +1765,13 @@ export default function App() {
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: var(--color-accent);
           border-radius: 10px;
+        }
+        section {
+          content-visibility: auto;
+          contain-intrinsic-size: 1px 1000px;
+        }
+        #inicio, nav {
+          content-visibility: visible;
         }
       `}</style>
     </div>
