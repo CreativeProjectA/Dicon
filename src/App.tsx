@@ -153,7 +153,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
           {card.items}
         </p>
         <button 
-          onClick={() => window.open(`https://wa.me/526566348189?text=${encodeURIComponent(card.msg)}`, '_blank')}
+          onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(card.msg)}`, '_blank')}
           className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
           Cotizar por WhatsApp
@@ -180,7 +180,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
         {card.items}
       </p>
       <button 
-        onClick={() => window.open(`https://wa.me/526566348189?text=${encodeURIComponent(card.msg)}`, '_blank')}
+        onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(card.msg)}`, '_blank')}
         className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-sm"
       >
         Cotizar por WhatsApp
@@ -528,7 +528,7 @@ export default function App() {
     return encodeURIComponent(header + items + "\n\n" + subtotalStr + "\n" + ivaStr + "\n" + totalStr + footer);
   }, [cart, getPrice, totalCart]);
 
-  const whatsappUrl = `https://wa.me/526566348189?text=${generateWhatsAppMessage()}`;
+  const whatsappUrl = `https://wa.me/5216568079485?text=${generateWhatsAppMessage()}`;
 
   const CartContent = memo(() => {
     const regularTotal = useMemo(() => {
@@ -828,7 +828,7 @@ export default function App() {
               </a>
             ))}
             <a 
-              href="https://wa.me/526566348189" 
+              href="https://wa.me/5216568079485" 
               target="_blank" 
               className="bg-accent text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-orange-600 transition-all"
             >
@@ -881,7 +881,7 @@ export default function App() {
                   </motion.a>
                 ))}
                 <motion.a
-                  href="https://wa.me/526566348189"
+                  href="https://wa.me/5216568079485"
                   target="_blank"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -1126,24 +1126,6 @@ export default function App() {
               </div>
             </motion.div>
           </div>
-        )}
-      </AnimatePresence>
-
-      {/* Floating Cart Button (Mobile Shortcut) */}
-      <AnimatePresence>
-        {cart.length > 0 && !isCartOpen && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            onClick={() => setIsCartOpen(true)}
-            className="fixed bottom-10 right-10 z-[80] bg-accent text-white w-20 h-20 rounded-full flex items-center justify-center shadow-2xl shadow-accent/40 border-4 border-bg lg:hidden"
-          >
-            <Box className="w-8 h-8" />
-            <span className="absolute -top-1 -right-1 bg-white text-accent font-black text-xs w-6 h-6 rounded-full flex items-center justify-center border-2 border-accent">
-              {cart.length}
-            </span>
-          </motion.button>
         )}
       </AnimatePresence>
 
@@ -1533,7 +1515,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* FLOATING CART BUTTON */}
-      <div className="fixed bottom-8 right-8 z-[100] flex flex-col gap-4">
+      <div className="fixed bottom-6 right-6 z-[999] flex flex-col gap-4">
         <motion.button 
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -1602,21 +1584,21 @@ export default function App() {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 relative z-10">
                   <a 
-                    href="tel:526566348189"
+                    href="tel:+5216568079485"
                     className="glass-card p-8 border border-white/5 hover:border-accent transition-colors block group"
                   >
                     <div className="text-accent mb-4 group-hover:scale-110 transition-transform"><Phone className="w-6 h-6" /></div>
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Ventas</p>
-                    <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
+                    <p className="text-white font-black text-xl uppercase italic">+52 1 656 807 9485</p>
                   </a>
                   <a 
-                    href="https://wa.me/526566348189"
+                    href="https://wa.me/5216568079485"
                     target="_blank"
                     className="glass-card p-8 border border-white/5 hover:border-accent transition-colors block group"
                   >
                     <div className="text-accent mb-4 group-hover:scale-110 transition-transform"><MessageCircle className="w-6 h-6" /></div>
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">WhatsApp</p>
-                    <p className="text-white font-black text-xl uppercase italic">656 634 8189</p>
+                    <p className="text-white font-black text-xl uppercase italic">+52 1 656 807 9485</p>
                   </a>
                 </div>
 
@@ -1724,7 +1706,7 @@ export default function App() {
               ))}
             </div>
 
-            <p className="text-accent font-bold text-2xl tracking-tight">656 634 8189</p>
+            <p className="text-accent font-bold text-2xl tracking-tight">+52 1 656 807 9485</p>
           </div>
 
           <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
@@ -1737,30 +1719,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Floating Cart Button (Mobile) */}
-      <AnimatePresence>
-        {cart.length > 0 && !isCartOpen && !activeModal && (
-          <motion.button
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsCartOpen(true)}
-            className="md:hidden fixed bottom-6 right-6 z-[60] h-16 px-6 bg-accent rounded-full flex items-center justify-center text-white shadow-[0_20px_50px_rgba(249,115,22,0.4)] border border-white/10"
-          >
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <ShoppingCart className="w-7 h-7" />
-                <span className="absolute -top-3 -right-3 bg-white text-accent w-6 h-6 rounded-full text-[10px] font-black flex items-center justify-center border-2 border-accent">
-                  {cart.length}
-                </span>
-              </div>
-              <span className="font-bold text-sm tracking-tight">Ver mi lista</span>
-            </div>
-          </motion.button>
-        )}
-      </AnimatePresence>
 
       {/* Marquee Animation Styles & Technical Cleanups */}
       <style>{`
