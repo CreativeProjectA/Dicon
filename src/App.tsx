@@ -158,7 +158,7 @@ const itemVariants = {
 const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
   if (isLowPowerMode) {
     return (
-      <div className="product-grid-item bg-white/[0.06] p-8 border border-white/[0.08] rounded-[24px] flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm">
+      <div className="product-grid-item bg-white/[0.06] p-8 border border-white/[0.08] rounded-[24px] flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform">
         <div className="flex flex-col gap-4 mb-6">
           <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
             {card.icon || <Package className="w-6 h-6" />}
@@ -184,7 +184,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm"
+      className="glass-card p-8 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col min-h-[300px] relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform"
     >
       <div className="flex flex-col gap-4 mb-6">
         <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
@@ -232,10 +232,9 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
   }, [product.constructorMode, qty, product.price]);
 
   // Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
-  // Optimización extrema: Bypass de Framer Motion en móvil para el catálogo
   if (isLowPowerMode) {
     return (
-      <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm">
+      <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform">
         <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
           <img 
             src={product.img} 
@@ -300,7 +299,7 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-20px" }}
-      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm"
+      className="glass-card p-6 border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] group flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform"
     >
       <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
         <img 
@@ -479,124 +478,156 @@ export default function App() {
 
   const whatsappUrl = `https://wa.me/5216568079485?text=${generateWhatsAppMessage()}`;
 
-  const CartContent = memo(() => {
-    return (
-      <div className="flex flex-col h-full bg-[#000] text-white">
-        <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/50 backdrop-blur-xl sticky top-0 z-30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold tracking-tight">Mi Lista</h3>
-              <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">{cart.length} Artículos</p>
+// Helper components to avoid lag on mobile
+const GlowSpheres = memo(({ isLowPowerMode, smoothY }: any) => {
+  // Disable on low power/mobile for absolute zero lag
+  if (isLowPowerMode) return null;
+
+  // Parallax movement for the orange glow
+  const glowY = useTransform(smoothY, [0, 1], ["-20%", "20%"]);
+  const glowY2 = useTransform(smoothY, [0, 1], ["10%", "-10%"]);
+  
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden will-change-transform transform-gpu">
+      {/* Central Moving Glow */}
+      <motion.div 
+        style={{ y: glowY, translateZ: 0 }}
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-accent/10 blur-[180px] rounded-full"
+      />
+      <motion.div 
+        style={{ y: glowY2, translateZ: 0 }}
+        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full translate-x-1/4"
+      />
+      <div className="absolute inset-0 bg-[#080808]/40" />
+    </div>
+  );
+});
+
+const CartContent = memo(({ 
+  cart, 
+  customerInfo, 
+  setIsCartOpen, 
+  removeFromCart, 
+  updateQuantity, 
+  whatsappUrl 
+}: any) => {
+  return (
+    <div className="flex flex-col h-full bg-[#000] text-white overflow-hidden transform-gpu">
+      <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/80 backdrop-blur-xl sticky top-0 z-30">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+            <ShoppingBag className="w-5 h-5 text-accent" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold tracking-tight">Mi Lista</h3>
+            <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">{cart.length} Artículos</p>
+          </div>
+        </div>
+        <button onClick={() => setIsCartOpen(false)} className="text-white/50 hover:text-white p-2">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black will-change-scroll">
+        {cart.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-8 px-10">
+            <motion.div
+              animate={{ 
+                y: [0, -12, 0],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{ 
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="w-24 h-24 rounded-[32px] bg-white/[0.02] flex items-center justify-center text-white/10 border border-white/[0.05] shadow-2xl"
+            >
+              <Package className="w-12 h-12" />
+            </motion.div>
+            <div className="space-y-2">
+              <p className="text-xl font-bold tracking-tight text-white">Tu lista está vacía</p>
+              <p className="text-sm font-medium text-white/30 leading-relaxed max-w-[200px] mx-auto">
+                Agrega productos de nuestro catálogo para generar una cotización.
+              </p>
             </div>
           </div>
-          <button onClick={() => setIsCartOpen(false)} className="text-white/50 hover:text-white p-2">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black">
-          {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-8 px-10">
-              <motion.div
-                animate={{ 
-                  y: [0, -12, 0],
-                  rotate: [0, 5, -5, 0]
-                }}
-                transition={{ 
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-                className="w-24 h-24 rounded-[32px] bg-white/[0.02] flex items-center justify-center text-white/10 border border-white/[0.05] shadow-2xl"
+        ) : (
+          <div className="space-y-4">
+            {cart.map((item: any) => (
+              <motion.div 
+                key={item.cartItemId} 
+                layout="position"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/[0.03] p-5 rounded-[24px] border border-white/[0.06] relative group overflow-hidden hover:bg-white/[0.05] transition-colors will-change-transform"
               >
-                <Package className="w-12 h-12" />
-              </motion.div>
-              <div className="space-y-2">
-                <p className="text-xl font-bold tracking-tight text-white">Tu lista está vacía</p>
-                <p className="text-sm font-medium text-white/30 leading-relaxed max-w-[200px] mx-auto">
-                  Agrega productos de nuestro catálogo para generar una cotización.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {cart.map((item) => (
-                <motion.div 
-                  key={item.cartItemId} 
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white/[0.03] p-5 rounded-[24px] border border-white/[0.06] relative group overflow-hidden hover:bg-white/[0.05] transition-colors will-change-transform"
-                >
-                  <div className="flex gap-5">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/[0.03] p-3 flex-shrink-0 flex items-center justify-center">
-                      <img src={item.img} className="w-full h-full object-contain" loading="lazy" />
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
-                      <div>
-                        <div className="flex justify-between items-start mb-1">
-                          <div className="min-w-0 flex-1">
-                            <p className="font-bold text-sm tracking-tight truncate text-white uppercase">{item.name}</p>
-                            {item.selectedVariant && <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mt-0.5">{item.selectedVariant}</p>}
-                          </div>
-                          <button onClick={() => removeFromCart(item.cartItemId)} className="text-white/20 hover:text-red-400 transition-colors p-1 ml-2">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                <div className="flex gap-5">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/[0.03] p-3 flex-shrink-0 flex items-center justify-center">
+                    <img src={item.img} className="w-full h-full object-contain" loading="lazy" decoding="async" />
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                    <div>
+                      <div className="flex justify-between items-start mb-1">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-sm tracking-tight truncate text-white uppercase">{item.name}</p>
+                          {item.selectedVariant && <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mt-0.5">{item.selectedVariant}</p>}
                         </div>
-                        
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] text-accent font-black uppercase tracking-[2px]">Disponible para Cotizar</span>
-                        </div>
+                        <button onClick={() => removeFromCart(item.cartItemId)} className="text-white/20 hover:text-red-400 transition-colors p-1 ml-2">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-[10px] text-accent font-black uppercase tracking-[2px]">Disponible para Cotizar</span>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.04]">
-                    <div className="flex items-center bg-white/[0.03] rounded-full p-1 border border-white/[0.05]">
-                      <button onClick={() => updateQuantity(item.cartItemId, -1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Minus className="w-3 h-3"/></button>
-                      <span className="w-8 text-center text-xs font-black tracking-tighter">{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.cartItemId, 1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Plus className="w-3 h-3"/></button>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest leading-none mb-1">Estatus</p>
-                      <p className="text-sm font-black tracking-widest text-accent uppercase">A COTIZAR</p>
-                    </div>
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.04]">
+                  <div className="flex items-center bg-white/[0.03] rounded-full p-1 border border-white/[0.05]">
+                    <button onClick={() => updateQuantity(item.cartItemId, -1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Minus className="w-3 h-3"/></button>
+                    <span className="w-8 text-center text-xs font-black tracking-tighter">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.cartItemId, 1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Plus className="w-3 h-3"/></button>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="p-8 border-t border-white/10 bg-[#050505] shadow-[0_-20px_40px_rgba(0,0,0,0.4)] relative z-30">
-          <div className="mb-8">
-             <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-               <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20 mb-3">Información de Solicitante</p>
-               <p className="text-sm font-bold text-white tracking-tight">{customerInfo.name || 'Invitado'}</p>
-               {customerInfo.companyName && <p className="text-xs text-white/60 font-medium mt-1">{customerInfo.companyName}</p>}
-               <p className="text-[10px] text-accent font-black uppercase tracking-[2px] mt-1">{customerInfo.type}</p>
-             </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest leading-none mb-1">Estatus</p>
+                    <p className="text-sm font-black tracking-widest text-accent uppercase">A COTIZAR</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-          
-          <motion.a 
-            href={whatsappUrl}
-            target="_blank"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-accent text-white py-5 rounded-2xl font-black text-sm tracking-[0.1em] uppercase hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(255,87,34,0.3)] group"
-          >
-            SOLICITAR COTIZACIÓN <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </motion.a>
-          <p className="text-center text-[9px] text-white/20 font-bold uppercase tracking-widest mt-6">
-            Te responderemos vía WhatsApp en minutos
-          </p>
-        </div>
+        )}
       </div>
-    );
-  });
+
+      <div className="p-8 border-t border-white/10 bg-[#050505] shadow-[0_-20px_40px_rgba(0,0,0,0.4)] relative z-30">
+        <div className="mb-8">
+           <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+             <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20 mb-3">Información de Solicitante</p>
+             <p className="text-sm font-bold text-white tracking-tight">{customerInfo.name || 'Invitado'}</p>
+             {customerInfo.companyName && <p className="text-xs text-white/60 font-medium mt-1">{customerInfo.companyName}</p>}
+             <p className="text-[10px] text-accent font-black uppercase tracking-[2px] mt-1">{customerInfo.type}</p>
+           </div>
+        </div>
+        
+        <motion.a 
+          href={whatsappUrl}
+          target="_blank"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full bg-accent text-white py-5 rounded-2xl font-black text-sm tracking-[0.1em] uppercase hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(255,87,34,0.3)] group"
+        >
+          SOLICITAR COTIZACIÓN <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </motion.a>
+        <p className="text-center text-[9px] text-white/20 font-bold uppercase tracking-widest mt-6">
+          Te responderemos vía WhatsApp en minutos
+        </p>
+      </div>
+    </div>
+  );
+});
 
   // Advanced Scroll Parallax Hook - Optimized and Subtler on Mobile
   const { scrollYProgress } = useScroll();
@@ -608,29 +639,7 @@ export default function App() {
 
   const smoothY = useSpring(scrollYProgress, springConfig);
 
-  const GlowSpheres = () => {
-    // Disable on low power/mobile for absolute zero lag
-    if (isLowPowerMode) return null;
-
-    // Parallax movement for the orange glow
-    const glowY = useTransform(smoothY, [0, 1], ["-20%", "20%"]);
-    const glowY2 = useTransform(smoothY, [0, 1], ["10%", "-10%"]);
-    
-    return (
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden will-change-transform">
-        {/* Central Moving Glow */}
-        <motion.div 
-          style={{ y: glowY, translateZ: 0 }}
-          className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-accent/10 blur-[180px] rounded-full"
-        />
-        <motion.div 
-          style={{ y: glowY2, translateZ: 0 }}
-          className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full translate-x-1/4"
-        />
-        <div className="absolute inset-0 bg-[#080808]/40" />
-      </div>
-    );
-  };
+  const GlowSpheresCall = <GlowSpheres isLowPowerMode={isLowPowerMode} smoothY={smoothY} />;
     
   const RegistrationForm = () => {
     const [name, setName] = useState(customerInfo.name);
@@ -646,7 +655,7 @@ export default function App() {
       // Lógica de redirección basada en el tipo de cliente
       if (type === 'Público General') {
         setActiveModal('publico');
-      } else if (type === 'Ferretería' || type === 'Constructora') {
+      } else {
         setActiveModal('constructora');
       }
     };
@@ -704,17 +713,17 @@ export default function App() {
 
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Tipo de Cliente</label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     {['Público General', 'Ferretería', 'Constructora'].map((t) => (
                       <button
                         key={t}
                         type="button"
                         onClick={() => setType(t)}
-                        className={`px-4 py-4 rounded-xl text-center font-bold text-[10px] uppercase tracking-widest border transition-all ${
+                        className={`px-2 py-4 rounded-xl text-center font-bold text-[9px] uppercase tracking-widest border transition-all ${
                           type === t 
                             ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20' 
                             : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'
-                        } ${t === 'Constructora' ? 'col-span-1' : ''}`}
+                        }`}
                       >
                         {t}
                       </button>
@@ -752,7 +761,7 @@ export default function App() {
             </motion.div>
             <h2 className="text-6xl md:text-8xl font-black leading-none tracking-tighter uppercase italic">
               DICON <br />
-              <span className="text-accent underline decoration-white/10 underline-offset-8">Industrial</span> Supply
+              <span className="text-accent underline decoration-white/10 underline-offset-8">Supply</span>
             </h2>
           </div>
 
@@ -801,8 +810,11 @@ export default function App() {
                     </ul>
                   </motion.div>
                 </div>
-                <button onClick={() => setActiveModal('maquila')} className="mt-12 group flex items-center gap-4 bg-accent text-white px-10 py-5 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-xl shadow-accent/20 active:scale-95">
-                  Solicitar Cotización Industrial <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                <button 
+                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área Profesional.")}`, '_blank')} 
+                  className="mt-12 group flex items-center gap-4 bg-accent text-white px-10 py-5 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-xl shadow-accent/20 active:scale-95"
+                >
+                  Solicitar Cotización Profesional <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </button>
               </motion.div>
               <motion.div 
@@ -880,7 +892,10 @@ export default function App() {
                      </li>
                    ))}
                  </ul>
-                 <button onClick={() => setActiveModal('maquila')} className="mt-auto text-accent font-black text-[10px] uppercase tracking-[3px] flex items-center gap-2 hover:opacity-80 transition-all group/btn">
+                                   <button 
+                    onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(`Hola DICON, me interesa cotizar para el área Industrial: ${group.title}.`)}`, '_blank')} 
+                    className="mt-auto text-accent font-black text-[10px] uppercase tracking-[3px] flex items-center gap-2 hover:opacity-80 transition-all group/btn"
+                  >
                    Solicitar cotización <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
                  </button>
               </motion.div>
@@ -1033,7 +1048,7 @@ export default function App() {
       {/* Background - Replaces the mesh with solid deep black */}
       <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none translate-z-0 will-change-transform" />
       
-      <GlowSpheres />
+      {GlowSpheresCall}
 
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-[#080808]/80 backdrop-blur-md border-b border-white/5 py-4" : "bg-transparent py-8"}`}>
@@ -1064,7 +1079,7 @@ export default function App() {
                 onClick={(e) => {
                   if (link.name === 'Catálogo' && isRegistered) {
                     e.preventDefault();
-                    setActiveModal('general');
+                    setActiveModal(customerInfo.type === 'Público General' ? 'publico' : 'constructora');
                   }
                 }}
                 className="text-[10px] uppercase tracking-[4px] font-black transition-colors hover:text-accent text-white/40"
@@ -1123,7 +1138,7 @@ export default function App() {
                       setIsMenuOpen(false);
                       if (link.name === 'Catálogo' && isRegistered) {
                         e.preventDefault();
-                        setActiveModal('general');
+                        setActiveModal(customerInfo.type === 'Público General' ? 'publico' : 'constructora');
                       }
                     }}
                     className="text-5xl font-black text-white tracking-tighter hover:text-accent transition-colors italic uppercase shadow-sm"
@@ -1253,153 +1268,6 @@ export default function App() {
           <div className="absolute inset-y-0 right-0 w-24 md:w-60 bg-gradient-to-l from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
         </div>
       </section>
-
-      {/* Quotation Cart Slide-over */}
-      <AnimatePresence>
-        {isCartOpen && (
-          <div className="fixed inset-0 z-[100] flex justify-end">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-bg/80 backdrop-blur-sm" 
-              onClick={() => setIsCartOpen(false)} 
-            />
-            <motion.div 
-              initial={{ x: "100%" }} 
-              animate={{ x: 0 }} 
-              exit={{ x: "100%" }} 
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative bg-card-bg w-full max-w-md h-full shadow-[-20px_0_50px_rgba(0,0,0,0.5)] border-l border-border flex flex-col"
-            >
-              <div className="p-8 border-b border-border flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold tracking-tight">Mi Lista</h3>
-                  <p className="text-white/50 text-sm font-medium">{cart.length} materiales seleccionados</p>
-                </div>
-                <button onClick={() => setIsCartOpen(false)} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                {cart.length > 0 && (
-                  <div className="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4 mb-8">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-accent">Datos del Cliente</p>
-                    <div className="space-y-3">
-                      <input 
-                        type="text" 
-                        placeholder="Tu Nombre Completo"
-                        value={customerInfo.name}
-                        onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent focus:outline-none transition-colors"
-                      />
-                      <select 
-                        value={customerInfo.type}
-                        onChange={(e) => setCustomerInfo({...customerInfo, type: e.target.value})}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-accent focus:outline-none transition-colors appearance-none"
-                      >
-                        <option value="Público General" className="bg-black">Público General</option>
-                        <option value="Ferretería" className="bg-black">Ferretería</option>
-                        <option value="Constructora" className="bg-black">Constructora</option>
-                        <option value="Industria" className="bg-black">Industria</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-                {cart.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
-                    <Box className="w-20 h-20 mb-6" />
-                    <p className="text-xl font-bold tracking-tight">Tu lista está vacía</p>
-                    <p className="text-sm mt-2">Agrega productos desde el catálogo para cotizar.</p>
-                  </div>
-                ) : (
-                  <>
-                    {cart.map((item) => {
-                      const finalPrice = null;
-                      return (
-                        <motion.div 
-                          key={item.cartItemId} 
-                          layout
-                          className="flex gap-4 items-center bg-bg/40 p-5 rounded-2xl border border-border/50 group relative"
-                        >
-                          <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                            <img 
-                              src={item.img} 
-                              alt={item.name} 
-                              className="w-full h-full object-cover" 
-                              loading="lazy"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex justify-between items-start">
-                              <p className="font-bold text-sm uppercase tracking-tight leading-none mb-1 truncate pr-2">{item.name}</p>
-                              <button 
-                                onClick={() => removeFromCart(item.cartItemId)}
-                                className="p-1 text-text-secondary/50 hover:text-red-500 transition-colors"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                            
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-white/40 font-black text-[10px] uppercase tracking-[4px]">
-                                Disponible para cotización
-                              </span>
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center bg-white/5 border border-white/10 rounded-lg p-1">
-                                <button 
-                                  onClick={() => updateQuantity(item.cartItemId, -1)}
-                                  className="w-6 h-6 flex items-center justify-center text-text-secondary hover:text-accent transition-colors"
-                                >
-                                  <Minus className="w-3 h-3" />
-                                </button>
-                                <motion.span 
-                                  key={item.quantity}
-                                  initial={{ y: -5, opacity: 0 }}
-                                  animate={{ y: 0, opacity: 1 }}
-                                  className="w-6 text-center text-xs font-black"
-                                >
-                                  {item.quantity}
-                                </motion.span>
-                                <button 
-                                  onClick={() => updateQuantity(item.cartItemId, 1)}
-                                  className="w-6 h-6 flex items-center justify-center text-text-secondary hover:text-accent transition-colors"
-                                >
-                                  <Plus className="w-3 h-3" />
-                                </button>
-                              </div>
-                              <p className="text-xs font-black text-accent uppercase tracking-widest">
-                                A cotizar
-                              </p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </>
-                )}
-              </div>
-
-              <div className="p-8 border-t border-border bg-bg/50">
-                {cart.length > 0 && (
-                  <div className="space-y-4">
-                    <a 
-                      href={whatsappUrl}
-                      target="_blank"
-                      className="bg-[#FF5722] text-white w-full py-6 rounded-2xl font-black text-lg shadow-[0_20px_40px_rgba(255,87,34,0.3)] hover:bg-orange-600 transition-all flex items-center justify-center gap-3"
-                    >
-                      ENVIAR SOLICITUD <ArrowRight className="w-6 h-6" />
-                    </a>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Story / History Section */}
       <section id="historia" className="py-24 md:py-40 relative overflow-hidden bg-transparent contain-paint">
@@ -1548,7 +1416,7 @@ export default function App() {
                   decoding="async"
                 />
                 <span className="text-lg font-bold tracking-tight text-white border-l border-white/10 pl-4">
-                  {`Catálogo — ${customerInfo.type === 'Ferretería' ? 'Ferreterías' : customerInfo.type === 'Constructora' ? 'Constructoras' : 'Público General'}`}
+                  {`Catálogo — ${customerInfo.type === 'Ferretería' ? 'Ferreterías' : customerInfo.type === 'Constructora' ? 'Constructoras' : customerInfo.type === 'Industria' ? 'Industria MRO' : 'Público General'}`}
                 </span>
               </div>
 
@@ -1572,29 +1440,66 @@ export default function App() {
               </div>
             </header>
 
-            <div className="flex-1 flex flex-col overflow-hidden relative">
+            <div className="flex-1 flex flex-col overflow-hidden relative transform-gpu">
+              {/* Category Quick Nav for better scrolling experience - STICKY */}
+              <div className="bg-black/80 backdrop-blur-2xl border-b border-white/10 px-6 md:px-12 py-3 flex gap-6 overflow-x-auto no-scrollbar scroll-smooth z-[220] sticky top-0 transform-gpu">
+                {activeModal === 'publico' && Object.keys(PUBLICO_PRODUCTS).map(cat => (
+                  <button key={cat} onClick={() => document.getElementById(cat)?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-black uppercase tracking-[2px] text-white/30 hover:text-accent whitespace-nowrap py-1 transition-all active:scale-95">
+                    {cat}
+                  </button>
+                ))}
+                {activeModal === 'constructora' && Object.keys(CONSTRUCTORA_PRODUCTS).map(cat => (
+                  <button key={cat} onClick={() => document.getElementById(cat)?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-black uppercase tracking-[2px] text-white/30 hover:text-accent whitespace-nowrap py-1 transition-all active:scale-95">
+                    {cat}
+                  </button>
+                ))}
+                {activeModal === 'maquila' && (
+                  <button onClick={() => document.getElementById('suministro-mro')?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-black uppercase tracking-[2px] text-white/20 hover:text-accent whitespace-nowrap py-1 transition-all active:scale-95">
+                    Suministro MRO
+                  </button>
+                )}
+                {/* Back to top helper */}
+                <button 
+                  onClick={() => {
+                    const scrollContainer = document.getElementById('modal-scroll-container');
+                    if (scrollContainer) scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="ml-auto text-[10px] font-black uppercase tracking-[2px] text-accent flex items-center gap-2 hover:opacity-70 transition-all border-l border-white/10 pl-6"
+                >
+                  Subir <ChevronDown className="w-3 h-3 rotate-180" />
+                </button>
+              </div>
+
               {/* Columna Izquierda: Catálogo */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12 transition-all duration-500">
+              <div id="modal-scroll-container" className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12 scroll-smooth will-change-scroll transform-gpu">
                 <style>{`
                   .custom-scrollbar::-webkit-scrollbar {
-                    width: 12px;
+                    width: 20px;
                   }
                   .custom-scrollbar::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.02);
+                    background: #111;
+                    border-left: 1px solid rgba(255, 255, 255, 0.05);
                   }
                   .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #FF5722;
+                    background: linear-gradient(180deg, #FF5722, #f4511e);
                     border-radius: 10px;
-                    border: 3px solid #080808;
+                    border: 5px solid #111;
+                    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
                   }
                   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #f4511e;
                   }
+                  /* Firefox support */
+                  .custom-scrollbar {
+                    scrollbar-width: auto;
+                    scrollbar-color: #FF5722 rgba(255, 255, 255, 0.03);
+                  }
                 `}</style>
+                
                 <div className="max-w-[1400px] mx-auto">
                   <div className="mb-16">
                      <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
-                       {customerInfo.type === 'Ferretería' ? 'Catálogo Ferreterías' : customerInfo.type === 'Constructora' ? 'Catálogo Constructoras' : 'Público general'}
+                       {customerInfo.type === 'Público General' ? 'Público General' : `Catálogo Profesional - ${customerInfo.type}`}
                      </h2>
                      <p className="text-white/40 text-lg font-medium">Selecciona los materiales para tu próximo proyecto.</p>
                   </div>
@@ -1603,7 +1508,7 @@ export default function App() {
                   {activeModal === 'publico' && (
                     <div className="space-y-32 pb-40">
                       {Object.entries(PUBLICO_PRODUCTS).map(([category, products]) => (
-                        <div key={category}>
+                        <div key={category} id={category}>
                           <div className="flex items-center gap-6 mb-8">
                              <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
                              <div className="flex-1 h-px bg-white/5" />
@@ -1636,11 +1541,11 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* MODAL 2 — CONSTRUCTORAS */}
+                  {/* MODAL 2 — CONSTRUCTORAS & FERRETERIAS */}
                   {activeModal === 'constructora' && (
                     <div className="space-y-32 pb-40">
                       {Object.entries(CONSTRUCTORA_PRODUCTS).map(([category, products]) => (
-                        <div key={category}>
+                        <div key={category} id={category}>
                           <div className="flex items-center gap-6 mb-8">
                              <h3 className="text-2xl font-bold text-white tracking-tight">{category}</h3>
                              <div className="flex-1 h-px bg-white/5" />
@@ -1670,18 +1575,19 @@ export default function App() {
                           ))}
                         </div>
                       </div>
-                    </div>
-                  )}
 
-                  {/* MODAL 3 — INDUSTRIA MAQUILADORA */}
-                  {activeModal === 'maquila' && (
-                    <div className="space-y-32 pb-40">
-                       <h3 className="text-2xl font-bold text-white tracking-tight mb-8">Suministro industrial MRO</h3>
-                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Integrated supply Section */}
+                      <div>
+                        <div className="flex items-center gap-6 mb-8">
+                           <h3 className="text-2xl font-bold text-white tracking-tight">Suministro Profesional (MRO)</h3>
+                           <div className="flex-1 h-px bg-white/5" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {QUOTE_CARDS_MAQUILA.map((card, idx) => (
                             <QuoteCard key={idx} card={card} isLowPowerMode={isLowPowerMode} />
                           ))}
                         </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1709,7 +1615,14 @@ export default function App() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="relative w-full max-w-[420px] h-full shadow-2xl"
             >
-              <CartContent />
+              <CartContent 
+                cart={cart} 
+                customerInfo={customerInfo} 
+                setIsCartOpen={setIsCartOpen} 
+                removeFromCart={removeFromCart} 
+                updateQuantity={updateQuantity} 
+                whatsappUrl={whatsappUrl} 
+              />
             </motion.div>
           </div>
         )}
