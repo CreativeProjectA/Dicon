@@ -788,18 +788,19 @@ const CartContent = memo(({
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
         <div className="section-container relative z-10">
           <div className="text-center mb-24">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="inline-block px-6 py-2 bg-accent/10 border border-accent/20 rounded-full text-accent font-black text-[10px] uppercase tracking-[6px] mb-8"
+              className="flex justify-center"
             >
-              MRO & Aceros Especiales
+              <img 
+                src="/supply.png" 
+                alt="Dicon Industrial Supply" 
+                className="h-40 md:h-64 lg:h-80 w-auto" 
+                loading="lazy"
+              />
             </motion.div>
-            <h2 className="text-6xl md:text-8xl font-black leading-none tracking-tighter uppercase italic">
-              DICON <br />
-              <span className="text-accent underline decoration-white/10 underline-offset-8">Industrial Supply</span>
-            </h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-center mb-32">
@@ -1121,7 +1122,7 @@ const CartContent = memo(({
             <img 
               src="/logo.png" 
               alt="DICON" 
-              className="h-20 md:h-24 lg:h-28 w-auto" 
+              className="h-12 md:h-16 lg:h-20 w-auto" 
               decoding="async"
               fetchPriority="high"
             />
@@ -1468,7 +1469,7 @@ const CartContent = memo(({
                 <img 
                   src="/logo.png" 
                   alt="DICON" 
-                  className="h-12 md:h-16 w-auto" 
+                  className="h-10 md:h-14 w-auto" 
                   loading="lazy"
                   decoding="async"
                 />
@@ -1953,7 +1954,7 @@ const CartContent = memo(({
               <img 
                 src="/logo.png" 
                 alt="DICON" 
-                className="h-24 md:h-32 lg:h-40 w-auto" 
+                className="h-16 md:h-20 lg:h-24 w-auto" 
                 loading="lazy"
               />
             </div>
