@@ -61,18 +61,6 @@ const BRANDS_INDUSTRIAL = [
   "KleinTools", "Austromex", "Mueller", "IUSA", "Ternium", "Milwaukee", "Makita", "Fandeli"
 ];
 
-const INDUSTRIAL_CLIENTS = [
-  { name: "GCC", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_GCC.svg/2560px-Logo_GCC.svg.png" },
-  { name: "tpi COMPOSITES", img: "https://www.tpicomposites.com/media/1xjpk2u0/tpi_logo.png" },
-  { name: "TECMA", img: "https://www.tecma.com/wp-content/themes/tecma/images/tecma-logo-blue.png" },
-  { name: "JMAS", img: "" },
-  { name: "FLUTEC", img: "" },
-  { name: "Omnibus de México", img: "" },
-  { name: "GRUPO IMPERIAL", img: "" },
-  { name: "S*Mart", img: "" },
-  { name: "BRP", img: "" }
-];
-
 const PUBLICO_PRODUCTS = {
   "Materiales de Construcción": [
     { id: 2, name: "Cemento Chihuahua", price: 210, unit: "bulto", img: "/cemento.png", variants: ["25kg - Resistencia CPC 30R"] },
@@ -244,11 +232,12 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
       <div className="product-grid-item bg-white/[0.06] p-6 border border-white/[0.08] rounded-[24px] flex flex-col h-full relative overflow-hidden transition-all shadow-sm transform-gpu will-change-transform contain-layout">
         <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout antialiased">
           <div className={`absolute inset-0 bg-accent/5 transition-opacity duration-1000 ${isLoaded ? 'opacity-0' : 'opacity-100'}`} />
-          <img 
-            src={product.img} 
+          <img
+            src={product.img}
             alt={product.name}
             onLoad={() => setIsLoaded(true)}
-            className={`w-full h-full object-contain pointer-events-none transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`} 
+            onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = '/logo4a.png'; setIsLoaded(true); }}
+            className={`w-full h-full object-contain pointer-events-none transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy"
             decoding="async"
             fetchPriority="low"
@@ -313,11 +302,12 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
     >
       <div className="relative aspect-square mb-6 bg-white/[0.02] rounded-2xl flex items-center justify-center p-8 overflow-hidden will-change-transform contain-layout">
         <div className={`absolute inset-0 bg-accent/5 transition-opacity duration-1000 ${isLoaded ? 'opacity-0' : 'opacity-100'}`} />
-        <img 
-          src={product.img} 
+        <img
+          src={product.img}
           alt={product.name}
           onLoad={() => setIsLoaded(true)}
-          className={`w-full h-full object-contain group-hover:scale-110 transition-all duration-700 pointer-events-none ${isLoaded ? 'opacity-100' : 'opacity-0'}`} 
+          onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = '/logo4a.png'; setIsLoaded(true); }}
+          className={`w-full h-full object-contain group-hover:scale-110 transition-all duration-700 pointer-events-none ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
           decoding="async"
           fetchPriority="low"
@@ -383,6 +373,547 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
     </motion.div>
   );
 });
+
+// Helper components - hoisted to module scope so they aren't recreated on every App render
+const GlowSpheres = memo(({ isLowPowerMode, smoothY }: any) => {
+  // Disable on low power/mobile for absolute zero lag
+  if (isLowPowerMode) return null;
+
+  // Parallax movement for the orange glow
+  const glowY = useTransform(smoothY, [0, 1], ["-20%", "20%"]);
+  const glowY2 = useTransform(smoothY, [0, 1], ["10%", "-10%"]);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden will-change-transform transform-gpu perspective-[1000px]">
+      {/* Central Moving Glow */}
+      <motion.div
+        style={{ y: glowY, translateZ: 1 }}
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-accent/10 blur-[180px] rounded-full will-change-transform"
+      />
+      <motion.div
+        style={{ y: glowY2, translateZ: 1 }}
+        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full translate-x-1/4 will-change-transform"
+      />
+      <div className="absolute inset-0 bg-[#080808]/40 antialiased" />
+    </div>
+  );
+});
+
+const CartContent = memo(({
+  cart,
+  customerInfo,
+  setIsCartOpen,
+  removeFromCart,
+  updateQuantity,
+  whatsappUrl
+}: any) => {
+  return (
+    <div className="flex flex-col h-full bg-[#000] text-white overflow-hidden transform-gpu">
+      <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/80 backdrop-blur-xl sticky top-0 z-30">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+            <ShoppingBag className="w-5 h-5 text-accent" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold tracking-tight">Mi Lista</h3>
+            <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">{cart.length} Artículos</p>
+          </div>
+        </div>
+        <button onClick={() => setIsCartOpen(false)} className="text-white/50 hover:text-white p-2">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black will-change-scroll">
+        {cart.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-8 px-10">
+            <motion.div
+              animate={{
+                y: [0, -12, 0],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="w-24 h-24 rounded-[32px] bg-white/[0.02] flex items-center justify-center text-white/10 border border-white/[0.05] shadow-2xl"
+            >
+              <Package className="w-12 h-12" />
+            </motion.div>
+            <div className="space-y-2">
+              <p className="text-xl font-bold tracking-tight text-white">Tu lista está vacía</p>
+              <p className="text-sm font-medium text-white/30 leading-relaxed max-w-[200px] mx-auto">
+                Agrega productos de nuestro catálogo para generar una cotización.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {cart.map((item: any) => (
+              <motion.div
+                key={item.cartItemId}
+                layout="position"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white/[0.03] p-5 rounded-[24px] border border-white/[0.06] relative group overflow-hidden hover:bg-white/[0.05] transition-colors will-change-transform"
+              >
+                <div className="flex gap-5">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/[0.03] p-3 flex-shrink-0 flex items-center justify-center">
+                    <img src={item.img} className="w-full h-full object-contain" loading="lazy" decoding="async" alt={item.name} />
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                    <div>
+                      <div className="flex justify-between items-start mb-1">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-sm tracking-tight truncate text-white uppercase">{item.name}</p>
+                          {item.selectedVariant && <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mt-0.5">{item.selectedVariant}</p>}
+                        </div>
+                        <button onClick={() => removeFromCart(item.cartItemId)} className="text-white/20 hover:text-red-400 transition-colors p-1 ml-2">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-[10px] text-accent font-black uppercase tracking-[2px]">Disponible para Cotizar</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.04]">
+                  <div className="flex items-center bg-white/[0.03] rounded-full p-1 border border-white/[0.05]">
+                    <button onClick={() => updateQuantity(item.cartItemId, -1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Minus className="w-3 h-3"/></button>
+                    <span className="w-8 text-center text-xs font-black tracking-tighter">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.cartItemId, 1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Plus className="w-3 h-3"/></button>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest leading-none mb-1">Estatus</p>
+                    <p className="text-sm font-black tracking-widest text-accent uppercase">A COTIZAR</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="p-8 border-t border-white/10 bg-[#050505] shadow-[0_-20px_40px_rgba(0,0,0,0.4)] relative z-30">
+        <div className="mb-8">
+           <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+             <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20 mb-3">Información de Solicitante</p>
+             <p className="text-sm font-bold text-white tracking-tight">{customerInfo.name || 'Invitado'}</p>
+             {customerInfo.companyName && <p className="text-xs text-white/60 font-medium mt-1">{customerInfo.companyName}</p>}
+             <p className="text-[10px] text-accent font-black uppercase tracking-[2px] mt-1">{customerInfo.type}</p>
+           </div>
+        </div>
+
+        <motion.a
+          href={whatsappUrl}
+          target="_blank"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full bg-accent text-white py-5 rounded-2xl font-black text-sm tracking-[0.1em] uppercase hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(255,87,34,0.3)] group"
+        >
+          SOLICITAR COTIZACIÓN <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </motion.a>
+        <p className="text-center text-[9px] text-white/20 font-bold uppercase tracking-widest mt-6">
+          Te responderemos vía WhatsApp en minutos
+        </p>
+      </div>
+    </div>
+  );
+});
+
+const RegistrationForm = ({ isLowPowerMode, smoothY, customerInfo, setCustomerInfo, setIsRegistered, setActiveModal }: any) => {
+  const [name, setName] = useState(customerInfo.name);
+  const [companyName, setCompanyName] = useState(customerInfo.companyName);
+  const [type, setType] = useState(customerInfo.type);
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if (!name) return;
+    setCustomerInfo({ name, companyName, type });
+    setIsRegistered(true);
+
+    // Lógica de redirección basada en el tipo de cliente
+    if (type === 'Público General') {
+      setActiveModal('publico');
+    } else {
+      setActiveModal('constructora');
+    }
+  };
+
+  return (
+    <section id="registro" className="pt-52 pb-40 relative bg-bg overflow-visible contain-paint">
+      {/* Background Animation behind Form */}
+      {!isLowPowerMode && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <motion.div
+            style={{ y: useTransform(smoothY, [0, 1], [0, 300]), translateZ: 0 }}
+            className="absolute bottom-[-15%] -left-[10%] w-[700px] z-0"
+          >
+            <img src="/block2.png" alt="" className="w-full h-auto grayscale brightness-125 opacity-[0.12] -rotate-12" />
+          </motion.div>
+        </div>
+      )}
+
+      <div className="section-container relative z-10">
+        <div className="max-w-xl mx-auto">
+          <div className="glass-card p-12 border border-white/10 shadow-2xl relative bg-black/40 backdrop-blur-3xl mt-12">
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-accent flex items-center justify-center shadow-xl z-20">
+              <FileText className="text-white w-10 h-10" />
+            </div>
+
+            <div className="text-center mt-8 mb-10">
+              <h2 className="text-4xl font-black uppercase tracking-tighter mb-4 italic">Cotización Express</h2>
+              <p className="text-white/40 text-sm italic">"Donde la calidad y el servicio se encuentran"</p>
+              <p className="text-white/20 text-[10px] uppercase tracking-[4px] mt-4">Personaliza tu cotización (opcional)</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Tu Nombre</label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ej. Juan Pérez"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder:text-white/20 focus:border-accent outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Empresa <span className="opacity-40">(Opcional)</span></label>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Ej. Suministros Industriales S.A."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder:text-white/20 focus:border-accent outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Tipo de Cliente</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {['Público General', 'Ferretería', 'Constructora'].map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setType(t)}
+                      className={`px-2 py-4 rounded-xl text-center font-bold text-[9px] uppercase tracking-widest border transition-all ${
+                        type === t
+                          ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20'
+                          : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-accent text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-3 mt-8 shadow-xl"
+              >
+                Ver Catálogo Personalizado <ArrowRight className="w-5 h-5" />
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const IndustrialSection = () => {
+  return (
+    <section id="industrial" className="py-32 relative bg-bg border-t border-white/5 overflow-hidden" style={{ contentVisibility: 'auto' } as any}>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
+      <div className="section-container relative z-10">
+        <div className="text-center mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center"
+          >
+            <img
+              src="/supply.png"
+              alt="Dicon Industrial Supply"
+              className="h-40 md:h-64 lg:h-80 w-auto"
+              loading="lazy"
+            />
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-center mb-32">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="relative space-y-8 order-2 lg:order-1"
+            >
+              <div className="relative rounded-[60px] overflow-hidden border border-white/5 bg-black/[0.2] aspect-[4/5] lg:aspect-square flex items-center justify-center group shadow-2xl">
+                 <div className="absolute inset-0 bg-accent/15 mix-blend-color group-hover:bg-accent/5 transition-colors duration-1000 z-10" />
+                 <img src="/herramienta1.png" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out-expo" alt="Herramientas" />
+                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-20" />
+
+                 <div className="absolute bottom-16 left-16 right-16 z-30 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-8 group-hover:translate-y-0">
+                    <div className="w-12 h-1 bg-accent mb-6" />
+                    <p className="text-accent font-black text-[10px] uppercase tracking-[8px] mb-3">Suministro Estratégico</p>
+                    <h3 className="text-white font-black text-3xl uppercase italic leading-none tracking-tighter">Soluciones <br/> de Precisión</h3>
+                 </div>
+              </div>
+
+              {/* Complementary Facade Image Block */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="rounded-[40px] overflow-hidden border border-white/5 aspect-video relative group shadow-2xl"
+              >
+                 <img src="/dicon fachada.png" className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Instalaciones Dicon" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                 <div className="absolute bottom-6 left-8">
+                   <p className="text-[10px] font-black uppercase tracking-[4px] text-accent">Sede Regional</p>
+                   <p className="text-white font-bold text-sm">Capacidad Operativa Inmediata</p>
+                 </div>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              className="order-1 lg:order-2"
+            >
+              <div className="inline-flex items-center gap-4 mb-10">
+                <div className="w-16 h-[2px] bg-accent/40" />
+                <span className="text-accent font-black text-[10px] uppercase tracking-[6px]">Partner Industrial</span>
+              </div>
+
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.75] mb-14">
+                Ingeniería <br/>
+                <span className="text-white/10 font-bold block mt-2">Superior</span>
+              </h2>
+
+              <div className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="p-8 bg-white/[0.02] border border-white/[0.06] rounded-[40px] hover:bg-white/[0.04] transition-all hover:border-accent/30 group relative overflow-hidden backdrop-blur-sm"
+                >
+                  <div className="flex items-center gap-6 mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
+                       <Layers className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-[3px] text-accent/60 mb-1">Aceros</h4>
+                      <h5 className="text-xl font-bold text-white tracking-tight">Especiales & Aleados</h5>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                    {["Inoxidables", "Grado Herramienta", "Carbón", "Aleaciones"].map((item, i) => (
+                      <div key={i} className="flex items-center gap-3 group/item">
+                        <div className="w-1 h-1 bg-accent/40 rounded-full" />
+                        <span className="text-white/40 text-[11px] font-bold uppercase tracking-wider group-hover/item:text-white transition-colors">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="p-8 bg-white/[0.02] border border-white/[0.06] rounded-[40px] hover:bg-white/[0.04] transition-all hover:border-accent/30 group relative overflow-hidden backdrop-blur-sm"
+                >
+                  <div className="flex items-center gap-6 mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
+                       <Layers className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-[3px] text-accent/60 mb-1">Estructural</h4>
+                      <h5 className="text-xl font-bold text-white tracking-tight">Perfiles & Tubería</h5>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                    {["Viga IPR/HSS", "Perfil PTR", "Láminas", "Tubería Sch"].map((item, i) => (
+                      <div key={i} className="flex items-center gap-3 group/item">
+                        <div className="w-1 h-1 bg-accent/40 rounded-full" />
+                        <span className="text-white/40 text-[11px] font-bold uppercase tracking-wider group-hover/item:text-white transition-colors">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+
+              <div className="mt-14 flex flex-col sm:flex-row items-center gap-6">
+                <button
+                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área de Dicon Industrial Supply.")}`, '_blank')}
+                  className="w-full sm:w-auto group flex items-center justify-center gap-4 bg-accent text-white px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-2xl shadow-accent/20 active:scale-95"
+                >
+                  MRO Industrial <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                </button>
+                <div className="hidden sm:block h-12 w-px bg-white/10" />
+                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[3px] text-center sm:text-left">
+                  Atención Directa <br/> a Plantas
+                </p>
+              </div>
+            </motion.div>
+
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
+          {[
+            {
+              icon: <Layers className="w-8 h-8" />,
+              title: "Aceros & Metales",
+              items: ["Inoxidable 304/316", "Grado Herramienta", "Carbón y Aleados", "Placa Antiderrapante"]
+            },
+            {
+              icon: <Wrench className="w-8 h-8" />,
+              title: "Herramientas de Precisión",
+              items: ["Dados de impacto", "Llaves de torque", "Extractores y prensas", "Equipos automotrices"]
+            },
+            {
+              icon: <Box className="w-8 h-8" />,
+              title: "MRO & Consumibles",
+              items: ["Lubricantes WD-40", "Plásticos técnicos", "Pinturas y esmaltes", "Tornillería grado 5/8"]
+            },
+            {
+              icon: <Droplets className="w-8 h-8" />,
+              title: "Cintas e Insumos",
+              items: ["Cinta Masking/Vinílica", "Aislantes térmicos", "Empaque industrial", "Filtración industrial"]
+            },
+            {
+              icon: <ShieldCheck className="w-8 h-8" />,
+              title: "EPP & Seguridad Corp",
+              items: ["Señalización OSHA", "Arneses certificados", "Calzado técnico", "Protección facial"]
+            },
+            {
+              icon: <Layers className="w-8 h-8" />,
+              title: "Racks & Almacenaje",
+              items: ["Diseño a medida", "Fabricación de estantes", "Optimización de CEDIS", "Racks industriales"]
+            },
+          ].map((group, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.8 }}
+              className="glass-card p-10 border border-white/5 hover:border-accent transition-all group flex flex-col items-center text-center relative overflow-hidden"
+            >
+               <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ExternalLink className="w-4 h-4 text-accent/40" />
+               </div>
+
+               <div className="w-20 h-20 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-8 group-hover:scale-110 group-hover:bg-accent group-hover:text-white transition-all duration-500 shadow-lg group-hover:shadow-accent/40">
+                  {group.icon}
+               </div>
+               <h3 className="text-xl font-bold mb-6 uppercase tracking-tight group-hover:text-accent transition-colors italic">{group.title}</h3>
+               <ul className="space-y-3 mb-10 w-full">
+                 {group.items.map(item => (
+                   <li key={item} className="text-white/40 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 group-hover:text-white/70 transition-colors">
+                      <span className="w-1 h-1 bg-accent/40 rounded-full group-hover:bg-accent transition-colors" /> {item}
+                   </li>
+                 ))}
+               </ul>
+                                 <button
+                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(`Hola DICON, me interesa cotizar para el área Industrial: ${group.title}.`)}`, '_blank')}
+                  className="mt-auto text-accent font-black text-[10px] uppercase tracking-[3px] flex items-center gap-2 hover:opacity-80 transition-all group/btn"
+                >
+                 Solicitar cotización <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
+               </button>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-32 pt-32 border-t border-white/5 relative">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-3xl rounded-full pointer-events-none" />
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-stretch">
+             <motion.div
+               initial={{ opacity: 0, scale: 0.95 }}
+               whileInView={{ opacity: 1, scale: 1 }}
+               viewport={{ once: true }}
+               transition={{ duration: 1 }}
+             >
+                <span className="text-accent font-black text-[10px] uppercase tracking-[6px] mb-6 block italic">Infraestructura Transfronteriza</span>
+                <h2 className="text-5xl font-black uppercase tracking-tighter mb-10 leading-none italic">Alianza Estratégica <br/> <span className="text-white/40 font-normal">El Paso, TX.</span></h2>
+                <p className="text-white/60 text-lg leading-relaxed mb-10 font-medium max-w-xl">
+                  Nuestra empresa hermana en Texas potencia nuestra logística binacional, permitiendo el suministro ágil de materiales MRO y aceros especializados que la industria maquiladora demanda con urgencia.
+                </p>
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="relative group p-4 border border-white/5 bg-white/[0.01] rounded-2xl">
+                     <p className="text-2xl font-black text-white italic leading-none">24/7</p>
+                     <p className="text-[9px] uppercase tracking-[4px] text-white/30 font-bold mt-2 leading-tight">Servicio <br/>Industria</p>
+                  </div>
+                  <div className="relative group p-4 border border-white/5 bg-white/[0.01] rounded-2xl">
+                     <p className="text-2xl font-black text-white italic leading-none">TX-JU</p>
+                     <p className="text-[9px] uppercase tracking-[4px] text-white/30 font-bold mt-2 leading-tight">Cruce <br/>Express</p>
+                  </div>
+                  <div className="relative group p-4 border border-white/5 bg-white/[0.01] rounded-2xl">
+                     <p className="text-2xl font-black text-white italic leading-none">ENG/ESP</p>
+                     <p className="text-[9px] uppercase tracking-[4px] text-white/30 font-bold mt-2 leading-tight">Atención <br/>Bilingüe</p>
+                  </div>
+                </div>
+             </motion.div>
+
+             <motion.div
+               initial={{ opacity: 0, x: 30 }}
+               whileInView={{ opacity: 1, x: 0 }}
+               viewport={{ once: true }}
+               className="relative group min-h-[400px]"
+             >
+                <div className="absolute inset-0 bg-accent/10 rounded-[40px] blur-2xl group-hover:bg-accent/20 transition-all duration-700" />
+                <div className="relative h-full w-full rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] flex flex-col items-center justify-center p-12">
+                   <div className="text-center relative z-10">
+                      <div className="w-24 h-24 rounded-[32px] bg-accent rotate-12 flex items-center justify-center mx-auto mb-10 shadow-[0_20px_50px_rgba(249,115,22,0.4)] group-hover:rotate-0 transition-transform duration-700">
+                         <Truck className="w-10 h-10 text-white animate-pulse" />
+                      </div>
+                      <p className="text-white font-black text-3xl uppercase italic tracking-tighter mb-4">Exportación <span className="text-accent underline decoration-white/10">Premium</span></p>
+                      <p className="text-white/40 text-[10px] font-black uppercase tracking-[5px]">Logística sin fronteras</p>
+                   </div>
+
+                   <div className="absolute top-10 left-10 w-20 h-px bg-white/10" />
+                   <div className="absolute top-10 left-10 w-px h-20 bg-white/10" />
+                   <div className="absolute bottom-10 right-10 w-20 h-px bg-white/10" />
+                   <div className="absolute bottom-10 right-10 w-px h-20 bg-white/10" />
+                </div>
+             </motion.div>
+           </div>
+        </div>
+
+        {/* BRANDS TICKER INDUSTRIAL */}
+        <div className="mt-32 pt-20 border-t border-white/5 overflow-hidden">
+           <p className="text-center text-[10px] font-black uppercase tracking-[8px] text-white/20 mb-12 italic">Marcas Líderes en Suministro Industrial</p>
+           <div className="flex gap-20 items-center justify-between opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-1000">
+             {[...BRANDS_INDUSTRIAL, ...BRANDS_INDUSTRIAL].map((brand, i) => (
+               <motion.span
+                 key={i}
+                 animate={{ x: [0, -1000] }}
+                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                 className="text-xl font-black uppercase tracking-tighter text-white/80 whitespace-nowrap italic hover:text-accent cursor-default"
+               >
+                 {brand}
+               </motion.span>
+             ))}
+           </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
 
 export default function App() {
   const [site, setSite] = useState<'general' | 'industrial'>('general');
@@ -515,157 +1046,6 @@ export default function App() {
 
   const whatsappUrl = `https://wa.me/5216568079485?text=${generateWhatsAppMessage()}`;
 
-// Helper components to avoid lag on mobile
-const GlowSpheres = memo(({ isLowPowerMode, smoothY }: any) => {
-  // Disable on low power/mobile for absolute zero lag
-  if (isLowPowerMode) return null;
-
-  // Parallax movement for the orange glow
-  const glowY = useTransform(smoothY, [0, 1], ["-20%", "20%"]);
-  const glowY2 = useTransform(smoothY, [0, 1], ["10%", "-10%"]);
-  
-  return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden will-change-transform transform-gpu perspective-[1000px]">
-      {/* Central Moving Glow */}
-      <motion.div 
-        style={{ y: glowY, translateZ: 1 }}
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-accent/10 blur-[180px] rounded-full will-change-transform"
-      />
-      <motion.div 
-        style={{ y: glowY2, translateZ: 1 }}
-        className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full translate-x-1/4 will-change-transform"
-      />
-      <div className="absolute inset-0 bg-[#080808]/40 antialiased" />
-    </div>
-  );
-});
-
-const CartContent = memo(({ 
-  cart, 
-  customerInfo, 
-  setIsCartOpen, 
-  removeFromCart, 
-  updateQuantity, 
-  whatsappUrl 
-}: any) => {
-  return (
-    <div className="flex flex-col h-full bg-[#000] text-white overflow-hidden transform-gpu">
-      <div className="p-8 border-b border-white/5 flex items-center justify-between bg-black/80 backdrop-blur-xl sticky top-0 z-30">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-            <ShoppingBag className="w-5 h-5 text-accent" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold tracking-tight">Mi Lista</h3>
-            <p className="text-[10px] text-white/30 font-bold uppercase tracking-[0.2em]">{cart.length} Artículos</p>
-          </div>
-        </div>
-        <button onClick={() => setIsCartOpen(false)} className="text-white/50 hover:text-white p-2">
-          <X className="w-6 h-6" />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black will-change-scroll">
-        {cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-8 px-10">
-            <motion.div
-              animate={{ 
-                y: [0, -12, 0],
-                rotate: [0, 5, -5, 0]
-              }}
-              transition={{ 
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="w-24 h-24 rounded-[32px] bg-white/[0.02] flex items-center justify-center text-white/10 border border-white/[0.05] shadow-2xl"
-            >
-              <Package className="w-12 h-12" />
-            </motion.div>
-            <div className="space-y-2">
-              <p className="text-xl font-bold tracking-tight text-white">Tu lista está vacía</p>
-              <p className="text-sm font-medium text-white/30 leading-relaxed max-w-[200px] mx-auto">
-                Agrega productos de nuestro catálogo para generar una cotización.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {cart.map((item: any) => (
-              <motion.div 
-                key={item.cartItemId} 
-                layout="position"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white/[0.03] p-5 rounded-[24px] border border-white/[0.06] relative group overflow-hidden hover:bg-white/[0.05] transition-colors will-change-transform"
-              >
-                <div className="flex gap-5">
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/[0.03] p-3 flex-shrink-0 flex items-center justify-center">
-                    <img src={item.img} className="w-full h-full object-contain" loading="lazy" decoding="async" alt={item.name} />
-                  </div>
-                  <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
-                    <div>
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-bold text-sm tracking-tight truncate text-white uppercase">{item.name}</p>
-                          {item.selectedVariant && <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mt-0.5">{item.selectedVariant}</p>}
-                        </div>
-                        <button onClick={() => removeFromCart(item.cartItemId)} className="text-white/20 hover:text-red-400 transition-colors p-1 ml-2">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[10px] text-accent font-black uppercase tracking-[2px]">Disponible para Cotizar</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.04]">
-                  <div className="flex items-center bg-white/[0.03] rounded-full p-1 border border-white/[0.05]">
-                    <button onClick={() => updateQuantity(item.cartItemId, -1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Minus className="w-3 h-3"/></button>
-                    <span className="w-8 text-center text-xs font-black tracking-tighter">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.cartItemId, 1)} className="w-8 h-8 flex items-center justify-center hover:text-accent transition-colors"><Plus className="w-3 h-3"/></button>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest leading-none mb-1">Estatus</p>
-                    <p className="text-sm font-black tracking-widest text-accent uppercase">A COTIZAR</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="p-8 border-t border-white/10 bg-[#050505] shadow-[0_-20px_40px_rgba(0,0,0,0.4)] relative z-30">
-        <div className="mb-8">
-           <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-             <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20 mb-3">Información de Solicitante</p>
-             <p className="text-sm font-bold text-white tracking-tight">{customerInfo.name || 'Invitado'}</p>
-             {customerInfo.companyName && <p className="text-xs text-white/60 font-medium mt-1">{customerInfo.companyName}</p>}
-             <p className="text-[10px] text-accent font-black uppercase tracking-[2px] mt-1">{customerInfo.type}</p>
-           </div>
-        </div>
-        
-        <motion.a 
-          href={whatsappUrl}
-          target="_blank"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-accent text-white py-5 rounded-2xl font-black text-sm tracking-[0.1em] uppercase hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(255,87,34,0.3)] group"
-        >
-          SOLICITAR COTIZACIÓN <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </motion.a>
-        <p className="text-center text-[9px] text-white/20 font-bold uppercase tracking-widest mt-6">
-          Te responderemos vía WhatsApp en minutos
-        </p>
-      </div>
-    </div>
-  );
-});
-
   // Advanced Scroll Parallax Hook - Optimized and Subtler on Mobile
   const { scrollYProgress } = useScroll();
   
@@ -676,397 +1056,6 @@ const CartContent = memo(({
 
   const smoothY = useSpring(scrollYProgress, springConfig);
 
-  const GlowSpheresCall = <GlowSpheres isLowPowerMode={isLowPowerMode} smoothY={smoothY} />;
-    
-  const RegistrationForm = () => {
-    const [name, setName] = useState(customerInfo.name);
-    const [companyName, setCompanyName] = useState(customerInfo.companyName);
-    const [type, setType] = useState(customerInfo.type);
-
-    const handleSubmit = (e: any) => {
-      e.preventDefault();
-      if (!name) return;
-      setCustomerInfo({ name, companyName, type });
-      setIsRegistered(true);
-      
-      // Lógica de redirección basada en el tipo de cliente
-      if (type === 'Público General') {
-        setActiveModal('publico');
-      } else {
-        setActiveModal('constructora');
-      }
-    };
-
-    return (
-      <section id="registro" className="pt-52 pb-40 relative bg-bg overflow-visible contain-paint">
-        {/* Background Animation behind Form */}
-        {!isLowPowerMode && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-            <motion.div 
-              style={{ y: useTransform(smoothY, [0, 1], [0, 300]), translateZ: 0 }}
-              className="absolute bottom-[-15%] -left-[10%] w-[700px] z-0"
-            >
-              <img src="/block2.png" alt="" className="w-full h-auto grayscale brightness-125 opacity-[0.12] -rotate-12" />
-            </motion.div>
-          </div>
-        )}
-
-        <div className="section-container relative z-10">
-          <div className="max-w-xl mx-auto">
-            <div className="glass-card p-12 border border-white/10 shadow-2xl relative bg-black/40 backdrop-blur-3xl mt-12">
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-accent flex items-center justify-center shadow-xl z-20">
-                <FileText className="text-white w-10 h-10" />
-              </div>
-              
-              <div className="text-center mt-8 mb-10">
-                <h2 className="text-4xl font-black uppercase tracking-tighter mb-4 italic">Cotización Express</h2>
-                <p className="text-white/40 text-sm italic">"Donde la calidad y el servicio se encuentran"</p>
-                <p className="text-white/20 text-[10px] uppercase tracking-[4px] mt-4">Completa para ver catálogo</p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Tu Nombre</label>
-                  <input 
-                    type="text" 
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Ej. Juan Pérez"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder:text-white/20 focus:border-accent outline-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Empresa <span className="opacity-40">(Opcional)</span></label>
-                  <input 
-                    type="text" 
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Ej. Suministros Industriales S.A."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder:text-white/20 focus:border-accent outline-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[3px] text-accent mb-3">Tipo de Cliente</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {['Público General', 'Ferretería', 'Constructora'].map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setType(t)}
-                        className={`px-2 py-4 rounded-xl text-center font-bold text-[9px] uppercase tracking-widest border transition-all ${
-                          type === t 
-                            ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20' 
-                            : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button 
-                  type="submit"
-                  className="w-full bg-accent text-white py-5 rounded-xl font-black text-sm uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-3 mt-8 shadow-xl"
-                >
-                  Ver Catálogo <ArrowRight className="w-5 h-5" />
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  };
-
-  const IndustrialSection = () => {
-    return (
-      <section id="industrial" className="py-32 relative bg-bg border-t border-white/5 overflow-hidden" style={{ contentVisibility: 'auto' } as any}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 blur-[150px] rounded-full pointer-events-none" />
-        <div className="section-container relative z-10">
-          <div className="text-center mb-24">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="flex justify-center"
-            >
-              <img 
-                src="/supply.png" 
-                alt="Dicon Industrial Supply" 
-                className="h-40 md:h-64 lg:h-80 w-auto" 
-                loading="lazy"
-              />
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-center mb-32">
-              <motion.div 
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                className="relative space-y-8 order-2 lg:order-1"
-              >
-                <div className="relative rounded-[60px] overflow-hidden border border-white/5 bg-black/[0.2] aspect-[4/5] lg:aspect-square flex items-center justify-center group shadow-2xl">
-                   <div className="absolute inset-0 bg-accent/15 mix-blend-color group-hover:bg-accent/5 transition-colors duration-1000 z-10" />
-                   <img src="/herramienta1.png" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out-expo" alt="Herramientas" />
-                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-20" />
-                   
-                   <div className="absolute bottom-16 left-16 right-16 z-30 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-8 group-hover:translate-y-0">
-                      <div className="w-12 h-1 bg-accent mb-6" />
-                      <p className="text-accent font-black text-[10px] uppercase tracking-[8px] mb-3">Suministro Estratégico</p>
-                      <h3 className="text-white font-black text-3xl uppercase italic leading-none tracking-tighter">Soluciones <br/> de Precisión</h3>
-                   </div>
-                </div>
-
-                {/* Complementary Facade Image Block */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="rounded-[40px] overflow-hidden border border-white/5 aspect-video relative group shadow-2xl"
-                >
-                   <img src="/dicon fachada.png" className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Instalaciones Dicon" />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                   <div className="absolute bottom-6 left-8">
-                     <p className="text-[10px] font-black uppercase tracking-[4px] text-accent">Sede Regional</p>
-                     <p className="text-white font-bold text-sm">Capacidad Operativa Inmediata</p>
-                   </div>
-                </motion.div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                className="order-1 lg:order-2"
-              >
-                <div className="inline-flex items-center gap-4 mb-10">
-                  <div className="w-16 h-[2px] bg-accent/40" />
-                  <span className="text-accent font-black text-[10px] uppercase tracking-[6px]">Partner Industrial</span>
-                </div>
-                
-                <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.75] mb-14">
-                  Ingeniería <br/> 
-                  <span className="text-white/10 font-bold block mt-2">Superior</span>
-                </h2>
-
-                <div className="space-y-6">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="p-8 bg-white/[0.02] border border-white/[0.06] rounded-[40px] hover:bg-white/[0.04] transition-all hover:border-accent/30 group relative overflow-hidden backdrop-blur-sm"
-                  >
-                    <div className="flex items-center gap-6 mb-6">
-                      <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
-                         <Layers className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black uppercase tracking-[3px] text-accent/60 mb-1">Aceros</h4>
-                        <h5 className="text-xl font-bold text-white tracking-tight">Especiales & Aleados</h5>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-                      {["Inoxidables", "Grado Herramienta", "Carbón", "Aleaciones"].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 group/item">
-                          <div className="w-1 h-1 bg-accent/40 rounded-full" />
-                          <span className="text-white/40 text-[11px] font-bold uppercase tracking-wider group-hover/item:text-white transition-colors">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                  
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 }}
-                    className="p-8 bg-white/[0.02] border border-white/[0.06] rounded-[40px] hover:bg-white/[0.04] transition-all hover:border-accent/30 group relative overflow-hidden backdrop-blur-sm"
-                  >
-                    <div className="flex items-center gap-6 mb-6">
-                      <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform">
-                         <Layers className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-black uppercase tracking-[3px] text-accent/60 mb-1">Estructural</h4>
-                        <h5 className="text-xl font-bold text-white tracking-tight">Perfiles & Tubería</h5>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-y-4 gap-x-8">
-                      {["Viga IPR/HSS", "Perfil PTR", "Láminas", "Tubería Sch"].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 group/item">
-                          <div className="w-1 h-1 bg-accent/40 rounded-full" />
-                          <span className="text-white/40 text-[11px] font-bold uppercase tracking-wider group-hover/item:text-white transition-colors">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
-
-                <div className="mt-14 flex flex-col sm:flex-row items-center gap-6">
-                  <button 
-                    onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área de Dicon Industrial Supply.")}`, '_blank')} 
-                    className="w-full sm:w-auto group flex items-center justify-center gap-4 bg-accent text-white px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-2xl shadow-accent/20 active:scale-95"
-                  >
-                    MRO Industrial <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-                  </button>
-                  <div className="hidden sm:block h-12 w-px bg-white/10" />
-                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-[3px] text-center sm:text-left">
-                    Atención Directa <br/> a Plantas
-                  </p>
-                </div>
-              </motion.div>
-
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
-            {[
-              { 
-                icon: <Layers className="w-8 h-8" />,
-                title: "Aceros & Metales", 
-                items: ["Inoxidable 304/316", "Grado Herramienta", "Carbón y Aleados", "Placa Antiderrapante"] 
-              },
-              { 
-                icon: <Wrench className="w-8 h-8" />,
-                title: "Herramientas de Precisión", 
-                items: ["Dados de impacto", "Llaves de torque", "Extractores y prensas", "Equipos automotrices"] 
-              },
-              { 
-                icon: <Box className="w-8 h-8" />,
-                title: "MRO & Consumibles", 
-                items: ["Lubricantes WD-40", "Plásticos técnicos", "Pinturas y esmaltes", "Tornillería grado 5/8"] 
-              },
-              { 
-                icon: <Droplets className="w-8 h-8" />,
-                title: "Cintas e Insumos", 
-                items: ["Cinta Masking/Vinílica", "Aislantes térmicos", "Empaque industrial", "Filtración industrial"] 
-              },
-              { 
-                icon: <ShieldCheck className="w-8 h-8" />,
-                title: "EPP & Seguridad Corp", 
-                items: ["Señalización OSHA", "Arneses certificados", "Calzado técnico", "Protección facial"] 
-              },
-              { 
-                icon: <Layers className="w-8 h-8" />,
-                title: "Racks & Almacenaje", 
-                items: ["Diseño a medida", "Fabricación de estantes", "Optimización de CEDIS", "Racks industriales"] 
-              },
-            ].map((group, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.8 }}
-                className="glass-card p-10 border border-white/5 hover:border-accent transition-all group flex flex-col items-center text-center relative overflow-hidden"
-              >
-                 <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ExternalLink className="w-4 h-4 text-accent/40" />
-                 </div>
-                 
-                 <div className="w-20 h-20 rounded-2xl bg-accent/10 flex items-center justify-center text-accent mb-8 group-hover:scale-110 group-hover:bg-accent group-hover:text-white transition-all duration-500 shadow-lg group-hover:shadow-accent/40">
-                    {group.icon}
-                 </div>
-                 <h3 className="text-xl font-bold mb-6 uppercase tracking-tight group-hover:text-accent transition-colors italic">{group.title}</h3>
-                 <ul className="space-y-3 mb-10 w-full">
-                   {group.items.map(item => (
-                     <li key={item} className="text-white/40 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 group-hover:text-white/70 transition-colors">
-                        <span className="w-1 h-1 bg-accent/40 rounded-full group-hover:bg-accent transition-colors" /> {item}
-                     </li>
-                   ))}
-                 </ul>
-                                   <button 
-                    onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(`Hola DICON, me interesa cotizar para el área Industrial: ${group.title}.`)}`, '_blank')} 
-                    className="mt-auto text-accent font-black text-[10px] uppercase tracking-[3px] flex items-center gap-2 hover:opacity-80 transition-all group/btn"
-                  >
-                   Solicitar cotización <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
-                 </button>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-32 pt-32 border-t border-white/5 relative">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 blur-3xl rounded-full pointer-events-none" />
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-stretch">
-               <motion.div
-                 initial={{ opacity: 0, scale: 0.95 }}
-                 whileInView={{ opacity: 1, scale: 1 }}
-                 viewport={{ once: true }}
-                 transition={{ duration: 1 }}
-               >
-                  <span className="text-accent font-black text-[10px] uppercase tracking-[6px] mb-6 block italic">Infraestructura Transfronteriza</span>
-                  <h2 className="text-5xl font-black uppercase tracking-tighter mb-10 leading-none italic">Alianza Estratégica <br/> <span className="text-white/40 font-normal">El Paso, TX.</span></h2>
-                  <p className="text-white/60 text-lg leading-relaxed mb-10 font-medium max-w-xl">
-                    Nuestra empresa hermana en Texas potencia nuestra logística binacional, permitiendo el suministro ágil de materiales MRO y aceros especializados que la industria maquiladora demanda con urgencia.
-                  </p>
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="relative group p-4 border border-white/5 bg-white/[0.01] rounded-2xl">
-                       <p className="text-2xl font-black text-white italic leading-none">24/7</p>
-                       <p className="text-[9px] uppercase tracking-[4px] text-white/30 font-bold mt-2 leading-tight">Servicio <br/>Industria</p>
-                    </div>
-                    <div className="relative group p-4 border border-white/5 bg-white/[0.01] rounded-2xl">
-                       <p className="text-2xl font-black text-white italic leading-none">TX-JU</p>
-                       <p className="text-[9px] uppercase tracking-[4px] text-white/30 font-bold mt-2 leading-tight">Cruce <br/>Express</p>
-                    </div>
-                    <div className="relative group p-4 border border-white/5 bg-white/[0.01] rounded-2xl">
-                       <p className="text-2xl font-black text-white italic leading-none">ENG/ESP</p>
-                       <p className="text-[9px] uppercase tracking-[4px] text-white/30 font-bold mt-2 leading-tight">Atención <br/>Bilingüe</p>
-                    </div>
-                  </div>
-               </motion.div>
-               
-               <motion.div 
-                 initial={{ opacity: 0, x: 30 }}
-                 whileInView={{ opacity: 1, x: 0 }}
-                 viewport={{ once: true }}
-                 className="relative group min-h-[400px]"
-               >
-                  <div className="absolute inset-0 bg-accent/10 rounded-[40px] blur-2xl group-hover:bg-accent/20 transition-all duration-700" />
-                  <div className="relative h-full w-full rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] flex flex-col items-center justify-center p-12">
-                     <div className="text-center relative z-10">
-                        <div className="w-24 h-24 rounded-[32px] bg-accent rotate-12 flex items-center justify-center mx-auto mb-10 shadow-[0_20px_50px_rgba(249,115,22,0.4)] group-hover:rotate-0 transition-transform duration-700">
-                           <Truck className="w-10 h-10 text-white animate-pulse" />
-                        </div>
-                        <p className="text-white font-black text-3xl uppercase italic tracking-tighter mb-4">Exportación <span className="text-accent underline decoration-white/10">Premium</span></p>
-                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[5px]">Logística sin fronteras</p>
-                     </div>
-                     
-                     <div className="absolute top-10 left-10 w-20 h-px bg-white/10" />
-                     <div className="absolute top-10 left-10 w-px h-20 bg-white/10" />
-                     <div className="absolute bottom-10 right-10 w-20 h-px bg-white/10" />
-                     <div className="absolute bottom-10 right-10 w-px h-20 bg-white/10" />
-                  </div>
-               </motion.div>
-             </div>
-          </div>
-
-          {/* BRANDS TICKER INDUSTRIAL */}
-          <div className="mt-32 pt-20 border-t border-white/5 overflow-hidden">
-             <p className="text-center text-[10px] font-black uppercase tracking-[8px] text-white/20 mb-12 italic">Marcas Líderes en Suministro Industrial</p>
-             <div className="flex gap-20 items-center justify-between opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-1000">
-               {[...BRANDS_INDUSTRIAL, ...BRANDS_INDUSTRIAL].map((brand, i) => (
-                 <motion.span 
-                   key={i} 
-                   animate={{ x: [0, -1000] }}
-                   transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                   className="text-xl font-black uppercase tracking-tighter text-white/80 whitespace-nowrap italic hover:text-accent cursor-default"
-                 >
-                   {brand}
-                 </motion.span>
-               ))}
-             </div>
-          </div>
-
-        </div>
-      </section>
-    );
-  };
 
   // Parallax ranges - Completely disabled on Mobile (isLowPowerMode) for zero lag
   const y1 = useTransform(smoothY, [0, 1], isLowPowerMode ? [0, 0] : [0, -300]);
@@ -1096,20 +1085,12 @@ const CartContent = memo(({
     { name: 'Ubicación', href: '#contacto' },
   ];
 
-  useEffect(() => {
-    if (activeModal || isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  }, [activeModal, isMenuOpen]);
-
   return (
     <div className="min-h-screen bg-transparent text-text-primary overflow-x-hidden selection:bg-accent/30 font-sans antialiased">
       {/* Background - Replaces the mesh with solid deep black */}
       <div className="fixed inset-0 z-0 bg-[#080808] pointer-events-none translate-z-0 will-change-transform translate-x-0" />
       
-      {GlowSpheresCall}
+      <GlowSpheres isLowPowerMode={isLowPowerMode} smoothY={smoothY} />
 
       {/* Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-[#080808]/80 backdrop-blur-md border-b border-white/5 py-4" : "bg-transparent py-8"}`}>
@@ -1135,9 +1116,9 @@ const CartContent = memo(({
                 key={link.name} 
                 href={link.href}
                 onClick={(e) => {
-                  if (link.name === 'Catálogo' && isRegistered) {
+                  if (link.name === 'Catálogo') {
                     e.preventDefault();
-                    setActiveModal(customerInfo.type === 'Público General' ? 'publico' : 'constructora');
+                    setActiveModal(isRegistered && customerInfo.type !== 'Público General' ? 'constructora' : 'publico');
                   }
                 }}
                 className="text-[10px] uppercase tracking-[4px] font-black transition-colors hover:text-accent text-white/40"
@@ -1194,9 +1175,9 @@ const CartContent = memo(({
                     transition={{ delay: 0.1 + i * 0.1 }}
                     onClick={(e) => {
                       setIsMenuOpen(false);
-                      if (link.name === 'Catálogo' && isRegistered) {
+                      if (link.name === 'Catálogo') {
                         e.preventDefault();
-                        setActiveModal(customerInfo.type === 'Público General' ? 'publico' : 'constructora');
+                        setActiveModal(isRegistered && customerInfo.type !== 'Público General' ? 'constructora' : 'publico');
                       }
                     }}
                     className="text-5xl font-black text-white tracking-tighter hover:text-accent transition-colors italic uppercase shadow-sm"
@@ -1269,8 +1250,8 @@ const CartContent = memo(({
                 variants={itemVariants}
                 className="flex flex-wrap justify-center gap-6"
               >
-                <button 
-                  onClick={() => document.getElementById('registro')?.scrollIntoView({ behavior: 'smooth' })}
+                <button
+                  onClick={() => setActiveModal('publico')}
                   className="w-full sm:w-auto bg-accent text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-orange-600 transition-all flex items-center justify-center gap-3 group"
                 >
                   Ver Catálogo <ArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -1448,7 +1429,14 @@ const CartContent = memo(({
         </div>
 
       {/* REGISTRATION FORM SECTION (Replaces "A quién le servimos") */}
-      <RegistrationForm />
+      <RegistrationForm
+        isLowPowerMode={isLowPowerMode}
+        smoothY={smoothY}
+        customerInfo={customerInfo}
+        setCustomerInfo={setCustomerInfo}
+        setIsRegistered={setIsRegistered}
+        setActiveModal={setActiveModal}
+      />
 
       {/* INDUSTRIAL SECTION (PDF CONTENT) */}
       <IndustrialSection />
@@ -1855,7 +1843,7 @@ const CartContent = memo(({
                    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
                       <p className="text-accent text-[10px] uppercase tracking-[3px] mb-2 italic">Giovanni Acosta</p>
                       <p className="text-white text-xs mb-1">ventas1@diconjrz.com.mx</p>
-                      <p className="text-white/40 text-xs">Cel. 656 322 2670</p>
+                      <p className="text-white/40 text-xs">Cel. 657 101 2932</p>
                    </div>
                    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
                       <p className="text-accent text-[10px] uppercase tracking-[3px] mb-2 italic">Verónica Acosta</p>
@@ -1961,7 +1949,17 @@ const CartContent = memo(({
             
             <div className="flex flex-wrap justify-center gap-8 md:gap-16">
               {navLinks.map(link => (
-                <a key={link.name} href={link.href} className="text-xs font-black uppercase tracking-[3px] text-white/50 hover:text-accent transition-colors">
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => {
+                    if (link.name === 'Catálogo') {
+                      e.preventDefault();
+                      setActiveModal(isRegistered && customerInfo.type !== 'Público General' ? 'constructora' : 'publico');
+                    }
+                  }}
+                  className="text-xs font-black uppercase tracking-[3px] text-white/50 hover:text-accent transition-colors"
+                >
                   {link.name}
                 </a>
               ))}
