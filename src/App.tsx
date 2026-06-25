@@ -163,7 +163,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
           {card.items}
         </p>
         <button 
-          onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(card.msg)}`, '_blank')}
+          onClick={() => window.open(`https://wa.me/5216571012932?text=${encodeURIComponent(card.msg)}`, '_blank')}
           className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide active:scale-95 transition-transform flex items-center justify-center gap-2"
         >
           Cotizar por WhatsApp
@@ -190,7 +190,7 @@ const QuoteCard = memo(({ card, isLowPowerMode }: any) => {
         {card.items}
       </p>
       <button 
-        onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(card.msg)}`, '_blank')}
+        onClick={() => window.open(`https://wa.me/5216571012932?text=${encodeURIComponent(card.msg)}`, '_blank')}
         className="w-full bg-accent text-white py-4 rounded-full font-bold text-sm tracking-wide hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-sm"
       >
         Cotizar por WhatsApp
@@ -758,7 +758,7 @@ const IndustrialSection = () => {
 
               <div className="mt-14 flex flex-col sm:flex-row items-center gap-6">
                 <button
-                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área de Dicon Industrial Supply.")}`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/5216571012932?text=${encodeURIComponent("Hola DICON, me interesa cotizar para el área de Dicon Industrial Supply.")}`, '_blank')}
                   className="w-full sm:w-auto group flex items-center justify-center gap-4 bg-accent text-white px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-2xl shadow-accent/20 active:scale-95"
                 >
                   MRO Industrial <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
@@ -829,7 +829,7 @@ const IndustrialSection = () => {
                  ))}
                </ul>
                                  <button
-                  onClick={() => window.open(`https://wa.me/5216568079485?text=${encodeURIComponent(`Hola DICON, me interesa cotizar para el área Industrial: ${group.title}.`)}`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/5216571012932?text=${encodeURIComponent(`Hola DICON, me interesa cotizar para el área Industrial: ${group.title}.`)}`, '_blank')}
                   className="mt-auto text-accent font-black text-[10px] uppercase tracking-[3px] flex items-center gap-2 hover:opacity-80 transition-all group/btn"
                 >
                  Solicitar cotización <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
@@ -1044,7 +1044,7 @@ export default function App() {
     return encodeURIComponent(header + items + footer);
   }, [cart, customerInfo]);
 
-  const whatsappUrl = `https://wa.me/5216568079485?text=${generateWhatsAppMessage()}`;
+  const whatsappUrl = `https://wa.me/5216571012932?text=${generateWhatsAppMessage()}`;
 
   // Advanced Scroll Parallax Hook - Optimized and Subtler on Mobile
   const { scrollYProgress } = useScroll();
@@ -1127,7 +1127,7 @@ export default function App() {
               </a>
             ))}
             <a 
-              href="https://wa.me/5216568079485" 
+              href="https://wa.me/5216571012932" 
               target="_blank" 
               className="bg-accent text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-accent/20"
             >
@@ -1186,7 +1186,7 @@ export default function App() {
                   </motion.a>
                 ))}
                 <motion.a
-                  href="https://wa.me/5216568079485"
+                  href="https://wa.me/5216571012932"
                   target="_blank"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -1900,7 +1900,7 @@ export default function App() {
                     <p className="text-white font-black text-sm uppercase italic">ventas@diconjrz.com.mx</p>
                   </div>
                   <a 
-                    href="https://wa.me/5216568079485"
+                    href="https://wa.me/5216571012932"
                     target="_blank"
                     className="glass-card p-6 border border-white/5 hover:border-accent transition-colors block group"
                   >
@@ -1908,7 +1908,7 @@ export default function App() {
                        <MessageCircle className="w-5 h-5" />
                        <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">WhatsApp Directo</p>
                     </div>
-                    <p className="text-white font-black text-xl uppercase italic">+52 656 807 9485</p>
+                    <p className="text-white font-black text-xl uppercase italic">+52 657 101 2932</p>
                   </a>
                 </div>
 
@@ -1965,7 +1965,7 @@ export default function App() {
               ))}
             </div>
 
-            <p className="text-accent font-bold text-2xl tracking-tight">+52 1 656 807 9485</p>
+            <p className="text-accent font-bold text-2xl tracking-tight">+52 1 657 101 2932</p>
           </div>
 
           <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
