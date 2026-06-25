@@ -63,25 +63,25 @@ const BRANDS_INDUSTRIAL = [
 
 const PUBLICO_PRODUCTS = {
   "Materiales de Construcción": [
-    { id: 2, name: "Cemento Chihuahua", price: 210, unit: "bulto", img: "/cemento.png", variants: ["25kg - Resistencia CPC 30R"] },
-    { id: 3, name: "Block de concreto", price: 12, unit: "pieza", img: "/block.png", variants: ["4\" (10x20x40cm)", "6\" (15x20x40cm)", "8\" (20x20x40cm)"] },
-    { id: 4, name: "Mortero Chuviscar", price: 95, unit: "bulto", img: "/mortero.png", variants: ["25kg - Alta adherencia"] },
-    { id: 5, name: "Yeso Máximo", price: 85, unit: "bulto", img: "/yeso.png", variants: ["40kg - Acabado extra fino"] },
-    { id: 1, name: "Varilla corrugada", price: 180, unit: "pieza", img: "/varilla.png", variants: ["3/8\" (9.5mm) - 12m", "1/2\" (12.7mm) - 12m", "5/8\" (15.9mm) - 12m"] },
-    { id: 6, name: "Castillo Armado", price: null, unit: "tramo", img: "/castillo.png", variants: ["15x15-4 (2.5m)", "15x20-4 (3.0m)"] },
-    { id: 101, name: "Malla Electrosoldada", price: null, unit: "rollo", img: "/malla.png", variants: ["6x6 10/10 (40m²)"] },
+    { id: 2, name: "Cemento Chihuahua", price: 210, unit: "bulto", img: "/cemento.webp", variants: ["25kg - Resistencia CPC 30R"] },
+    { id: 3, name: "Block de concreto", price: 12, unit: "pieza", img: "/block.webp", variants: ["4\" (10x20x40cm)", "6\" (15x20x40cm)", "8\" (20x20x40cm)"] },
+    { id: 4, name: "Mortero Chuviscar", price: 95, unit: "bulto", img: "/mortero.webp", variants: ["25kg - Alta adherencia"] },
+    { id: 5, name: "Yeso Máximo", price: 85, unit: "bulto", img: "/yeso.webp", variants: ["40kg - Acabado extra fino"] },
+    { id: 1, name: "Varilla corrugada", price: 180, unit: "pieza", img: "/varilla.webp", variants: ["3/8\" (9.5mm) - 12m", "1/2\" (12.7mm) - 12m", "5/8\" (15.9mm) - 12m"] },
+    { id: 6, name: "Castillo Armado", price: null, unit: "tramo", img: "/castillo.webp", variants: ["15x15-4 (2.5m)", "15x20-4 (3.0m)"] },
+    { id: 101, name: "Malla Electrosoldada", price: null, unit: "rollo", img: "/malla.webp", variants: ["6x6 10/10 (40m²)"] },
   ],
   "Plomería Industrial": [
-    { id: 7, name: "Tubo PVC C-40", price: 85, unit: "tramo", img: "/pvc.png", variants: ["1/2\" x 6m", "3/4\" x 6m", "1\" x 6m", "2\" x 6m", "4\" x 6m"] },
-    { id: 8, name: "Codo Negro 90°", price: 18, unit: "pieza", img: "/codo_negro_1.png", variants: ["1/2\" Sch 40", "3/4\" Sch 40", "1\" Sch 40", "2\" Sch 40"] },
-    { id: 9, name: "Tee Negra", price: 22, unit: "pieza", img: "/tee_negra.png", variants: ["1/2\" Sch 40", "3/4\" Sch 40", "1\" Sch 40", "2\" Sch 40"] },
-    { id: 10, name: "Válvula de Bola", price: 45, unit: "pieza", img: "/valbula.png", variants: ["1/2\" (600 PSI)", "3/4\" (600 PSI)", "1\" (600 PSI)", "2\" (600 PSI)"] },
-    { id: 11, name: "Tubo Negro Roscado", price: 120, unit: "tramo", img: "/tubo_negro_roscada.png", variants: ["1/2\" x 6m", "3/4\" x 6m", "1\" x 6m", "2\" x 6m"] },
+    { id: 7, name: "Tubo PVC C-40", price: 85, unit: "tramo", img: "/pvc.webp", variants: ["1/2\" x 6m", "3/4\" x 6m", "1\" x 6m", "2\" x 6m", "4\" x 6m"] },
+    { id: 8, name: "Codo Negro 90°", price: 18, unit: "pieza", img: "/codo_negro_1.webp", variants: ["1/2\" Sch 40", "3/4\" Sch 40", "1\" Sch 40", "2\" Sch 40"] },
+    { id: 9, name: "Tee Negra", price: 22, unit: "pieza", img: "/tee_negra.webp", variants: ["1/2\" Sch 40", "3/4\" Sch 40", "1\" Sch 40", "2\" Sch 40"] },
+    { id: 10, name: "Válvula de Bola", price: 45, unit: "pieza", img: "/valbula.webp", variants: ["1/2\" (600 PSI)", "3/4\" (600 PSI)", "1\" (600 PSI)", "2\" (600 PSI)"] },
+    { id: 11, name: "Tubo Negro Roscado", price: 120, unit: "tramo", img: "/tubo_negro_roscada.webp", variants: ["1/2\" x 6m", "3/4\" x 6m", "1\" x 6m", "2\" x 6m"] },
   ],
   "Pintura y Recubrimientos": [
-    { id: 50, name: "Impermeabilizante Axel", price: 320, unit: "cubeta", img: "/axel.png", variants: ["19L - 3 Años", "19L - 5 Años", "19L - 10 Años"] },
-    { id: 51, name: "Pintura Tráfico", price: 280, unit: "cubeta", img: "/trafico.png", variants: ["19L - Amarillo Industrial", "19L - Blanco"] },
-    { id: 52, name: "Pega Azulejo Atlas", price: 280, unit: "bulto", img: "/pega.png", variants: ["20kg - Piso sobre Piso", "20kg - Estándar"] },
+    { id: 50, name: "Impermeabilizante Axel", price: 320, unit: "cubeta", img: "/axel.webp", variants: ["19L - 3 Años", "19L - 5 Años", "19L - 10 Años"] },
+    { id: 51, name: "Pintura Tráfico", price: 280, unit: "cubeta", img: "/trafico.webp", variants: ["19L - Amarillo Industrial", "19L - Blanco"] },
+    { id: 52, name: "Pega Azulejo Atlas", price: 280, unit: "bulto", img: "/pega azulejo a.webp", variants: ["20kg - Piso sobre Piso", "20kg - Estándar"] },
   ]
 };
 
@@ -236,7 +236,7 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
             src={product.img}
             alt={product.name}
             onLoad={() => setIsLoaded(true)}
-            onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = '/logo4a.png'; setIsLoaded(true); }}
+            onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = '/logo4a.webp'; setIsLoaded(true); }}
             className={`w-full h-full object-contain pointer-events-none transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy"
             decoding="async"
@@ -306,7 +306,7 @@ const ProductCard = memo(({ product, addToCart, isLowPowerMode }: any) => {
           src={product.img}
           alt={product.name}
           onLoad={() => setIsLoaded(true)}
-          onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = '/logo4a.png'; setIsLoaded(true); }}
+          onError={(e) => { (e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = '/logo4a.webp'; setIsLoaded(true); }}
           className={`w-full h-full object-contain group-hover:scale-110 transition-all duration-700 pointer-events-none ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
           decoding="async"
@@ -553,7 +553,7 @@ const RegistrationForm = ({ isLowPowerMode, smoothY, customerInfo, setCustomerIn
             style={{ y: useTransform(smoothY, [0, 1], [0, 300]), translateZ: 0 }}
             className="absolute bottom-[-15%] -left-[10%] w-[700px] z-0"
           >
-            <img src="/block2.png" alt="" className="w-full h-auto grayscale brightness-125 opacity-[0.12] -rotate-12" />
+            <img src="/block2.webp" alt="" className="w-full h-auto grayscale brightness-125 opacity-[0.12] -rotate-12" />
           </motion.div>
         </div>
       )}
@@ -642,7 +642,7 @@ const IndustrialSection = () => {
             className="flex justify-center"
           >
             <img
-              src="/supply.png"
+              src="/supply.webp"
               alt="Dicon Industrial Supply"
               className="h-40 md:h-64 lg:h-80 w-auto"
               loading="lazy"
@@ -660,7 +660,7 @@ const IndustrialSection = () => {
             >
               <div className="relative rounded-[60px] overflow-hidden border border-white/5 bg-black/[0.2] aspect-[4/5] lg:aspect-square flex items-center justify-center group shadow-2xl">
                  <div className="absolute inset-0 bg-accent/15 mix-blend-color group-hover:bg-accent/5 transition-colors duration-1000 z-10" />
-                 <img src="/herramienta1.png" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out-expo" alt="Herramientas" />
+                 <img src="/herramienta1.webp" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms] ease-out-expo" alt="Herramientas" />
                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-20" />
 
                  <div className="absolute bottom-16 left-16 right-16 z-30 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-8 group-hover:translate-y-0">
@@ -677,7 +677,7 @@ const IndustrialSection = () => {
                 viewport={{ once: true }}
                 className="rounded-[40px] overflow-hidden border border-white/5 aspect-video relative group shadow-2xl"
               >
-                 <img src="/dicon fachada.png" className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Instalaciones Dicon" />
+                 <img src="/dicon fachada.webp" className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000" alt="Instalaciones Dicon" />
                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
                  <div className="absolute bottom-6 left-8">
                    <p className="text-[10px] font-black uppercase tracking-[4px] text-accent">Sede Regional</p>
@@ -1101,7 +1101,7 @@ export default function App() {
             className="flex items-center gap-3 group cursor-pointer"
           >
             <img 
-              src="/logo.png" 
+              src="/logo.webp" 
               alt="DICON" 
               className="h-12 md:h-16 lg:h-20 w-auto" 
               decoding="async"
@@ -1308,6 +1308,64 @@ export default function App() {
         </div>
       </section>
 
+      {/* NUEVA SECCIÓN: ¿A QUIÉN LE SERVIMOS? */}
+      <section id="servicios" className="py-32 relative overflow-hidden bg-[#09090b] contain-layout" style={{ contentVisibility: 'auto' } as any}>
+        {/* Background Decorations - Orange Glows & Parallax Objects */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
+          <div className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full opacity-50" />
+          <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full opacity-40" />
+          
+          {/* Parallax Objects - Optimized: ONLY Block for a clean, professional technical look */}
+          {!isLowPowerMode && (
+            <>
+              {/* Main Technical Element: Block */}
+              <motion.div 
+                style={{ y: y1, rotate: rotate1 }}
+                animate={{ 
+                  y: [0, -20, 0],
+                  filter: [
+                    "grayscale(1) brightness(0.4) contrast(1.2) blur(1px)",
+                    "grayscale(1) brightness(0.5) contrast(1.3) blur(1px)",
+                    "grayscale(1) brightness(0.4) contrast(1.2) blur(1px)"
+                  ]
+                }}
+                transition={{ 
+                  duration: 10, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+                className="absolute top-[25%] left-[-5%] w-[400px] md:w-[600px] opacity-[0.15] pointer-events-none shadow-2xl will-change-transform transition-all"
+              >
+                <img 
+                  src="/block2.webp" 
+                  alt="" 
+                  className="w-full h-auto"
+                  style={{ imageRendering: 'auto' }}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </motion.div>
+              
+              {/* Subtle light streak accentuates the industrial feel */}
+              <div className="absolute top-[30%] left-[10%] w-[1px] h-[400px] bg-gradient-to-b from-transparent via-accent/20 to-transparent rotate-[25deg] blur-sm opacity-30" />
+            </>
+          )}
+        </div>
+
+      {/* REGISTRATION FORM SECTION (Replaces "A quién le servimos") */}
+      <RegistrationForm
+        isLowPowerMode={isLowPowerMode}
+        smoothY={smoothY}
+        customerInfo={customerInfo}
+        setCustomerInfo={setCustomerInfo}
+        setIsRegistered={setIsRegistered}
+        setActiveModal={setActiveModal}
+      />
+
+      {/* INDUSTRIAL SECTION (PDF CONTENT) */}
+      <IndustrialSection />
+      </section>
+
       {/* Story / History Section */}
       <section id="historia" className="py-24 md:py-40 relative overflow-hidden bg-transparent contain-paint">
         {/* Glow behind centerpiece */}
@@ -1346,7 +1404,7 @@ export default function App() {
                 className="will-change-transform"
               >
                 <img 
-                  src="/casco2.png" 
+                  src="/casco2.webp" 
                   alt="Casco Pro DICON" 
                   loading="lazy"
                   decoding="async"
@@ -1384,64 +1442,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* NUEVA SECCIÓN: ¿A QUIÉN LE SERVIMOS? */}
-      <section id="servicios" className="py-32 relative overflow-hidden bg-[#09090b] contain-layout" style={{ contentVisibility: 'auto' } as any}>
-        {/* Background Decorations - Orange Glows & Parallax Objects */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden h-full w-full">
-          <div className="absolute top-1/4 -left-1/4 w-[800px] h-[800px] bg-accent/10 blur-[150px] rounded-full opacity-50" />
-          <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-accent/5 blur-[120px] rounded-full opacity-40" />
-          
-          {/* Parallax Objects - Optimized: ONLY Block for a clean, professional technical look */}
-          {!isLowPowerMode && (
-            <>
-              {/* Main Technical Element: Block */}
-              <motion.div 
-                style={{ y: y1, rotate: rotate1 }}
-                animate={{ 
-                  y: [0, -20, 0],
-                  filter: [
-                    "grayscale(1) brightness(0.4) contrast(1.2) blur(1px)",
-                    "grayscale(1) brightness(0.5) contrast(1.3) blur(1px)",
-                    "grayscale(1) brightness(0.4) contrast(1.2) blur(1px)"
-                  ]
-                }}
-                transition={{ 
-                  duration: 10, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }}
-                className="absolute top-[25%] left-[-5%] w-[400px] md:w-[600px] opacity-[0.15] pointer-events-none shadow-2xl will-change-transform transition-all"
-              >
-                <img 
-                  src="/block2.png" 
-                  alt="" 
-                  className="w-full h-auto"
-                  style={{ imageRendering: 'auto' }}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </motion.div>
-              
-              {/* Subtle light streak accentuates the industrial feel */}
-              <div className="absolute top-[30%] left-[10%] w-[1px] h-[400px] bg-gradient-to-b from-transparent via-accent/20 to-transparent rotate-[25deg] blur-sm opacity-30" />
-            </>
-          )}
-        </div>
-
-      {/* REGISTRATION FORM SECTION (Replaces "A quién le servimos") */}
-      <RegistrationForm
-        isLowPowerMode={isLowPowerMode}
-        smoothY={smoothY}
-        customerInfo={customerInfo}
-        setCustomerInfo={setCustomerInfo}
-        setIsRegistered={setIsRegistered}
-        setActiveModal={setActiveModal}
-      />
-
-      {/* INDUSTRIAL SECTION (PDF CONTENT) */}
-      <IndustrialSection />
-      </section>
-
       {/* FULLSCREEN MODALS */}
       <AnimatePresence mode="wait">
         {activeModal && (
@@ -1455,7 +1455,7 @@ export default function App() {
             <header className="flex items-center justify-between px-6 md:px-12 py-6 bg-bg border-b border-white/5 relative z-[210] md:backdrop-blur-3xl will-change-transform">
               <div className="flex items-center gap-4">
                 <img 
-                  src="/logo.png" 
+                  src="/logo.webp" 
                   alt="DICON" 
                   className="h-10 md:h-14 w-auto" 
                   loading="lazy"
@@ -1615,7 +1615,7 @@ export default function App() {
                               {[...Array(12)].map((_, i) => (
                                 <img 
                                   key={i} 
-                                  src="/logo4a.png" 
+                                  src="/logo4a.webp" 
                                   alt="Brand Pattern" 
                                   className="h-12 w-auto grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500" 
                                 />
@@ -1679,7 +1679,7 @@ export default function App() {
                               {[...Array(12)].map((_, i) => (
                                 <img 
                                   key={i} 
-                                  src="/logo4a.png" 
+                                  src="/logo4a.webp" 
                                   alt="Brand Pattern" 
                                   className="h-12 w-auto grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-500" 
                                 />
@@ -1766,6 +1766,79 @@ export default function App() {
         </motion.button>
       </div>
 
+      {/* FAQ Section */}
+      <section className="py-24 md:py-40 bg-[#0a0a0c] relative overflow-hidden contain-paint">
+        {/* Layered Technical Background for FAQ */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-[#09090b]" />
+          {/* Main animated glow */}
+          {!isLowPowerMode && (
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)]"
+            />
+          )}
+          {isLowPowerMode && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.05)_0%,transparent_70%)] opacity-50" />
+          )}
+          <div className="absolute top-0 left-0 w-full h-full opacity-[0.04] pointer-events-none" 
+               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
+          <div className="absolute -bottom-1/4 -right-1/4 w-[800px] h-[800px] bg-accent/10 blur-[180px] rounded-full opacity-30" />
+          <div className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-white/5 blur-[140px] rounded-full opacity-15" />
+        </div>
+        
+        <div className="section-container relative z-10">
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-8xl font-black tracking-[-0.05em] text-white">Preguntas frecuentes</h2>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-4">
+            {[
+              { q: "¿Tienen entrega a domicilio?", a: "Sí, contamos con flotilla propia para entregas en todo Ciudad Juárez y alrededores." },
+              { q: "¿Manejan precios de mayoreo?", a: "Absolutamente. Tenemos escalas de precios para ferreterías y constructoras según volumen." },
+              { q: "¿Los materiales son certificados?", a: "Solo trabajamos con marcas líderes y materiales que cumplen con todas las normas de calidad." },
+              { q: "¿Tienen tienda física?", a: "Contamos con nuestro centro de distribución donde puedes recoger materiales o ver muestras." }
+            ].map((faq, idx) => (
+              <motion.div 
+                key={idx}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={itemVariants}
+                className="glass-card border border-white/5 overflow-hidden"
+              >
+                <button 
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full p-8 flex items-center justify-between text-left group"
+                >
+                  <div className="flex items-center gap-6">
+                    <span className="text-accent font-black text-2xl group-hover:scale-125 transition-transform">{idx + 1}</span>
+                    <span className="text-lg md:text-2xl font-bold tracking-tight text-white">{faq.q}</span>
+                  </div>
+                  <ChevronDown className={`transition-transform duration-500 text-accent ${openFaq === idx ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {openFaq === idx && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="px-8 pb-8"
+                    >
+                      <p className="text-gray-400 font-medium italic border-l-2 border-accent pl-6 py-2">{faq.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Contact & Location */}
       <section id="contacto" className="py-24 md:py-40 relative bg-bg border-t border-border">
         <div className="section-container">
@@ -1777,7 +1850,7 @@ export default function App() {
               className="h-[500px] rounded-[40px] overflow-hidden border border-border relative group shadow-2xl"
             >
               <img 
-                src="/dicon_building.png" 
+                src="/dicon_building.webp" 
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover grayscale transition-transform duration-1000 group-hover:scale-105"
@@ -1861,86 +1934,13 @@ export default function App() {
          </div>
        </section>
 
-      {/* FAQ Section */}
-      <section className="py-24 md:py-40 bg-[#0a0a0c] relative overflow-hidden contain-paint">
-        {/* Layered Technical Background for FAQ */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute inset-0 bg-[#09090b]" />
-          {/* Main animated glow */}
-          {!isLowPowerMode && (
-            <motion.div 
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3]
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.08)_0%,transparent_70%)]"
-            />
-          )}
-          {isLowPowerMode && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.05)_0%,transparent_70%)] opacity-50" />
-          )}
-          <div className="absolute top-0 left-0 w-full h-full opacity-[0.04] pointer-events-none" 
-               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
-          <div className="absolute -bottom-1/4 -right-1/4 w-[800px] h-[800px] bg-accent/10 blur-[180px] rounded-full opacity-30" />
-          <div className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-white/5 blur-[140px] rounded-full opacity-15" />
-        </div>
-        
-        <div className="section-container relative z-10">
-          <div className="text-center mb-24">
-            <h2 className="text-5xl md:text-8xl font-black tracking-[-0.05em] text-white">Preguntas frecuentes</h2>
-          </div>
-
-          <div className="max-w-4xl mx-auto space-y-4">
-            {[
-              { q: "¿Tienen entrega a domicilio?", a: "Sí, contamos con flotilla propia para entregas en todo Ciudad Juárez y alrededores." },
-              { q: "¿Manejan precios de mayoreo?", a: "Absolutamente. Tenemos escalas de precios para ferreterías y constructoras según volumen." },
-              { q: "¿Los materiales son certificados?", a: "Solo trabajamos con marcas líderes y materiales que cumplen con todas las normas de calidad." },
-              { q: "¿Tienen tienda física?", a: "Contamos con nuestro centro de distribución donde puedes recoger materiales o ver muestras." }
-            ].map((faq, idx) => (
-              <motion.div 
-                key={idx}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={itemVariants}
-                className="glass-card border border-white/5 overflow-hidden"
-              >
-                <button 
-                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full p-8 flex items-center justify-between text-left group"
-                >
-                  <div className="flex items-center gap-6">
-                    <span className="text-accent font-black text-2xl group-hover:scale-125 transition-transform">{idx + 1}</span>
-                    <span className="text-lg md:text-2xl font-bold tracking-tight text-white">{faq.q}</span>
-                  </div>
-                  <ChevronDown className={`transition-transform duration-500 text-accent ${openFaq === idx ? "rotate-180" : ""}`} />
-                </button>
-                <AnimatePresence>
-                  {openFaq === idx && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="px-8 pb-8"
-                    >
-                      <p className="text-gray-400 font-medium italic border-l-2 border-accent pl-6 py-2">{faq.a}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-bg py-24 border-t border-border">
         <div className="section-container text-center">
           <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-16 px-4">
             <div className="flex items-center gap-4">
               <img 
-                src="/logo.png" 
+                src="/logo.webp" 
                 alt="DICON" 
                 className="h-16 md:h-20 lg:h-24 w-auto" 
                 loading="lazy"
