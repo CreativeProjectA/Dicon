@@ -1,20 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# DICON — Suministro Industrial y Construcción
 
-# Run and deploy your AI Studio app
+Sitio web de DICON Juárez: catálogo segmentado por tipo de cliente (público general,
+ferreterías, constructoras) con cotización vía WhatsApp.
 
-This contains everything you need to run your app locally.
+## Stack
 
-View your app in AI Studio: https://ai.studio/apps/00051348-bbf3-4d48-892e-bd334498108b
+React 19 + TypeScript + Vite + Tailwind CSS + Framer Motion (`motion`).
 
-## Run Locally
+## Desarrollo local
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+## Build de producción
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run build
+```
+
+## Despliegue
+
+Listo para desplegarse en Vercel sin configuración adicional (no requiere variables
+de entorno).
